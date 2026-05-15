@@ -14,4 +14,4 @@ if st.button("Submit"):
 # Slider
 age = st.slider("Select your age:", 1, 100, 25)
 
-st.write(f"Your age is {age}")
+st.write(f"Your age is
