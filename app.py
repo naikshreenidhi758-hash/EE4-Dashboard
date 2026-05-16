@@ -1,62 +1,95 @@
-import requests
-import pandas as pd
 import streamlit as st
+import pandas as pd
 import plotly.express as px
-from requests.auth import HTTPBasicAuth
 
-# ServiceNow details
-INSTANCE = "yourcompany"
-USERNAME = "your_username"
-PASSWORD = "your_password"
+st.set_page_config(page_title="Software Ticket Dashboard", layout="wide")
 
-url = f"https://{INSTANCE}.service-now.com/api/now/table/incident"
+st.title("🎫 Software Ticket Dashboard")
 
-params = {
-    "sysparm_limit": 100,
-    "sysparm_query": "active=true"
-}
-
-response = requests.get(
-    url,
-    auth=HTTPBasicAuth(USERNAME, PASSWORD),
-    params=params,
-    headers={"Accept": "application/json"}
+# Upload Excel File
+uploaded_file = st.file_uploader(
+    "Upload Ticket Excel File",
+    type=["xlsx", "csv"]
 )
 
-data = response.json()["result"]
+if uploaded_file:
 
-df = pd.DataFrame(data)
+    # Read file
+    if uploaded_file.name.endswith(".csv"):
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = pd.read_excel(uploaded_file)
 
-st.title("EE4 ServiceNow Open Tickets Dashboard")
+    st.success("File uploaded successfully!")
 
-# KPIs
-st.metric("Total Open Tickets", len(df))
+    st.subheader("Ticket Data")
+    st.dataframe(df)
 
-# Priority distribution
-priority_chart = df["priority"].value_counts().reset_index()
-priority_chart.columns = ["Priority", "Count"]
+    # Sidebar Filters
+    st.sidebar.header("Filters")
 
-fig = px.bar(
-    priority_chart,
-    x="Priority",
-    y="Count",
-    color="Priority",
-    title="Tickets by Priority"
-)
-
-st.plotly_chart(fig)
-
-# Assignment group filter
-if "assignment_group" in df.columns:
-    groups = df["assignment_group"].astype(str).unique()
-
-    selected_group = st.selectbox(
-        "Select Assignment Group",
-        groups
+    status_filter = st.sidebar.multiselect(
+        "Select Status",
+        options=df["Status"].unique(),
+        default=df["Status"].unique()
     )
 
-    filtered = df[
-        df["assignment_group"].astype(str) == selected_group
+    priority_filter = st.sidebar.multiselect(
+        "Select Priority",
+        options=df["Priority"].unique(),
+        default=df["Priority"].unique()
+    )
+
+    filtered_df = df[
+        (df["Status"].isin(status_filter)) &
+        (df["Priority"].isin(priority_filter))
     ]
 
-    st.dataframe(filtered)
+    # KPIs
+    total_tickets = len(filtered_df)
+    open_tickets = len(filtered_df[filtered_df["Status"] == "Open"])
+    closed_tickets = len(filtered_df[filtered_df["Status"] == "Closed"])
+
+    col1, col2, col3 = st.columns(3)
+
+    col1.metric("Total Tickets", total_tickets)
+    col2.metric("Open Tickets", open_tickets)
+    col3.metric("Closed Tickets", closed_tickets)
+
+    # Status Chart
+    st.subheader("Tickets by Status")
+
+    status_chart = filtered_df["Status"].value_counts().reset_index()
+    status_chart.columns = ["Status", "Count"]
+
+    fig1 = px.bar(
+        status_chart,
+        x="Status",
+        y="Count",
+        color="Status",
+        title="Ticket Status Distribution"
+    )
+
+    st.plotly_chart(fig1, use_container_width=True)
+
+    # Priority Chart
+    st.subheader("Tickets by Priority")
+
+    priority_chart = filtered_df["Priority"].value_counts().reset_index()
+    priority_chart.columns = ["Priority", "Count"]
+
+    fig2 = px.pie(
+        priority_chart,
+        names="Priority",
+        values="Count",
+        title="Priority Distribution"
+    )
+
+    st.plotly_chart(fig2, use_container_width=True)
+
+    # Filtered Data
+    st.subheader("Filtered Tickets")
+    st.dataframe(filtered_df)
+
+else:
+    st.info("Please upload an Excel or CSV file.")
