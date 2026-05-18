@@ -2,9 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="Software Tickets", layout="wide")
+st.set_page_config(page_title="Software Ticket Dashboard", layout="wide")
 
-st.title("🎫 Software Ticket Dashboard")
+st.title("🎫 Software Tickets")
 
 # Upload Excel File
 uploaded_file = st.file_uploader(
