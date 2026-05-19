@@ -2,84 +2,125 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-st.set_page_config(page_title="Software Ticket Dashboard", layout="wide")
+# Page Configuration
+st.set_page_config(
+    page_title="Software Ticket Dashboard",
+    layout="wide"
+)
 
-st.title("🎫 Software Tickets")
+# Title
+st.title("🎫 Software Ticket Dashboard")
 
-# Upload Excel File
+# Upload File
 uploaded_file = st.file_uploader(
-    "Upload Ticket Excel File",
+    "Upload Excel or CSV File",
     type=["xlsx", "csv"]
 )
 
 if uploaded_file:
 
-    # Read file
+    # Read File
     if uploaded_file.name.endswith(".csv"):
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file)
 
+    # Remove extra spaces from column names
+    df.columns = df.columns.str.strip()
+
+    # Check Required Columns
+    required_columns = ["Case State", "Site"]
+
+    for col in required_columns:
+        if col not in df.columns:
+            st.error(f"Missing column: {col}")
+            st.stop()
+
     st.success("File uploaded successfully!")
 
+    # Show Raw Data
     st.subheader("Ticket Data")
     st.dataframe(df)
 
     # Sidebar Filters
     st.sidebar.header("Filters")
 
+    # Case State Filter
     status_filter = st.sidebar.multiselect(
         "Select Case State",
-        options=df["Case State"].unique(),
-        default=df["Case State"].unique()
+        options=df["Case State"].dropna().unique(),
+        default=df["Case State"].dropna().unique()
     )
 
-    priority_filter = st.sidebar.multiselect(
+    # Site Filter
+    site_filter = st.sidebar.multiselect(
         "Select Site",
-        options=df["Site"].unique(),
-        default=df["Site"].unique()
+        options=df["Site"].dropna().unique(),
+        default=df["Site"].dropna().unique()
     )
 
+    # Apply Filters
     filtered_df = df[
-        (df["Case State"].isin(Case State_filter)) &
-        (df["Site"].isin(priority_filter))
+        (df["Case State"].isin(status_filter)) &
+        (df["Site"].isin(site_filter))
     ]
 
-    # KPIs
+    # KPI Metrics
     total_tickets = len(filtered_df)
-    open_tickets = len(filtered_df[filtered_df["Case State"] == "Open"])
-    closed_tickets = len(filtered_df[filtered_df["Case State"] == "Closed"])
 
+    open_tickets = len(
+        filtered_df[filtered_df["Case State"] == "Open"]
+    )
+
+    closed_tickets = len(
+        filtered_df[filtered_df["Case State"] == "Closed"]
+    )
+
+    # KPI Columns
     col1, col2, col3 = st.columns(3)
 
     col1.metric("Total Tickets", total_tickets)
     col2.metric("Open Tickets", open_tickets)
     col3.metric("Closed Tickets", closed_tickets)
 
-    # Status Chart
-    st.subheader("Tickets by Status")
+    # ----------------------------
+    # Tickets by Case State
+    # ----------------------------
+    st.subheader("Tickets by Case State")
 
-    Case State_chart = filtered_df["Case State"].value_counts().reset_index()
-    Case State_chart.columns = ["Case State", "Count"]
+    status_chart = (
+        filtered_df["Case State"]
+        .value_counts()
+        .reset_index()
+    )
+
+    status_chart.columns = ["Case State", "Count"]
 
     fig1 = px.bar(
-       Case State_chart,
+        status_chart,
         x="Case State",
         y="Count",
         color="Case State",
-        title="Ticket Status Distribution"
+        title="Case State Distribution"
     )
 
     st.plotly_chart(fig1, use_container_width=True)
 
-    # Priority Chart
+    # ----------------------------
+    # Tickets by Site
+    # ----------------------------
     st.subheader("Tickets by Site")
 
-    priority_chart = filtered_df["Site"].value_counts().reset_index()
-    priority_chart.columns = ["Site", "Count"]
+    site_chart = (
+        filtered_df["Site"]
+        .value_counts()
+        .reset_index()
+    )
+
+    site_chart.columns = ["Site", "Count"]
 
     fig2 = px.pie(
-        priority_chart,
+        site_chart,
         names="Site",
         values="Count",
         title="Site Distribution"
@@ -87,8 +128,11 @@ if uploaded_file:
 
     st.plotly_chart(fig2, use_container_width=True)
 
+    # ----------------------------
     # Filtered Data
-    st.subheader("Filtered Tickets")
+    # ----------------------------
+    st.subheader("Filtered Ticket Data")
+
     st.dataframe(filtered_df)
 
 else:
