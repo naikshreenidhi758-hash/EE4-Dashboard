@@ -87,10 +87,12 @@ col1.metric("Total Tickets", total_tickets)
 col2.metric("Open Tickets", open_tickets)
 col3.metric("Closed Tickets", closed_tickets)
 
-    # Tickets by Case State
-    st.subheader("Tickets by Case State")
+#-------------------------
+# Tickets by Case State
+#-------------------------
+st.subheader("Tickets by Case State")
 
-    status_chart = (
+ status_chart = (
         filtered_df["Case State"]
         .value_counts()
         .reset_index()
