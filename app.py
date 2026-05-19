@@ -87,29 +87,28 @@ col1.metric("Total Tickets", total_tickets)
 col2.metric("Open Tickets", open_tickets)
 col3.metric("Closed Tickets", closed_tickets)
 
-#-------------------------
+# ----------------------------
 # Tickets by Case State
-#-------------------------
+# ----------------------------
 st.subheader("Tickets by Case State")
 
- status_chart = (
-        filtered_df["Case State"]
-        .value_counts()
-        .reset_index()
-    )
+status_chart = (
+    filtered_df["Case State"]
+    .value_counts()
+    .reset_index()
+)
 
-    status_chart.columns = ["Case State", "Count"]
+status_chart.columns = ["Case State", "Count"]
 
-    fig1 = px.bar(
-        status_chart,
-        x="Case State",
-        y="Count",
-        color="Case State",
-        title="Case State Distribution"
-    )
+fig1 = px.bar(
+    status_chart,
+    x="Case State",
+    y="Count",
+    color="Case State",
+    title="Case State Distribution"
+)
 
-    st.plotly_chart(fig1, use_container_width=True)
-
+st.plotly_chart(fig1, use_container_width=True)
     
     # Tickets by Site
     st.subheader("Tickets by Site")
