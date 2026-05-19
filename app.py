@@ -29,26 +29,26 @@ if uploaded_file:
     st.sidebar.header("Filters")
 
     status_filter = st.sidebar.multiselect(
-        "Select Status",
-        options=df["Status"].unique(),
-        default=df["Status"].unique()
+        "Select Case State",
+        options=df["Case State"].unique(),
+        default=df["Case State"].unique()
     )
 
     priority_filter = st.sidebar.multiselect(
-        "Select Priority",
-        options=df["Priority"].unique(),
-        default=df["Priority"].unique()
+        "Select Site",
+        options=df["Site"].unique(),
+        default=df["Site"].unique()
     )
 
     filtered_df = df[
-        (df["Status"].isin(status_filter)) &
-        (df["Priority"].isin(priority_filter))
+        (df["Case State"].isin(Case State_filter)) &
+        (df["Site"].isin(priority_filter))
     ]
 
     # KPIs
     total_tickets = len(filtered_df)
-    open_tickets = len(filtered_df[filtered_df["Status"] == "Open"])
-    closed_tickets = len(filtered_df[filtered_df["Status"] == "Closed"])
+    open_tickets = len(filtered_df[filtered_df["Case State"] == "Open"])
+    closed_tickets = len(filtered_df[filtered_df["Case State"] == "Closed"])
 
     col1, col2, col3 = st.columns(3)
 
@@ -59,30 +59,30 @@ if uploaded_file:
     # Status Chart
     st.subheader("Tickets by Status")
 
-    status_chart = filtered_df["Status"].value_counts().reset_index()
-    status_chart.columns = ["Status", "Count"]
+    Case State_chart = filtered_df["Case State"].value_counts().reset_index()
+    Case State_chart.columns = ["Case State", "Count"]
 
     fig1 = px.bar(
-        status_chart,
-        x="Status",
+       Case State_chart,
+        x="Case State",
         y="Count",
-        color="Status",
+        color="Case State",
         title="Ticket Status Distribution"
     )
 
     st.plotly_chart(fig1, use_container_width=True)
 
     # Priority Chart
-    st.subheader("Tickets by Priority")
+    st.subheader("Tickets by Site")
 
-    priority_chart = filtered_df["Priority"].value_counts().reset_index()
-    priority_chart.columns = ["Priority", "Count"]
+    priority_chart = filtered_df["Site"].value_counts().reset_index()
+    priority_chart.columns = ["Site", "Count"]
 
     fig2 = px.pie(
         priority_chart,
-        names="Priority",
+        names="Site",
         values="Count",
-        title="Priority Distribution"
+        title="Site Distribution"
     )
 
     st.plotly_chart(fig2, use_container_width=True)
