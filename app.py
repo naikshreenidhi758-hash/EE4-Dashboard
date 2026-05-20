@@ -29,7 +29,7 @@ if uploaded_file:
     df.columns = df.columns.str.strip()
 
     # Check Required Columns
-    required_columns = ["Case State", "Site"]
+    required_columns = ["Number","short description","Case State","Site","Register time"]
 
     for col in required_columns:
         if col not in df.columns:
