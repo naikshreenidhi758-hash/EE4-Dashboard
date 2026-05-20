@@ -66,52 +66,54 @@ if uploaded_file:
     ]
 
     # KPI Metrics
-total_tickets = len(filtered_df)
+    total_tickets = len(filtered_df)
 
-open_tickets = len(
-    filtered_df[
-        filtered_df["Case State"].isin(
-            ["Open", "Register", "In Processing"]
-        )
-    ]
-)
+    open_tickets = len(
+        filtered_df[
+            filtered_df["Case State"].isin(
+                ["Open", "Register", "In Processing"]
+            )
+        ]
+    )
 
-closed_tickets = len(
-    filtered_df[filtered_df["Case State"] == "Closed"]
-)
+    closed_tickets = len(
+        filtered_df[filtered_df["Case State"] == "Closed"]
+    )
 
-# KPI Columns
-col1, col2, col3 = st.columns(3)
+    # KPI Columns
+    col1, col2, col3 = st.columns(3)
 
-col1.metric("Total Tickets", total_tickets)
-col2.metric("Open Tickets", open_tickets)
-col3.metric("Closed Tickets", closed_tickets)
+    col1.metric("Total Tickets", total_tickets)
+    col2.metric("Open Tickets", open_tickets)
+    col3.metric("Closed Tickets", closed_tickets)
 
-# ----------------------------
-# Tickets by Case State
-# ----------------------------
-st.subheader("Tickets by Case State")
+    # ----------------------------
+    # Tickets by Case State
+    # ----------------------------
+    st.subheader("Tickets by Case State")
 
-status_chart = (
-    filtered_df["Case State"]
-    .value_counts()
-    .reset_index()
-)
+    status_chart = (
+        filtered_df["Case State"]
+        .value_counts()
+        .reset_index()
+    )
 
-status_chart.columns = ["Case State", "Count"]
+    status_chart.columns = ["Case State", "Count"]
 
-fig1 = px.bar(
-    status_chart,
-    x="Case State",
-    y="Count",
-    color="Case State",
-    title="Case State Distribution"
-)
+    fig1 = px.bar(
+        status_chart,
+        x="Case State",
+        y="Count",
+        color="Case State",
+        title="Case State Distribution"
+    )
 
-st.plotly_chart(fig1, use_container_width=True)
-    
-# Tickets by Site
-st.subheader("Tickets by Site")
+    st.plotly_chart(fig1, use_container_width=True)
+
+    # ----------------------------
+    # Tickets by Site
+    # ----------------------------
+    st.subheader("Tickets by Site")
 
     site_chart = (
         filtered_df["Site"]
@@ -130,8 +132,9 @@ st.subheader("Tickets by Site")
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    
+    # ----------------------------
     # Filtered Data
+    # ----------------------------
     st.subheader("Filtered Ticket Data")
 
     st.dataframe(filtered_df)
