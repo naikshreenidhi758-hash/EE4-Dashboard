@@ -41,7 +41,7 @@ if uploaded_file:
     # Save to new Excel file
     filtered_df.to_excel(output_file, index=False)
  
-      print("Filtered file saved as:", output_file)       
+    print("Filtered file saved as:", output_file)       
 
     st.success("File uploaded successfully!")
 
