@@ -110,8 +110,8 @@ fig1 = px.bar(
 
 st.plotly_chart(fig1, use_container_width=True)
     
-    # Tickets by Site
-    st.subheader("Tickets by Site")
+# Tickets by Site
+st.subheader("Tickets by Site")
 
     site_chart = (
         filtered_df["Site"]
