@@ -69,17 +69,24 @@ if uploaded_file:
     total_tickets = len(filtered_df)
 
     open_tickets = len(
-        filtered_df[
-            filtered_df["Case State"].isin(
-                ["Open", "Register", "In Processing"]
-            )
-        ]
-    )
+    filtered_df[
+        filtered_df["Case State"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin(["open", "register", "in processing"])
+    ]
+)
 
-    closed_tickets = len(
-        filtered_df[filtered_df["Case State"] == "Closed"]
-    )
-
+   closed_tickets = len(
+    filtered_df[
+        filtered_df["Case State"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        == "closed"
+    ]
+)
     # KPI Columns
     col1, col2, col3 = st.columns(3)
 
