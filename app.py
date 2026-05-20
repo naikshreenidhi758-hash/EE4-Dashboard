@@ -75,8 +75,8 @@ if uploaded_file:
         .str.strip()
         .str.lower()
         .isin(["open", "register", "in processing"])
-    ]
-)
+     ]
+    )
 
    closed_tickets = len(
     filtered_df[
@@ -85,8 +85,8 @@ if uploaded_file:
         .str.strip()
         .str.lower()
         == "closed"
-    ]
-)
+      ]
+   )
     # KPI Columns
     col1, col2, col3 = st.columns(3)
 
