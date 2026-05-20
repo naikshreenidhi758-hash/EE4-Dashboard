@@ -66,6 +66,7 @@ if uploaded_file:
     ]
 
         # KPI Metrics
+    st.subheader("Statistics")
     total_tickets = len(filtered_df)
 
     open_tickets = len(
