@@ -74,7 +74,7 @@ if uploaded_file:
             .astype(str)
             .str.strip()
             .str.lower()
-            .isin(["open", "register", "in processing"])
+            .isin(["open", "register"," Effect confirmation", "in processing"])
         ]
     )
 
