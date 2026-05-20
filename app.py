@@ -37,7 +37,13 @@ if uploaded_file:
             st.stop()
     # Filter dataframe
     filtered_df = df[required_columns]
- 
+
+    output_file = "filtered_output.xlsx"
+
+    filtered_df.to_excel(output_file, index=False)
+
+    st.success(f"File saved as {output_file}")
+
     # Save to new Excel file
     filtered_df.to_excel(output_file, index=False)
  
