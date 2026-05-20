@@ -35,6 +35,13 @@ if uploaded_file:
         if col not in df.columns:
             st.error(f"Missing column: {col}")
             st.stop()
+    # Filter dataframe
+    filtered_df = df[required_columns]
+ 
+    # Save to new Excel file
+    filtered_df.to_excel(output_file, index=False)
+ 
+      print("Filtered file saved as:", output_file)       
 
     st.success("File uploaded successfully!")
 
