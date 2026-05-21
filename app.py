@@ -148,10 +148,10 @@ if uploaded_file:
 
     status_chart.columns = ["Case State", "Count"]
 
-    fig1 = px.bar(
+    fig1 = px.pie(
         status_chart,
-        x="Case State",
-        y="Count",
+        names="Case State",
+        values="Count",
         color="Case State",
         title="Case State Distribution"
     )
@@ -171,10 +171,10 @@ if uploaded_file:
 
     site_chart.columns = ["Site", "Count"]
 
-    fig2 = px.pie(
+    fig2 = px.bar(
         site_chart,
-        names="Site",
-        values="Count",
+        x="Site",
+        y="Count",
         title="Site Distribution"
     )
 
