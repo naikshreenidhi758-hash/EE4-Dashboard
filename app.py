@@ -149,7 +149,7 @@ if uploaded_file:
 
     status_chart.columns = ["Case State", "Count"]
 
-    fig1 = px.pie(
+    fig1 = px.donut chart(
         status_chart,
         names="Case State",
         values="Count",
