@@ -157,8 +157,11 @@ if uploaded_file:
     title="Case State Distribution"
 )
 
-    st.plotly_chart(fig1, use_container_width=True)
+    fig1.update_traces(
+      textinfo="value"
+)
 
+    st.plotly_chart(fig1, use_container_width=True)
     # ----------------------------
     # Filtered Data
     # ----------------------------
