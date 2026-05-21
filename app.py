@@ -41,7 +41,7 @@ if uploaded_file:
     # Save filtered columns to Excel
     output_file = "filtered_output.xlsx"
 
-     required_df.to_excel(output_file, index=False)
+    required_df.to_excel(output_file, index=False)
 
     st.success(f"Filtered file saved as {output_file}")
     st.success(f"File saved as {output_file}")
