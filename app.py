@@ -180,26 +180,33 @@ if uploaded_file:
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    # ----------------------------
+       # ----------------------------
     # Filtered Data
     # ----------------------------
+
     # Convert register time column to datetime
-df["register time"] = pd.to_datetime(
-    df["register time"],
-    errors="coerce"
-)
+    df["register time"] = pd.to_datetime(
+        df["register time"],
+        errors="coerce"
+    )
 
-# Get current month and year
-current_month = pd.Timestamp.now().month
-current_year = pd.Timestamp.now().year
+    # Get current month and year
+    current_month = pd.Timestamp.now().month
+    current_year = pd.Timestamp.now().year
 
-# Apply filters
-filtered_df = df[
-    (df["case state"].isin(status_filter)) &
-    (df["site"].isin(site_filter)) &
-    (df["register time"].dt.month == current_month) &
-    (df["register time"].dt.year == current_year)
-]
+    # Apply current month filter
+    filtered_df = filtered_df[
+        (filtered_df["register time"].dt.month == current_month) &
+        (filtered_df["register time"].dt.year == current_year)
+    ]
 
-# Keep only required columns
-filtered_df = filtered_df[required_columns]
+    # Keep only required columns
+    filtered_df = filtered_df[required_columns]
+
+    # Show Filtered Data
+    st.subheader("Filtered Ticket Data")
+
+    st.dataframe(filtered_df)
+
+else:
+    st.info("Please upload an Excel or CSV file.")
