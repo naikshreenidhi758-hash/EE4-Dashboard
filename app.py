@@ -203,6 +203,3 @@ filtered_df = df[
 
 # Keep only required columns
 filtered_df = filtered_df[required_columns]
-
-else:
-    st.info("Please upload an Excel or CSV file.")
