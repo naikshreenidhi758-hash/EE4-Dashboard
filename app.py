@@ -46,11 +46,10 @@ if uploaded_file:
     st.success(f"Filtered file saved as {output_file}")
     st.success(f"File saved as {output_file}")
 
-    # Save to new Excel file
-    filtered_df.to_excel(output_file, index=False)
- 
-    print("Filtered file saved as:", output_file)       
+    # Save required columns to Excel
+    required_df.to_excel(output_file, index=False)
 
+    print("Filtered file saved as:", output_file)
     st.success("File uploaded successfully!")
 
     # Show Raw Data
