@@ -84,14 +84,19 @@ if uploaded_file:
     total_tickets = len(filtered_df)
 
     open_tickets = len(
-        filtered_df[
-            filtered_df["Case State"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .isin(["open", "register"," Effect confirmation", "in processing"])
-        ]
-    )
+     filtered_df[
+        filtered_df["Case State"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin([
+            "open",
+            "register",
+            "effect confirmation",
+            "in processing"
+        ])
+    ]
+)
 
     closed_tickets = len(
         filtered_df[
