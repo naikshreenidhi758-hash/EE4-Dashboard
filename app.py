@@ -35,6 +35,7 @@ if uploaded_file:
         "case state",
         "site",
         "register time"
+        "close time"
     ]
 
     # Check missing columns
