@@ -25,18 +25,31 @@ if uploaded_file:
     else:
         df = pd.read_excel(uploaded_file)
 
-    # Remove extra spaces from column names
-    df.columns = df.columns.str.strip()
+ # Clean column names
+ df.columns = df.columns.str.strip().str.lower()
 
-    # Check Required Columns
-    required_columns = ["Number","Short description","Case State","Site","Register time"]
+ # Required columns
+ required_columns = [
+    "number",
+    "short description",
+    "case state",
+    "site",
+    "register time"
+]
 
-    for col in required_columns:
-        if col not in df.columns:
-            st.error(f"Missing column: {col}")
-            st.stop()
-    # Keep only required columns
-    required_df = df[required_columns]
+  # Check columns
+  missing_columns = [
+    col for col in required_columns
+    if col not in df.columns
+]
+
+if missing_columns:
+    st.error(f"Missing columns: {missing_columns}")
+    st.write("Available columns:", df.columns.tolist())
+    st.stop()
+
+  # Keep only required columns
+   required_df = df[required_columns]
 
     # Save filtered columns to Excel
     output_file = "filtered_output.xlsx"
