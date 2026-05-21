@@ -34,7 +34,7 @@ if uploaded_file:
         "short description",
         "case state",
         "site",
-        "register time"
+        "register time",
         "close time"
     ]
 
