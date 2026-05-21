@@ -183,9 +183,26 @@ if uploaded_file:
     # ----------------------------
     # Filtered Data
     # ----------------------------
-    st.subheader("Filtered Ticket Data")
+    # Convert register time column to datetime
+df["register time"] = pd.to_datetime(
+    df["register time"],
+    errors="coerce"
+)
 
-    st.dataframe(filtered_df)
+# Get current month and year
+current_month = pd.Timestamp.now().month
+current_year = pd.Timestamp.now().year
+
+# Apply filters
+filtered_df = df[
+    (df["case state"].isin(status_filter)) &
+    (df["site"].isin(site_filter)) &
+    (df["register time"].dt.month == current_month) &
+    (df["register time"].dt.year == current_year)
+]
+
+# Keep only required columns
+filtered_df = filtered_df[required_columns]
 
 else:
     st.info("Please upload an Excel or CSV file.")
