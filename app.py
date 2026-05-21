@@ -25,31 +25,31 @@ if uploaded_file:
     else:
         df = pd.read_excel(uploaded_file)
 
- # Clean column names
- df.columns = df.columns.str.strip().str.lower()
+    # Clean column names
+    df.columns = df.columns.str.strip().str.lower()
 
- # Required columns
- required_columns = [
-    "number",
-    "short description",
-    "case state",
-    "site",
-    "register time"
-]
+    # Required columns
+    required_columns = [
+        "number",
+        "short description",
+        "case state",
+        "site",
+        "register time"
+    ]
 
-  # Check columns
-  missing_columns = [
-    col for col in required_columns
-    if col not in df.columns
-]
+    # Check missing columns
+    missing_columns = [
+        col for col in required_columns
+        if col not in df.columns
+    ]
 
-if missing_columns:
-    st.error(f"Missing columns: {missing_columns}")
-    st.write("Available columns:", df.columns.tolist())
-    st.stop()
+    if missing_columns:
+        st.error(f"Missing columns: {missing_columns}")
+        st.write("Available columns:", df.columns.tolist())
+        st.stop()
 
-  # Keep only required columns
-   required_df = df[required_columns]
+    # Keep only required columns
+    required_df = df[required_columns]
 
     # Save filtered columns to Excel
     output_file = "filtered_output.xlsx"
@@ -57,31 +57,35 @@ if missing_columns:
     required_df.to_excel(output_file, index=False)
 
     st.success(f"Filtered file saved as {output_file}")
-    st.success(f"File saved as {output_file}")
 
-    # Save required columns to Excel
-    required_df.to_excel(output_file, index=False)
+    # Download button
+    with open(output_file, "rb") as file:
+        st.download_button(
+            label="Download Filtered Excel File",
+            data=file,
+            file_name=output_file,
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
-    print("Filtered file saved as:", output_file)
     st.success("File uploaded successfully!")
 
     # Show Raw Data
     st.subheader("Ticket Data")
-    st.dataframe(df)
+    st.dataframe(required_df)
 
     # Sidebar Filters
     st.sidebar.header("Filters")
 
     # Case State Filter
     status_filter = st.sidebar.multiselect(
-        "Select case State",
+        "Select Case State",
         options=df["case state"].dropna().unique(),
         default=df["case state"].dropna().unique()
     )
 
     # Site Filter
     site_filter = st.sidebar.multiselect(
-        "Select site",
+        "Select Site",
         options=df["site"].dropna().unique(),
         default=df["site"].dropna().unique()
     )
@@ -92,24 +96,27 @@ if missing_columns:
         (df["site"].isin(site_filter))
     ]
 
-        # KPI Metrics
+    # ----------------------------
+    # KPI Metrics
+    # ----------------------------
     st.subheader("Statistics")
+
     total_tickets = len(filtered_df)
 
     open_tickets = len(
-     filtered_df[
-        filtered_df["case state"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .isin([
-            "open",
-            "register",
-            "effect confirmation",
-            "in processing"
-        ])
-    ]
-)
+        filtered_df[
+            filtered_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .isin([
+                "open",
+                "register",
+                "effect confirmation",
+                "in processing"
+            ])
+        ]
+    )
 
     closed_tickets = len(
         filtered_df[
@@ -134,7 +141,7 @@ if missing_columns:
     st.subheader("Tickets by Case State")
 
     status_chart = (
-        filtered_df["Case State"]
+        filtered_df["case state"]
         .value_counts()
         .reset_index()
     )
@@ -157,7 +164,7 @@ if missing_columns:
     st.subheader("Tickets by Site")
 
     site_chart = (
-        filtered_df["Site"]
+        filtered_df["site"]
         .value_counts()
         .reset_index()
     )
