@@ -74,22 +74,22 @@ if missing_columns:
 
     # Case State Filter
     status_filter = st.sidebar.multiselect(
-        "Select Case State",
-        options=df["Case State"].dropna().unique(),
-        default=df["Case State"].dropna().unique()
+        "Select case State",
+        options=df["case state"].dropna().unique(),
+        default=df["case state"].dropna().unique()
     )
 
     # Site Filter
     site_filter = st.sidebar.multiselect(
-        "Select Site",
-        options=df["Site"].dropna().unique(),
-        default=df["Site"].dropna().unique()
+        "Select site",
+        options=df["site"].dropna().unique(),
+        default=df["site"].dropna().unique()
     )
 
     # Apply Filters
     filtered_df = df[
-        (df["Case State"].isin(status_filter)) &
-        (df["Site"].isin(site_filter))
+        (df["case state"].isin(status_filter)) &
+        (df["site"].isin(site_filter))
     ]
 
         # KPI Metrics
@@ -98,7 +98,7 @@ if missing_columns:
 
     open_tickets = len(
      filtered_df[
-        filtered_df["Case State"]
+        filtered_df["case state"]
         .astype(str)
         .str.strip()
         .str.lower()
@@ -113,7 +113,7 @@ if missing_columns:
 
     closed_tickets = len(
         filtered_df[
-            filtered_df["Case State"]
+            filtered_df["case state"]
             .astype(str)
             .str.strip()
             .str.lower()
