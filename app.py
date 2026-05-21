@@ -149,13 +149,13 @@ if uploaded_file:
 
     status_chart.columns = ["Case State", "Count"]
 
-    fig1 = px.donut chart(
-        status_chart,
-        names="Case State",
-        values="Count",
-        color="Case State",
-        title="Case State Distribution"
-    )
+    fig1 = px.pie(
+    status_chart,
+    names="Case State",
+    values="Count",
+    hole=0.5,
+    title="Case State Distribution"
+)
 
     st.plotly_chart(fig1, use_container_width=True)
 
