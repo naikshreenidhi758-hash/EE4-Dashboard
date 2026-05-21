@@ -97,75 +97,76 @@ if uploaded_file:
         (df["site"].isin(site_filter))
     ]
 
-   # Create 2 columns
-left_col, right_col = st.columns(2)
+    # Create 2 columns
+    left_col, right_col = st.columns(2)
 
-# ----------------------------
-# LEFT SIDE - Statistics
-# ----------------------------
-with left_col:
+    # ----------------------------
+    # LEFT SIDE - Statistics
+    # ----------------------------
+    with left_col:
 
-    st.subheader("Statistics")
+        st.subheader("Statistics")
 
-    total_tickets = len(filtered_df)
+        total_tickets = len(filtered_df)
 
-    open_tickets = len(
-        filtered_df[
-            filtered_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .isin([
-                "open",
-                "register",
-                "effect confirmation",
-                "in processing"
-            ])
-        ]
-    )
+        open_tickets = len(
+            filtered_df[
+                filtered_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                .isin([
+                    "open",
+                    "register",
+                    "effect confirmation",
+                    "in processing"
+                ])
+            ]
+        )
 
-    closed_tickets = len(
-        filtered_df[
-            filtered_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            == "closed"
-        ]
-    )
+        closed_tickets = len(
+            filtered_df[
+                filtered_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                == "closed"
+            ]
+        )
 
-    col1, col2, col3 = st.columns(3)
+        col1, col2, col3 = st.columns(3)
 
-    col1.metric("Total Tickets", total_tickets)
-    col2.metric("Open Tickets", open_tickets)
-    col3.metric("Closed Tickets", closed_tickets)
+        col1.metric("Total Tickets", total_tickets)
+        col2.metric("Open Tickets", open_tickets)
+        col3.metric("Closed Tickets", closed_tickets)
 
     # ----------------------------
     # RIGHT SIDE - Ticket Status
     # ----------------------------
     with right_col:
 
-    st.subheader("Tickets by Case State")
+        st.subheader("Tickets by Case State")
 
-    status_chart = (
-        filtered_df["case state"]
-        .value_counts()
-        .reset_index()
-    )
+        status_chart = (
+            filtered_df["case state"]
+            .value_counts()
+            .reset_index()
+        )
 
-    status_chart.columns = ["Case State", "Count"]
+        status_chart.columns = ["Case State", "Count"]
 
-    fig1 = px.pie(
-        status_chart,
-        names="Case State",
-        values="Count",
-        hole=0.5,
-        title="Case State Distribution"
-    )
+        fig1 = px.pie(
+            status_chart,
+            names="Case State",
+            values="Count",
+            hole=0.5,
+            title="Case State Distribution"
+        )
 
-    fig1.update_traces(textinfo="value")
+        fig1.update_traces(textinfo="value")
 
-    st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, use_container_width=True)
+
     # ----------------------------
     # Filtered Data
     # ----------------------------
@@ -193,6 +194,3 @@ with left_col:
     st.subheader("Current Month Ticket Summary")
 
     st.dataframe(filtered_df)
-
-else:
-    st.info("Please upload an Excel or CSV file.")
