@@ -160,28 +160,6 @@ if uploaded_file:
     st.plotly_chart(fig1, use_container_width=True)
 
     # ----------------------------
-    # Tickets by Site
-    # ----------------------------
-    st.subheader("Tickets by Site")
-
-    site_chart = (
-        filtered_df["site"]
-        .value_counts()
-        .reset_index()
-    )
-
-    site_chart.columns = ["Site", "Count"]
-
-    fig2 = px.bar(
-        site_chart,
-        x="Site",
-        y="Count",
-        title="Site Distribution"
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
-       # ----------------------------
     # Filtered Data
     # ----------------------------
 
