@@ -204,7 +204,7 @@ if uploaded_file:
     filtered_df = filtered_df[required_columns]
 
     # Show Filtered Data
-    st.subheader("Filtered Ticket Data")
+    st.subheader("Current Month Ticket Summary")
 
     st.dataframe(filtered_df)
 
