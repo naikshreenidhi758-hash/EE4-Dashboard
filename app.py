@@ -13,7 +13,7 @@ st.title("🎫 Software Ticket Dashboard")
 
 # Upload File
 uploaded_file = st.file_uploader(
-    "Incident softwares file",
+    "Upload Incident softwares file",
     type=["xlsx", "csv"]
 )
 
