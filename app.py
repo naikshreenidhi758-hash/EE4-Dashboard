@@ -97,9 +97,14 @@ if uploaded_file:
         (df["site"].isin(site_filter))
     ]
 
-    # ----------------------------
-    # KPI Metrics
-    # ----------------------------
+   # Create 2 columns
+left_col, right_col = st.columns(2)
+
+# ----------------------------
+# LEFT SIDE - Statistics
+# ----------------------------
+with left_col:
+
     st.subheader("Statistics")
 
     total_tickets = len(filtered_df)
@@ -129,7 +134,6 @@ if uploaded_file:
         ]
     )
 
-    # KPI Columns
     col1, col2, col3 = st.columns(3)
 
     col1.metric("Total Tickets", total_tickets)
@@ -137,8 +141,10 @@ if uploaded_file:
     col3.metric("Closed Tickets", closed_tickets)
 
     # ----------------------------
-    # Tickets by Case State
+    # RIGHT SIDE - Ticket Status
     # ----------------------------
+      with right_col:
+
     st.subheader("Tickets by Case State")
 
     status_chart = (
@@ -150,16 +156,14 @@ if uploaded_file:
     status_chart.columns = ["Case State", "Count"]
 
     fig1 = px.pie(
-    status_chart,
-    names="Case State",
-    values="Count",
-    hole=0.5,
-    title="Case State Distribution"
-)
+        status_chart,
+        names="Case State",
+        values="Count",
+        hole=0.5,
+        title="Case State Distribution"
+    )
 
-    fig1.update_traces(
-      textinfo="value"
-)
+    fig1.update_traces(textinfo="value")
 
     st.plotly_chart(fig1, use_container_width=True)
     # ----------------------------
