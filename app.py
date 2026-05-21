@@ -143,7 +143,7 @@ with left_col:
     # ----------------------------
     # RIGHT SIDE - Ticket Status
     # ----------------------------
-      with right_col:
+    with right_col:
 
     st.subheader("Tickets by Case State")
 
