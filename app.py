@@ -4,33 +4,30 @@ import plotly.express as px
 import requests
 from requests.auth import HTTPBasicAuth
 
-# ---------------------------------
-# PAGE CONFIG
-# ---------------------------------
+#page config
 st.set_page_config(
     page_title="Software Ticket Dashboard",
     layout="wide"
 )
-
-# ---------------------------------
-# TOP IMAGE
-# ---------------------------------
+#add image
 st.image("envision.png")
 
-# ---------------------------------
-# TITLE
-# ---------------------------------
+#title
 st.title("🎫 INDIA Software Ticket Report")
 
 # ---------------------------------
-# SERVICENOW CONFIG
+# SERVICENOW API
 # ---------------------------------
-INSTANCE = "https://ee.envision-energy.com/now/nav/ui/classic/params/target/u_incident_software_list.do%3Fsysparm_query%3Du_site.u_director_of_service%253D67c3ce79db868f0085c19c27db96194e%255Eu_case_state!%253D7%255EORu_case_state%253DNULL%255Eu_site!%253D2df8921fdb3fa740e6ca9cb6db96198b%255EORu_site%253DNULL%255Eu_site.u_site_bigarea!%253DLatin%2520America%255EORu_site.u_site_bigarea%253DNULL%26sysparm_first_row%3D1%26sysparm_view%3D"
+INSTANCE = "https://ee.envision-energy.com"
 
 API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 
 USERNAME = "your_username"
 PASSWORD = "your_password"
+
+headers = {
+    "Accept": "application/json"
+}
 
 # ---------------------------------
 # API REQUEST
@@ -38,16 +35,37 @@ PASSWORD = "your_password"
 response = requests.get(
     API_URL,
     auth=HTTPBasicAuth(USERNAME, PASSWORD),
-    headers={"Accept": "application/json"}
+    headers=headers
 )
 
 # ---------------------------------
-# CHECK API RESPONSE
+# DEBUG RESPONSE
+# ---------------------------------
+st.write("Status Code:", response.status_code)
+
+# Show first 500 characters
+st.text(response.text[:500])
+
+# ---------------------------------
+# CHECK RESPONSE
 # ---------------------------------
 if response.status_code != 200:
-    st.error("Failed to fetch data from ServiceNow")
+    st.error("Failed to connect to ServiceNow")
     st.stop()
 
+# ---------------------------------
+# TRY JSON
+# ---------------------------------
+try:
+    data = response.json()["result"]
+
+except Exception as e:
+    st.error(f"JSON Error: {e}")
+
+    st.write("Raw Response:")
+    st.code(response.text)
+
+    st.stop()
 # ---------------------------------
 # LOAD DATA
 # ---------------------------------
