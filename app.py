@@ -146,7 +146,7 @@ if uploaded_file:
             status_chart,
             names="Case State",
             values="Count",
-            hole="0.5",
+            hole=0.5,
             title="Case State Distribution"
         )
  
