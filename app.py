@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 # Title
-st.title("🎫 Software Ticket Dashboard")
+st.title("🎫 INDIA  Software Ticket Report ")
 
 # Upload File
 uploaded_file = st.file_uploader(
