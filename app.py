@@ -25,7 +25,7 @@ st.title("🎫 INDIA Software Ticket Report")
 # ---------------------------------
 # SERVICENOW CONFIG
 # ---------------------------------
-INSTANCE = "https://ee.envision-energy.com"
+INSTANCE = "https://ee.envision-energy.com/now/nav/ui/classic/params/target/u_incident_software_list.do%3Fsysparm_query%3Du_site.u_director_of_service%253D67c3ce79db868f0085c19c27db96194e%255Eu_case_state!%253D7%255EORu_case_state%253DNULL%255Eu_site!%253D2df8921fdb3fa740e6ca9cb6db96198b%255EORu_site%253DNULL%255Eu_site.u_site_bigarea!%253DLatin%2520America%255EORu_site.u_site_bigarea%253DNULL%26sysparm_first_row%3D1%26sysparm_view%3D"
 
 API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 
