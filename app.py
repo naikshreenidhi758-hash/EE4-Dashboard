@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+#add image
+st.image("envision.png")
+
 # Page Configuration
 st.set_page_config(
     page_title="Software Ticket Dashboard",
