@@ -14,19 +14,41 @@ st.set_page_config(
 # Title
 st.title("🎫 INDIA  Software Ticket Report ")
 
-# Upload File
+# Logo + Title
+col1, col2 = st.columns([1, 6])
+
+with col1:
+    st.image("images/logo.png", width=80)
+
+with col2:
+    st.markdown(
+        """
+        <h1 style='margin-bottom:0px;'>
+        INDIA Software Ticket Report
+        </h1>
+        """,
+        unsafe_allow_html=True
+    )
+
+# Subtitle
+st.markdown(
+    """
+    <h4 style='color:gray; margin-top:0px;'>
+    Upload Incident Software File
+    </h4>
+    """,
+    unsafe_allow_html=True
+)
+
+# Upload Button on Left Side
 uploaded_file = st.file_uploader(
-    "Upload Incident softwares file",
+    "",
     type=["xlsx", "csv"]
 )
 
+# Show file name after upload
 if uploaded_file:
-
-    # Read File
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = pd.read_excel(uploaded_file)
+    st.success(f"Uploaded File: {uploaded_file.name}")
 
     # Clean column names
     df.columns = df.columns.str.strip().str.lower()
