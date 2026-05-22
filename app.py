@@ -18,6 +18,9 @@ st.title("🎫 INDIA Software Ticket Report")
 # ---------------------------------
 # SERVICENOW API
 # ---------------------------------
+from requests.auth import HTTPBasicAuth
+import requests
+
 INSTANCE = "https://ee.envision-energy.com"
 
 API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
@@ -25,18 +28,16 @@ API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 USERNAME = "your_username"
 PASSWORD = "your_password"
 
-headers = {
-    "Accept": "application/json"
-}
-
-# ---------------------------------
-# API REQUEST
-# ---------------------------------
 response = requests.get(
     API_URL,
     auth=HTTPBasicAuth(USERNAME, PASSWORD),
-    headers=headers
+    headers={
+        "Accept": "application/json"
+    }
 )
+
+print(response.status_code)
+print(response.text)
 
 # ---------------------------------
 # DEBUG RESPONSE
