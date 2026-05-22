@@ -55,22 +55,6 @@ if uploaded_file:
     # Keep only required columns
     required_df = df[required_columns]
 
-    # Save filtered columns to Excel
-    output_file = "filtered_output.xlsx"
-
-    required_df.to_excel(output_file, index=False)
-
-    st.success(f"Filtered file saved as {output_file}")
-
-    # Download button
-    with open(output_file, "rb") as file:
-        st.download_button(
-            label="Download Filtered Excel File",
-            data=file,
-            file_name=output_file,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
-
     st.success("File uploaded successfully!")
 
     # Show Raw Data
