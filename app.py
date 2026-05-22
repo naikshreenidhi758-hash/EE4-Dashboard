@@ -1,90 +1,122 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
- 
-#add image
-st.image("envision.png")
- 
-# Page Configuration
+
+# ---------------------------------
+# PAGE CONFIG
+# ---------------------------------
 st.set_page_config(
     page_title="Software Ticket Dashboard",
     layout="wide"
 )
- 
-# Title
-st.title("🎫 INDIA  Software Ticket Report ")
- 
-# Hidden internal portal URL
-SERVICENOW_URL =" https://ee.envision-energy.com/now/nav/ui/classic/params/target/u_incident_software_list.do%3Fsysparm_query%3Du_site.u_director_of_service%253D67c3ce79db868f0085c19c27db96194e%255Eu_case_state!%253D7%255EORu_case_state%253DNULL%255Eu_site!%253D2df8921fdb3fa740e6ca9cb6db96198b%255EORu_site%253DNULL%255Eu_site.u_site_bigarea!%253DLatin%2520America%255EORu_site.u_site_bigarea%253DNULL%26sysparm_first_row%3D1%26sysparm_view%3D"
 
-# Only show required dashboard fields
-required_columns = [
-    "number",
-    "short description",
-    "case state",
-    "site",
-    "register time"
-]
+# ---------------------------------
+# TOP IMAGE
+# ---------------------------------
+st.image("envision.png", use_container_width=True)
 
-dashboard_df = df[required_columns]
+# ---------------------------------
+# TITLE
+# ---------------------------------
+st.title("🎫 INDIA Software Ticket Report")
 
-st.dataframe(dashboard_df)
- 
- # Check missing columns
- missing_columns = [
-     col for col in required_columns
-     if col not in df.columns
- ]
- 
+# ---------------------------------
+# HIDDEN SERVICENOW URL
+# ---------------------------------
+SERVICENOW_URL = "https://ee.envision-energy.com"
+
+# ---------------------------------
+# FILE UPLOAD
+# ---------------------------------
+uploaded_file = st.file_uploader(
+    "Upload Incident Software File",
+    type=["xlsx", "csv"]
+)
+
+# ---------------------------------
+# PROCESS FILE
+# ---------------------------------
+if uploaded_file:
+
+    # Read file
+    if uploaded_file.name.endswith(".csv"):
+        df = pd.read_csv(uploaded_file)
+    else:
+        df = pd.read_excel(uploaded_file)
+
+    # Clean columns
+    df.columns = df.columns.str.strip().str.lower()
+
+    # ---------------------------------
+    # REQUIRED COLUMNS
+    # ---------------------------------
+    required_columns = [
+        "number",
+        "short description",
+        "case state",
+        "site",
+        "register time"
+    ]
+
+    # Check missing columns
+    missing_columns = [
+        col for col in required_columns
+        if col not in df.columns
+    ]
+
     if missing_columns:
         st.error(f"Missing columns: {missing_columns}")
         st.write("Available columns:", df.columns.tolist())
         st.stop()
- 
+
     # Keep only required columns
-    required_df = df[required_columns]
- 
+    dashboard_df = df[required_columns]
+
     st.success("File uploaded successfully!")
- 
-    # Show Raw Data
+
+    # ---------------------------------
+    # SHOW DATA
+    # ---------------------------------
     st.subheader("Ticket Data across INDIA")
-    st.dataframe(required_df)
- 
-    # Sidebar Filters
+
+    st.dataframe(dashboard_df)
+
+    # ---------------------------------
+    # SIDEBAR FILTERS
+    # ---------------------------------
     st.sidebar.header("Filters")
- 
-    # Case State Filter
+
     status_filter = st.sidebar.multiselect(
         "Select Case State",
         options=df["case state"].dropna().unique(),
         default=df["case state"].dropna().unique()
     )
- 
-    # Site Filter
+
     site_filter = st.sidebar.multiselect(
         "Select Site",
         options=df["site"].dropna().unique(),
         default=df["site"].dropna().unique()
     )
- 
-    # Apply Filters
+
+    # ---------------------------------
+    # APPLY FILTERS
+    # ---------------------------------
     filtered_df = df[
         (df["case state"].isin(status_filter)) &
         (df["site"].isin(site_filter))
     ]
- 
-    # Create 2 columns
+
+    # ---------------------------------
+    # KPI SECTION
+    # ---------------------------------
     left_col, right_col = st.columns(2)
- 
-    # ----------------------------
-    # LEFT SIDE - Statistics
-    # ----------------------------
+
     with left_col:
- 
+
         st.subheader("Statistics")
- 
+
         total_tickets = len(filtered_df)
- 
+
         open_tickets = len(
             filtered_df[
                 filtered_df["case state"]
@@ -92,14 +124,13 @@ st.dataframe(dashboard_df)
                 .str.strip()
                 .str.lower()
                 .isin([
-                    "open",
                     "register",
-                    "effect confirmation",
-                    "in processing"
+                    "in processing",
+                    "effect confirmation"
                 ])
             ]
         )
- 
+
         closed_tickets = len(
             filtered_df[
                 filtered_df["case state"]
@@ -109,29 +140,28 @@ st.dataframe(dashboard_df)
                 == "closed"
             ]
         )
- 
+
         col1, col2, col3 = st.columns(3)
- 
+
         col1.metric("Total Tickets", total_tickets)
         col2.metric("Open Tickets", open_tickets)
         col3.metric("Closed Tickets", closed_tickets)
-     
- 
-    # ----------------------------
-    # RIGHT SIDE - Ticket Status
-    # ----------------------------
+
+    # ---------------------------------
+    # PIE CHART
+    # ---------------------------------
     with right_col:
- 
+
         st.subheader("Tickets by Case State")
- 
+
         status_chart = (
             filtered_df["case state"]
             .value_counts()
             .reset_index()
         )
- 
+
         status_chart.columns = ["Case State", "Count"]
- 
+
         fig1 = px.pie(
             status_chart,
             names="Case State",
@@ -139,37 +169,54 @@ st.dataframe(dashboard_df)
             hole=0.5,
             title="Case State Distribution"
         )
- 
+
         fig1.update_traces(textinfo="value")
- 
+
         st.plotly_chart(fig1, use_container_width=True)
-     
-     
- 
-    # ----------------------------
-    # Filtered Data
-    # ----------------------------
- 
-    # Convert register time column to datetime
-    df["register time"] = pd.to_datetime(
-        df["register time"],
+
+    # ---------------------------------
+    # CURRENT MONTH OPEN TICKETS
+    # ---------------------------------
+    filtered_df["register time"] = pd.to_datetime(
+        filtered_df["register time"],
         errors="coerce"
     )
- 
-    # Get current month and year
+
     current_month = pd.Timestamp.now().month
     current_year = pd.Timestamp.now().year
- 
-    # Apply current month filter
-    filtered_df = filtered_df[
-        (filtered_df["register time"].dt.month == current_month) &
-        (filtered_df["register time"].dt.year == current_year)
+
+    open_states = [
+        "register",
+        "in processing",
+        "effect confirmation"
     ]
- 
-    # Keep only required columns
-    filtered_df = filtered_df[required_columns]
- 
-    # Show Filtered Data
-    st.subheader("Current Month Ticket Summary")
- 
-    st.dataframe(filtered_df)
+
+    current_month_df = filtered_df[
+        (filtered_df["register time"].dt.month == current_month) &
+        (filtered_df["register time"].dt.year == current_year) &
+        (
+            filtered_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .isin(open_states)
+        )
+    ]
+
+    # Remove close time
+    current_month_df = current_month_df[
+        [
+            "number",
+            "short description",
+            "case state",
+            "site",
+            "register time"
+        ]
+    ]
+
+    # ---------------------------------
+    # SHOW CURRENT MONTH SUMMARY
+    # ---------------------------------
+    st.subheader("Current Month Open Ticket Summary")
+
+    st.dataframe(current_month_df)
