@@ -15,9 +15,8 @@ st.image("envision.png")
 #title
 st.title("🎫 INDIA Software Ticket Report")
 
-# ---------------------------------
+
 # SERVICENOW API
-# ---------------------------------
 from requests.auth import HTTPBasicAuth
 import requests
 
@@ -67,21 +66,18 @@ except Exception as e:
     st.code(response.text)
 
     st.stop()
-# ---------------------------------
+
 # LOAD DATA
-# ---------------------------------
 data = response.json()["result"]
 
 df = pd.DataFrame(data)
 
-# ---------------------------------
+
 # CLEAN COLUMNS
-# ---------------------------------
 df.columns = df.columns.str.strip().str.lower()
 
-# ---------------------------------
+
 # REQUIRED COLUMNS
-# ---------------------------------
 required_columns = [
     "number",
     "short_description",
@@ -90,9 +86,8 @@ required_columns = [
     "u_register_time"
 ]
 
-# ---------------------------------
+
 # RENAME COLUMNS
-# ---------------------------------
 df = df.rename(columns={
     "short_description": "short description",
     "u_case_state": "case state",
@@ -100,9 +95,8 @@ df = df.rename(columns={
     "u_register_time": "register time"
 })
 
-# ---------------------------------
+
 # KEEP REQUIRED FIELDS
-# ---------------------------------
 dashboard_df = df[
     [
         "number",
@@ -113,16 +107,14 @@ dashboard_df = df[
     ]
 ]
 
-# ---------------------------------
+
 # SHOW DATA
-# ---------------------------------
 st.subheader("Ticket Data across INDIA")
 
 st.dataframe(dashboard_df)
 
-# ---------------------------------
+
 # KPI SECTION
-# ---------------------------------
 total_tickets = len(dashboard_df)
 
 open_tickets = len(
