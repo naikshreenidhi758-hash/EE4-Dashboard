@@ -13,7 +13,7 @@ st.set_page_config(
 # ---------------------------------
 # TOP IMAGE
 # ---------------------------------
-st.image("envision.png", use_container_width=True)
+st.image("envision.png")
 
 # ---------------------------------
 # TITLE
@@ -25,32 +25,14 @@ st.title("🎫 INDIA Software Ticket Report")
 # ---------------------------------
 SERVICENOW_URL = "https://ee.envision-energy.com"
 
-# ---------------------------------
-# FILE UPLOAD
-# ---------------------------------
-uploaded_file = st.file_uploader(
-    "Upload Incident Software File",
-    type=["xlsx", "csv"]
-)
 
-# ---------------------------------
-# PROCESS FILE
-# ---------------------------------
-if uploaded_file:
+ # Clean columns
+ df.columns = df.columns.str.strip().str.lower()
 
-    # Read file
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = pd.read_excel(uploaded_file)
-
-    # Clean columns
-    df.columns = df.columns.str.strip().str.lower()
-
-    # ---------------------------------
-    # REQUIRED COLUMNS
-    # ---------------------------------
-    required_columns = [
+ # ---------------------------------
+ # REQUIRED COLUMNS
+ # ---------------------------------
+ required_columns = [
         "number",
         "short description",
         "case state",
