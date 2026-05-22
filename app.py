@@ -71,7 +71,7 @@ if uploaded_file:
     st.success("File uploaded successfully!")
 
     # Show Raw Data
-    st.subheader("Ticket Data")
+    st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
 
     # Sidebar Filters
