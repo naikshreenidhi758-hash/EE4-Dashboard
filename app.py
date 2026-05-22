@@ -2,29 +2,32 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-#add image
-st.image("envision.png")
-
-# Page Configuration
+# ---------------------------------
+# PAGE CONFIG
+# ---------------------------------
 st.set_page_config(
     page_title="Software Ticket Dashboard",
     layout="wide"
 )
 
-# Title
-st.title("🎫 INDIA  Software Ticket Report ")
+# ---------------------------------
+# TOP IMAGE
+# ---------------------------------
+st.image("envision.png", use_container_width=True)
 
-# Logo + Title
+# ---------------------------------
+# HEADER SECTION
+# ---------------------------------
 col1, col2 = st.columns([1, 6])
 
 with col1:
-    st.image("images/logo.png", width=80)
+    st.image("images/logo.png", width=90)
 
 with col2:
     st.markdown(
         """
-        <h1 style='margin-bottom:0px;'>
-        INDIA Software Ticket Report
+        <h1 style='margin-bottom:0px; color:#003366;'>
+            🎫 INDIA  Software Ticket Report
         </h1>
         """,
         unsafe_allow_html=True
@@ -34,21 +37,31 @@ with col2:
 st.markdown(
     """
     <h4 style='color:gray; margin-top:0px;'>
-    Upload Incident Software File
+        Upload Incident Software File
     </h4>
     """,
     unsafe_allow_html=True
 )
 
-# Upload Button on Left Side
+# ---------------------------------
+# FILE UPLOAD
+# ---------------------------------
 uploaded_file = st.file_uploader(
     "",
     type=["xlsx", "csv"]
 )
 
-# Show file name after upload
+# ---------------------------------
+# READ FILE
+# ---------------------------------
 if uploaded_file:
-    st.success(f"Uploaded File: {uploaded_file.name}")
+
+    # Read Excel or CSV
+    if uploaded_file.name.endswith(".csv"):
+        df = pd.read_csv(uploaded_file)
+
+    else:
+        df = pd.read_excel(uploaded_file)
 
     # Clean column names
     df.columns = df.columns.str.strip().str.lower()
@@ -74,26 +87,28 @@ if uploaded_file:
         st.write("Available columns:", df.columns.tolist())
         st.stop()
 
-    # Keep only required columns
+    # Keep required columns
     required_df = df[required_columns]
 
-    st.success("File uploaded successfully!")
+    st.success(f"Uploaded File: {uploaded_file.name}")
 
-    # Show Raw Data
+    # ---------------------------------
+    # SHOW DATA
+    # ---------------------------------
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
 
-    # Sidebar Filters
+    # ---------------------------------
+    # SIDEBAR FILTERS
+    # ---------------------------------
     st.sidebar.header("Filters")
 
-    # Case State Filter
     status_filter = st.sidebar.multiselect(
         "Select Case State",
         options=df["case state"].dropna().unique(),
         default=df["case state"].dropna().unique()
     )
 
-    # Site Filter
     site_filter = st.sidebar.multiselect(
         "Select Site",
         options=df["site"].dropna().unique(),
@@ -106,12 +121,11 @@ if uploaded_file:
         (df["site"].isin(site_filter))
     ]
 
-    # Create 2 columns
+    # ---------------------------------
+    # KPI SECTION
+    # ---------------------------------
     left_col, right_col = st.columns(2)
 
-    # ----------------------------
-    # LEFT SIDE - Statistics
-    # ----------------------------
     with left_col:
 
         st.subheader("Statistics")
@@ -149,9 +163,9 @@ if uploaded_file:
         col2.metric("Open Tickets", open_tickets)
         col3.metric("Closed Tickets", closed_tickets)
 
-    # ----------------------------
-    # RIGHT SIDE - Ticket Status
-    # ----------------------------
+    # ---------------------------------
+    # PIE CHART
+    # ---------------------------------
     with right_col:
 
         st.subheader("Tickets by Case State")
@@ -176,30 +190,27 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
-    # ----------------------------
-    # Filtered Data
-    # ----------------------------
-
-    # Convert register time column to datetime
-    df["register time"] = pd.to_datetime(
-        df["register time"],
+    # ---------------------------------
+    # CURRENT MONTH FILTER
+    # ---------------------------------
+    filtered_df["register time"] = pd.to_datetime(
+        filtered_df["register time"],
         errors="coerce"
     )
 
-    # Get current month and year
     current_month = pd.Timestamp.now().month
     current_year = pd.Timestamp.now().year
 
-    # Apply current month filter
-    filtered_df = filtered_df[
+    current_month_df = filtered_df[
         (filtered_df["register time"].dt.month == current_month) &
         (filtered_df["register time"].dt.year == current_year)
     ]
 
-    # Keep only required columns
-    filtered_df = filtered_df[required_columns]
+    current_month_df = current_month_df[required_columns]
 
-    # Show Filtered Data
+    # ---------------------------------
+    # CURRENT MONTH SUMMARY
+    # ---------------------------------
     st.subheader("Current Month Ticket Summary")
 
-    st.dataframe(filtered_df)
+    st.dataframe(current_month_df)
