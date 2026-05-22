@@ -142,11 +142,10 @@ if uploaded_file:
  
         status_chart.columns = ["Case State", "Count"]
  
-        fig1 = px.pie(
+        fig1 = px.bar(
             status_chart,
-            names="Case State",
-            values="Count",
-            hole=0.5,
+            x="Case State",
+            y="Count",
             title="Case State Distribution"
         )
  
