@@ -30,11 +30,11 @@ dashboard_df = df[required_columns]
 
 st.dataframe(dashboard_df)
  
-    # Check missing columns
-    missing_columns = [
-        col for col in required_columns
-        if col not in df.columns
-    ]
+   # Check missing columns
+   missing_columns = [
+       col for col in required_columns
+       if col not in df.columns
+   ]
  
     if missing_columns:
         st.error(f"Missing columns: {missing_columns}")
