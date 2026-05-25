@@ -32,20 +32,39 @@ API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 # ---------------------------------
 # LOAD BROWSER COOKIES
 # ---------------------------------
-try:
-    import browser_cookie3
+# ---------------------------------
+# LOAD BROWSER COOKIES
+# ---------------------------------
+
+import browser_cookie3
 
 try:
+
+    # Try Edge first
     cookies = browser_cookie3.edge(
         domain_name='envision-energy.com'
     )
 
-except Exception:
+    st.success("Loaded Edge cookies")
 
-    cookies = browser_cookie3.chrome(
-        domain_name='envision-energy.com'
-    )
+except Exception as edge_error:
 
+    st.warning(f"Edge cookies failed: {edge_error}")
+
+    try:
+
+        # Fallback to Chrome
+        cookies = browser_cookie3.chrome(
+            domain_name='envision-energy.com'
+        )
+
+        st.success("Loaded Chrome cookies")
+
+    except Exception as chrome_error:
+
+        st.error(f"Chrome cookies failed: {chrome_error}")
+
+        st.stop()
 # ---------------------------------
 # CREATE SESSION
 # ---------------------------------
