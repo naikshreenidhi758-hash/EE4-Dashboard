@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
+import browser_cookie3
 
 # ---------------------------------
 # PAGE CONFIG
@@ -26,72 +27,44 @@ st.title("🎫 INDIA Software Ticket Report")
 # ---------------------------------
 INSTANCE = "https://ee.envision-energy.com"
 
-# ---------------------------------
-# OAUTH CONFIG
-# ---------------------------------
-CLIENT_ID = "YOUR_CLIENT_ID"
-CLIENT_SECRET = "YOUR_CLIENT_SECRET"
-
-TOKEN_URL = f"{INSTANCE}/oauth_token.do"
+API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 
 # ---------------------------------
-# GET OAUTH TOKEN
+# LOAD BROWSER COOKIES
 # ---------------------------------
-token_payload = {
-    "grant_type": "client_credentials",
-    "client_id": CLIENT_ID,
-    "client_secret": CLIENT_SECRET
-}
-
 try:
-    token_response = requests.post(
-        TOKEN_URL,
-        data=token_payload,
-        headers={
-            "Content-Type": "application/x-www-form-urlencoded"
-        }
+    cookies = browser_cookie3.chrome(
+        domain_name='envision-energy.com'
     )
 
-    st.write("OAuth Status Code:", token_response.status_code)
-
-    if token_response.status_code != 200:
-        st.error("Failed to get OAuth token")
-        st.code(token_response.text)
-        st.stop()
-
-    token_data = token_response.json()
-
-    access_token = token_data["access_token"]
-
 except Exception as e:
-    st.error(f"OAuth Error: {e}")
+    st.error(f"Failed to load browser cookies: {e}")
     st.stop()
 
 # ---------------------------------
-# SERVICENOW API URL
+# CREATE SESSION
 # ---------------------------------
-API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
+session = requests.Session()
+
+session.cookies.update(cookies)
 
 # ---------------------------------
 # API REQUEST
 # ---------------------------------
-headers = {
-    "Authorization": f"Bearer {access_token}",
-    "Accept": "application/json"
-}
-
 try:
-    response = requests.get(
+    response = session.get(
         API_URL,
-        headers=headers
+        headers={
+            "Accept": "application/json"
+        }
     )
 
 except Exception as e:
-    st.error(f"API Connection Error: {e}")
+    st.error(f"API Request Error: {e}")
     st.stop()
 
 # ---------------------------------
-# DEBUG RESPONSE
+# DEBUG
 # ---------------------------------
 st.write("API Status Code:", response.status_code)
 
@@ -99,34 +72,36 @@ st.write("API Status Code:", response.status_code)
 # CHECK RESPONSE
 # ---------------------------------
 if response.status_code != 200:
-    st.error("Failed to connect to ServiceNow API")
 
-    st.write("Response:")
-    st.code(response.text)
+    st.error("Failed to connect to ServiceNow")
+
+    st.write("Response Preview:")
+    st.code(response.text[:1000])
 
     st.stop()
 
 # ---------------------------------
-# TRY JSON
+# PARSE JSON
 # ---------------------------------
 try:
     data = response.json()["result"]
 
 except Exception as e:
-    st.error(f"JSON Error: {e}")
+
+    st.error(f"JSON Parse Error: {e}")
 
     st.write("Raw Response:")
-    st.code(response.text)
+    st.code(response.text[:2000])
 
     st.stop()
 
 # ---------------------------------
-# LOAD DATAFRAME
+# DATAFRAME
 # ---------------------------------
 df = pd.DataFrame(data)
 
 # ---------------------------------
-# CLEAN COLUMN NAMES
+# CLEAN COLUMNS
 # ---------------------------------
 df.columns = df.columns.str.strip().str.lower()
 
@@ -152,7 +127,7 @@ required_columns = [
 ]
 
 # ---------------------------------
-# CHECK MISSING COLUMNS
+# CHECK REQUIRED COLUMNS
 # ---------------------------------
 missing_cols = [
     col for col in required_columns
