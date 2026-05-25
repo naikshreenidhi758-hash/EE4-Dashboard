@@ -33,13 +33,18 @@ API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 # LOAD BROWSER COOKIES
 # ---------------------------------
 try:
-    cookies = browser_cookie3.chrome(
+    import browser_cookie3
+
+try:
+    cookies = browser_cookie3.edge(
         domain_name='envision-energy.com'
     )
 
-except Exception as e:
-    st.error(f"Failed to load browser cookies: {e}")
-    st.stop()
+except Exception:
+
+    cookies = browser_cookie3.chrome(
+        domain_name='envision-energy.com'
+    )
 
 # ---------------------------------
 # CREATE SESSION
