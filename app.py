@@ -2,55 +2,108 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
-from requests.auth import HTTPBasicAuth
 
-#page config
+# ---------------------------------
+# PAGE CONFIG
+# ---------------------------------
 st.set_page_config(
     page_title="Software Ticket Dashboard",
     layout="wide"
 )
-#add image
+
+# ---------------------------------
+# IMAGE
+# ---------------------------------
 st.image("envision.png")
 
-#title
+# ---------------------------------
+# TITLE
+# ---------------------------------
 st.title("🎫 INDIA Software Ticket Report")
 
-
-# SERVICENOW API
-from requests.auth import HTTPBasicAuth
-import requests
-
+# ---------------------------------
+# SERVICENOW INSTANCE
+# ---------------------------------
 INSTANCE = "https://ee.envision-energy.com"
 
+# ---------------------------------
+# OAUTH CONFIG
+# ---------------------------------
+CLIENT_ID = "YOUR_CLIENT_ID"
+CLIENT_SECRET = "YOUR_CLIENT_SECRET"
+
+TOKEN_URL = f"{INSTANCE}/oauth_token.do"
+
+# ---------------------------------
+# GET OAUTH TOKEN
+# ---------------------------------
+token_payload = {
+    "grant_type": "client_credentials",
+    "client_id": CLIENT_ID,
+    "client_secret": CLIENT_SECRET
+}
+
+try:
+    token_response = requests.post(
+        TOKEN_URL,
+        data=token_payload,
+        headers={
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+    )
+
+    st.write("OAuth Status Code:", token_response.status_code)
+
+    if token_response.status_code != 200:
+        st.error("Failed to get OAuth token")
+        st.code(token_response.text)
+        st.stop()
+
+    token_data = token_response.json()
+
+    access_token = token_data["access_token"]
+
+except Exception as e:
+    st.error(f"OAuth Error: {e}")
+    st.stop()
+
+# ---------------------------------
+# SERVICENOW API URL
+# ---------------------------------
 API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 
-USERNAME = "your_username"
-PASSWORD = "your_password"
+# ---------------------------------
+# API REQUEST
+# ---------------------------------
+headers = {
+    "Authorization": f"Bearer {access_token}",
+    "Accept": "application/json"
+}
 
-response = requests.get(
-    API_URL,
-    auth=HTTPBasicAuth(USERNAME, PASSWORD),
-    headers={
-        "Accept": "application/json"
-    }
-)
+try:
+    response = requests.get(
+        API_URL,
+        headers=headers
+    )
 
-print(response.status_code)
-print(response.text)
+except Exception as e:
+    st.error(f"API Connection Error: {e}")
+    st.stop()
 
 # ---------------------------------
 # DEBUG RESPONSE
 # ---------------------------------
-st.write("Status Code:", response.status_code)
-
-# Show first 500 characters
-st.text(response.text[:500])
+st.write("API Status Code:", response.status_code)
 
 # ---------------------------------
 # CHECK RESPONSE
 # ---------------------------------
 if response.status_code != 200:
-    st.error("Failed to connect to ServiceNow")
+    st.error("Failed to connect to ServiceNow API")
+
+    st.write("Response:")
+    st.code(response.text)
+
     st.stop()
 
 # ---------------------------------
@@ -67,27 +120,19 @@ except Exception as e:
 
     st.stop()
 
-# LOAD DATA
-data = response.json()["result"]
-
+# ---------------------------------
+# LOAD DATAFRAME
+# ---------------------------------
 df = pd.DataFrame(data)
 
-
-# CLEAN COLUMNS
+# ---------------------------------
+# CLEAN COLUMN NAMES
+# ---------------------------------
 df.columns = df.columns.str.strip().str.lower()
 
-
-# REQUIRED COLUMNS
-required_columns = [
-    "number",
-    "short_description",
-    "u_case_state",
-    "u_site",
-    "u_register_time"
-]
-
-
+# ---------------------------------
 # RENAME COLUMNS
+# ---------------------------------
 df = df.rename(columns={
     "short_description": "short description",
     "u_case_state": "case state",
@@ -95,26 +140,44 @@ df = df.rename(columns={
     "u_register_time": "register time"
 })
 
-
-# KEEP REQUIRED FIELDS
-dashboard_df = df[
-    [
-        "number",
-        "short description",
-        "case state",
-        "site",
-        "register time"
-    ]
+# ---------------------------------
+# REQUIRED COLUMNS
+# ---------------------------------
+required_columns = [
+    "number",
+    "short description",
+    "case state",
+    "site",
+    "register time"
 ]
 
+# ---------------------------------
+# CHECK MISSING COLUMNS
+# ---------------------------------
+missing_cols = [
+    col for col in required_columns
+    if col not in df.columns
+]
 
+if missing_cols:
+    st.error(f"Missing Columns: {missing_cols}")
+    st.stop()
+
+# ---------------------------------
+# FILTER DATA
+# ---------------------------------
+dashboard_df = df[required_columns]
+
+# ---------------------------------
 # SHOW DATA
+# ---------------------------------
 st.subheader("Ticket Data across INDIA")
 
 st.dataframe(dashboard_df)
 
-
+# ---------------------------------
 # KPI SECTION
+# ---------------------------------
 total_tickets = len(dashboard_df)
 
 open_tickets = len(
@@ -139,6 +202,9 @@ closed_tickets = len(
     ]
 )
 
+# ---------------------------------
+# KPI DISPLAY
+# ---------------------------------
 col1, col2, col3 = st.columns(3)
 
 col1.metric("Total Tickets", total_tickets)
@@ -160,7 +226,8 @@ fig = px.pie(
     status_chart,
     names="Case State",
     values="Count",
-    hole=0.5
+    hole=0.5,
+    title="Ticket Status Distribution"
 )
 
 st.plotly_chart(fig, use_container_width=True)
