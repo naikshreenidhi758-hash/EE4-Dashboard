@@ -19,7 +19,6 @@ INSTANCE = "https://ee.envision-energy.com"
 
 API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 
-.streamlit/secrets.toml
 USERNAME = st.secrets["SN_USERNAME"]
 PASSWORD = st.secrets["SN_PASSWORD"]
 
