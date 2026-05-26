@@ -1,182 +1,102 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
- 
-#add image
-st.image("envision.png")
- 
-# Page Configuration
+
+from playwright.sync_api import sync_playwright
+
 st.set_page_config(
-    page_title="Software Ticket Dashboard",
+    page_title="ServiceNow Dashboard",
     layout="wide"
-
 )
- 
-# Title
-st.title("🎫 INDIA  Software Ticket Report ")
- 
-# Upload File
-uploaded_file = st.file_uploader(
-    "Upload Incident softwares file",
-    type=["xlsx", "csv"]
 
-)
- 
-if uploaded_file:
- 
-    # Read File
-    if uploaded_file.name.endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
+st.title("🎫 ServiceNow Ticket Dashboard")
 
-    else:
 
-        df = pd.read_excel(uploaded_file)
- 
-    # Clean column names
-    df.columns = df.columns.str.strip().str.lower()
- 
-    # Required columns
-    required_columns = [
-        "number",
-        "short description",
-        "case state",
-        "site",
-        "register time",
-        "close time"
+@st.cache_data(ttl=300)
+def fetch_data():
 
-    ]
- 
-    # Check missing columns
-    missing_columns = [
-        col for col in required_columns
-        if col not in df.columns
+    tickets = []
 
-    ]
- 
-    if missing_columns:
-        st.error(f"Missing columns: {missing_columns}")
-        st.write("Available columns:", df.columns.tolist())
-        st.stop()
- 
-    # Keep only required columns
-    required_df = df[required_columns]
-    st.success("File uploaded successfully!")
- 
-    # Show Raw Data
-    st.subheader("Ticket Data across INDIA")
-    st.dataframe(required_df)
- 
-    # Sidebar Filters
-    st.sidebar.header("Filters")
- 
-    # Case State Filter
-    status_filter = st.sidebar.multiselect(
-        "Select Case State",
-        options=df["case state"].dropna().unique(),
-        default=df["case state"].dropna().unique()
+    with sync_playwright() as p:
 
+        browser = p.chromium.launch(headless=True)
+
+        context = browser.new_context(
+            storage_state="auth.json"
+        )
+
+        page = context.new_page()
+
+        url = "https://ee.envision-energy.com/now/nav/ui/classic/params/target/u_incident_software_list"
+
+        response = page.goto(url)
+
+        data = response.json()
+
+        for item in data["result"]:
+
+            tickets.append({
+                "Number": item.get("number"),
+                "Priority": item.get("priority"),
+                "State": item.get("state"),
+                "Short Description": item.get("short_description"),
+                "Assigned To": item.get("assigned_to", "")
+            })
+
+        browser.close()
+
+    return pd.DataFrame(tickets)
+
+
+try:
+
+    df = fetch_data()
+
+    st.success("Connected to ServiceNow")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        st.metric("Total Tickets", len(df))
+
+    with col2:
+        st.metric(
+            "Open Tickets",
+            len(df[df["State"] != "Closed"])
+        )
+
+    with col3:
+        st.metric(
+            "High Priority",
+            len(df[df["Priority"] == "1"])
+        )
+
+    st.subheader("Tickets Table")
+
+    st.dataframe(df, use_container_width=True)
+
+    st.subheader("Tickets by Priority")
+
+    fig1 = px.histogram(
+        df,
+        x="Priority"
     )
- 
-    # Site Filter
-    site_filter = st.sidebar.multiselect(
-        "Select Site",
-        options=df["site"].dropna().unique(),
-        default=df["site"].dropna().unique()
 
+    st.plotly_chart(fig1, use_container_width=True)
+
+    st.subheader("Tickets by State")
+
+    fig2 = px.pie(
+        df,
+        names="State"
     )
- 
-    # Apply Filters
-    filtered_df = df[
-        (df["case state"].isin(status_filter)) &
-        (df["site"].isin(site_filter))
 
-    ]
- 
-    # Create 2 columns
-    left_col, right_col = st.columns(2)
- 
-    # ----------------------------
-    # LEFT SIDE - Statistics
-    # ----------------------------
-    with left_col:
-        st.subheader("Statistics")
-        total_tickets = len(filtered_df)
-        open_tickets = len(
-            filtered_df[
-                filtered_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .isin([
-                    "open",
-                    "register",
-                    "effect confirmation",
-                    "in processing"
-               ])
-            ]
-        )
- 
-        closed_tickets = len(
-            filtered_df[
-                filtered_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                == "closed"
-            ]
-        )
- 
-        col1, col2, col3 = st.columns(3)
-        col1.metric("Total Tickets", total_tickets)
-        col2.metric("Open Tickets", open_tickets)
-        col3.metric("Closed Tickets", closed_tickets)
- 
-    # ----------------------------
-    # RIGHT SIDE - Ticket Status
-    # ----------------------------
-    with right_col:
-        st.subheader("Tickets by Case State")
-        status_chart = (
-            filtered_df["case state"]
-            .value_counts()
-            .reset_index()
+    st.plotly_chart(fig2, use_container_width=True)
 
-        )
- 
-        status_chart.columns = ["Case State", "Count"]
-        fig1 = px.pie(
-            status_chart,
-            names="Case State",
-            values="Count",
-            hole=0.5,
-            title="Case State Distribution"
+except Exception as e:
 
-        )
- 
-        fig1.update_traces(textinfo="value")
-        st.plotly_chart(fig1, use_container_width=True)
-  
-    # Filtered Data
-    # Convert register time column to datetime
-    df["register time"] = pd.to_datetime(
-        df["register time"],
-        errors="coerce"
+    st.error(f"Error: {e}")
 
+    st.info(
+        "Make sure auth.json exists and login session is valid."
     )
- 
-    # Get current month and year
-    current_month = pd.Timestamp.now().month
-    current_year = pd.Timestamp.now().year
- 
-    # Apply current month filter
-    filtered_df = filtered_df[
-        (filtered_df["register time"].dt.month == current_month) &
-        (filtered_df["register time"].dt.year == current_year)
-
-    ]
- 
-    # Keep only required columns
-    filtered_df = filtered_df[required_columns]
-    # Show Filtered Data
-    st.subheader("Current Month Ticket Summary")
-    st.dataframe(filtered_df)
