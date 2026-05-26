@@ -42,37 +42,25 @@ if uploaded_file:
  
     # Required columns
     required_columns = [
-
         "number",
-
         "short description",
-
         "case state",
-
         "site",
-
         "register time",
-
         "close time"
 
     ]
  
     # Check missing columns
-
     missing_columns = [
-
         col for col in required_columns
-
         if col not in df.columns
 
     ]
  
     if missing_columns:
-
         st.error(f"Missing columns: {missing_columns}")
-
         st.write("Available columns:", df.columns.tolist())
-
         st.stop()
  
     # Keep only required columns
@@ -90,7 +78,6 @@ if uploaded_file:
  
     # Case State Filter
     status_filter = st.sidebar.multiselect(
-
         "Select Case State",
 
         options=df["case state"].dropna().unique(),
