@@ -1,15 +1,11 @@
 import streamlit as st
-
 import pandas as pd
-
 import plotly.express as px
  
 #add image
-
 st.image("envision.png")
  
 # Page Configuration
-
 st.set_page_config(
 
     page_title="Software Ticket Dashboard",
@@ -19,11 +15,9 @@ st.set_page_config(
 )
  
 # Title
-
 st.title("🎫 INDIA  Software Ticket Report ")
  
 # Upload File
-
 uploaded_file = st.file_uploader(
 
     "Upload Incident softwares file",
@@ -35,7 +29,6 @@ uploaded_file = st.file_uploader(
 if uploaded_file:
  
     # Read File
-
     if uploaded_file.name.endswith(".csv"):
 
         df = pd.read_csv(uploaded_file)
@@ -45,11 +38,9 @@ if uploaded_file:
         df = pd.read_excel(uploaded_file)
  
     # Clean column names
-
     df.columns = df.columns.str.strip().str.lower()
  
     # Required columns
-
     required_columns = [
 
         "number",
@@ -85,23 +76,19 @@ if uploaded_file:
         st.stop()
  
     # Keep only required columns
-
     required_df = df[required_columns]
  
     st.success("File uploaded successfully!")
  
     # Show Raw Data
-
     st.subheader("Ticket Data across INDIA")
 
     st.dataframe(required_df)
  
     # Sidebar Filters
-
     st.sidebar.header("Filters")
  
     # Case State Filter
-
     status_filter = st.sidebar.multiselect(
 
         "Select Case State",
@@ -113,7 +100,6 @@ if uploaded_file:
     )
  
     # Site Filter
-
     site_filter = st.sidebar.multiselect(
 
         "Select Site",
@@ -125,7 +111,6 @@ if uploaded_file:
     )
  
     # Apply Filters
-
     filtered_df = df[
 
         (df["case state"].isin(status_filter)) &
@@ -135,81 +120,48 @@ if uploaded_file:
     ]
  
     # Create 2 columns
-
     left_col, right_col = st.columns(2)
  
     # ----------------------------
-
     # LEFT SIDE - Statistics
-
     # ----------------------------
 
     with left_col:
- 
         st.subheader("Statistics")
- 
         total_tickets = len(filtered_df)
- 
         open_tickets = len(
-
             filtered_df[
-
                 filtered_df["case state"]
-
                 .astype(str)
-
                 .str.strip()
-
                 .str.lower()
-
                 .isin([
-
                     "open",
-
                     "register",
-
                     "effect confirmation",
-
                     "in processing"
-
-                ])
-
+               ])
             ]
-
         )
  
         closed_tickets = len(
-
             filtered_df[
-
                 filtered_df["case state"]
-
                 .astype(str)
-
                 .str.strip()
-
                 .str.lower()
-
                 == "closed"
-
             ]
-
         )
  
         col1, col2, col3 = st.columns(3)
- 
         col1.metric("Total Tickets", total_tickets)
-
         col2.metric("Open Tickets", open_tickets)
-
         col3.metric("Closed Tickets", closed_tickets)
  
     # ----------------------------
-
     # RIGHT SIDE - Ticket Status
-
     # ----------------------------
-
     with right_col:
  
         st.subheader("Tickets by Case State")
