@@ -7,9 +7,7 @@ st.image("envision.png")
  
 # Page Configuration
 st.set_page_config(
-
     page_title="Software Ticket Dashboard",
-
     layout="wide"
 
 )
@@ -19,9 +17,7 @@ st.title("🎫 INDIA  Software Ticket Report ")
  
 # Upload File
 uploaded_file = st.file_uploader(
-
     "Upload Incident softwares file",
-
     type=["xlsx", "csv"]
 
 )
@@ -30,7 +26,6 @@ if uploaded_file:
  
     # Read File
     if uploaded_file.name.endswith(".csv"):
-
         df = pd.read_csv(uploaded_file)
 
     else:
@@ -65,12 +60,10 @@ if uploaded_file:
  
     # Keep only required columns
     required_df = df[required_columns]
- 
     st.success("File uploaded successfully!")
  
     # Show Raw Data
     st.subheader("Ticket Data across INDIA")
-
     st.dataframe(required_df)
  
     # Sidebar Filters
@@ -79,29 +72,22 @@ if uploaded_file:
     # Case State Filter
     status_filter = st.sidebar.multiselect(
         "Select Case State",
-
         options=df["case state"].dropna().unique(),
-
         default=df["case state"].dropna().unique()
 
     )
  
     # Site Filter
     site_filter = st.sidebar.multiselect(
-
         "Select Site",
-
         options=df["site"].dropna().unique(),
-
         default=df["site"].dropna().unique()
 
     )
  
     # Apply Filters
     filtered_df = df[
-
         (df["case state"].isin(status_filter)) &
-
         (df["site"].isin(site_filter))
 
     ]
@@ -112,7 +98,6 @@ if uploaded_file:
     # ----------------------------
     # LEFT SIDE - Statistics
     # ----------------------------
-
     with left_col:
         st.subheader("Statistics")
         total_tickets = len(filtered_df)
@@ -150,78 +135,48 @@ if uploaded_file:
     # RIGHT SIDE - Ticket Status
     # ----------------------------
     with right_col:
- 
         st.subheader("Tickets by Case State")
- 
         status_chart = (
-
             filtered_df["case state"]
-
             .value_counts()
-
             .reset_index()
 
         )
  
         status_chart.columns = ["Case State", "Count"]
- 
         fig1 = px.pie(
-
             status_chart,
-
             names="Case State",
-
             values="Count",
-
             hole=0.5,
-
             title="Case State Distribution"
 
         )
  
         fig1.update_traces(textinfo="value")
- 
         st.plotly_chart(fig1, use_container_width=True)
- 
-    # ----------------------------
-
+  
     # Filtered Data
-
-    # ----------------------------
- 
     # Convert register time column to datetime
-
     df["register time"] = pd.to_datetime(
-
         df["register time"],
-
         errors="coerce"
 
     )
  
     # Get current month and year
-
     current_month = pd.Timestamp.now().month
-
     current_year = pd.Timestamp.now().year
  
     # Apply current month filter
-
     filtered_df = filtered_df[
-
         (filtered_df["register time"].dt.month == current_month) &
-
         (filtered_df["register time"].dt.year == current_year)
 
     ]
  
     # Keep only required columns
-
     filtered_df = filtered_df[required_columns]
- 
     # Show Filtered Data
-
     st.subheader("Current Month Ticket Summary")
- 
     st.dataframe(filtered_df)
- 
