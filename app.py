@@ -2,136 +2,63 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import requests
-import browser_cookie3
+from requests.auth import HTTPBasicAuth
 
-# ---------------------------------
 # PAGE CONFIG
-# ---------------------------------
 st.set_page_config(
     page_title="Software Ticket Dashboard",
     layout="wide"
 )
 
-# ---------------------------------
 # IMAGE
-# ---------------------------------
 st.image("envision.png")
 
-# ---------------------------------
 # TITLE
-# ---------------------------------
 st.title("🎫 INDIA Software Ticket Report")
-
-# ---------------------------------
-# SERVICENOW INSTANCE
-# ---------------------------------
 INSTANCE = "https://ee.envision-energy.com"
 
 API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
 
-# ---------------------------------
-# LOAD BROWSER COOKIES
-# ---------------------------------
-# ---------------------------------
-# LOAD BROWSER COOKIES
-# ---------------------------------
+.streamlit/secrets.toml
+USERNAME = st.secrets["SN_USERNAME"]
+PASSWORD = st.secrets["SN_PASSWORD"]
 
-import browser_cookie3
+response = requests.get(
+    API_URL,
+    auth=HTTPBasicAuth(USERNAME, PASSWORD),
+    headers={
+        "Accept": "application/json"
+    }
+)
 
-try:
+st.write("Status Code:", response.status_code)
 
-    # Try Edge first
-    cookies = browser_cookie3.edge(
-        domain_name='envision-energy.com'
-    )
+if response.status_code == 200:
 
-    st.success("Loaded Edge cookies")
+    st.success("Connected Successfully")
 
-except Exception as edge_error:
-
-    st.warning(f"Edge cookies failed: {edge_error}")
-
-    try:
-
-        # Fallback to Chrome
-        cookies = browser_cookie3.chrome(
-            domain_name='envision-energy.com'
-        )
-
-        st.success("Loaded Chrome cookies")
-
-    except Exception as chrome_error:
-
-        st.error(f"Chrome cookies failed: {chrome_error}")
-
-        st.stop()
-# ---------------------------------
-# CREATE SESSION
-# ---------------------------------
-session = requests.Session()
-
-session.cookies.update(cookies)
-
-# ---------------------------------
-# API REQUEST
-# ---------------------------------
-try:
-    response = session.get(
-        API_URL,
-        headers={
-            "Accept": "application/json"
-        }
-    )
-
-except Exception as e:
-    st.error(f"API Request Error: {e}")
-    st.stop()
-
-# ---------------------------------
-# DEBUG
-# ---------------------------------
-st.write("API Status Code:", response.status_code)
-
-# ---------------------------------
-# CHECK RESPONSE
-# ---------------------------------
-if response.status_code != 200:
-
-    st.error("Failed to connect to ServiceNow")
-
-    st.write("Response Preview:")
-    st.code(response.text[:1000])
-
-    st.stop()
-
-# ---------------------------------
-# PARSE JSON
-# ---------------------------------
-try:
     data = response.json()["result"]
 
-except Exception as e:
+    st.write(data[:5])
 
-    st.error(f"JSON Parse Error: {e}")
+else:
+    st.error(response.text)
 
-    st.write("Raw Response:")
-    st.code(response.text[:2000])
 
-    st.stop()
+# SERVICENOW INSTANCE
+INSTANCE = "https://ee.envision-energy.com"
 
-# ---------------------------------
+API_URL = f"{INSTANCE}/api/now/table/u_incident_software"
+
+
 # DATAFRAME
-# ---------------------------------
 df = pd.DataFrame(data)
 
-# ---------------------------------
 # CLEAN COLUMNS
-# ---------------------------------
 df.columns = df.columns.str.strip().str.lower()
 
-# ---------------------------------
+
 # RENAME COLUMNS
-# ---------------------------------
 df = df.rename(columns={
     "short_description": "short description",
     "u_case_state": "case state",
@@ -139,9 +66,7 @@ df = df.rename(columns={
     "u_register_time": "register time"
 })
 
-# ---------------------------------
 # REQUIRED COLUMNS
-# ---------------------------------
 required_columns = [
     "number",
     "short description",
@@ -150,9 +75,7 @@ required_columns = [
     "register time"
 ]
 
-# ---------------------------------
 # CHECK REQUIRED COLUMNS
-# ---------------------------------
 missing_cols = [
     col for col in required_columns
     if col not in df.columns
@@ -162,21 +85,17 @@ if missing_cols:
     st.error(f"Missing Columns: {missing_cols}")
     st.stop()
 
-# ---------------------------------
+
 # FILTER DATA
-# ---------------------------------
 dashboard_df = df[required_columns]
 
-# ---------------------------------
+
 # SHOW DATA
-# ---------------------------------
 st.subheader("Ticket Data across INDIA")
 
 st.dataframe(dashboard_df)
 
-# ---------------------------------
 # KPI SECTION
-# ---------------------------------
 total_tickets = len(dashboard_df)
 
 open_tickets = len(
@@ -201,18 +120,16 @@ closed_tickets = len(
     ]
 )
 
-# ---------------------------------
+
 # KPI DISPLAY
-# ---------------------------------
 col1, col2, col3 = st.columns(3)
 
 col1.metric("Total Tickets", total_tickets)
 col2.metric("Open Tickets", open_tickets)
 col3.metric("Closed Tickets", closed_tickets)
 
-# ---------------------------------
+
 # PIE CHART
-# ---------------------------------
 status_chart = (
     dashboard_df["case state"]
     .value_counts()
