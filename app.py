@@ -37,10 +37,11 @@ def fetch_data():
 
             tickets.append({
                 "Number": item.get("number"),
-                "Priority": item.get("priority"),
-                "State": item.get("state"),
                 "Short Description": item.get("short_description"),
-                "Assigned To": item.get("assigned_to", "")
+                "Case State": item.get("case_state"),
+                "Site": item.get("site"),
+                "Register time":item.get("register_time"),
+                "Close time": item.get("close_time", "")
             })
 
         browser.close()
