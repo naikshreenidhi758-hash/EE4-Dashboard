@@ -23,8 +23,8 @@ def fetch_data():
         args=["--no-sandbox", "--disable-dev-shm-usage"]
     )
 
-    context = browser.new_context(
-        storage_state="auth.json"
+  context = browser.new_context(
+    storage_state="auth.json"
     )
 
     page = context.new_page()
