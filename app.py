@@ -11,28 +11,34 @@ st.set_page_config(
 
 st.title("🎫 ServiceNow Ticket Dashboard")
 
+
 @st.cache_data(ttl=300)
 def fetch_data():
 
     tickets = []
 
- with sync_playwright() as p:
+    with sync_playwright() as p:
 
-    browser = p.chromium.launch(
-        headless=True,
-        args=["--no-sandbox", "--disable-dev-shm-usage"]
-    )
-context = browser.new_context(
-    storage_state="auth.json"
-    )
+        browser = p.chromium.launch(
+            headless=True,
+            args=["--no-sandbox", "--disable-dev-shm-usage"]
+        )
 
-    page = context.new_page()
+        context = browser.new_context(
+            storage_state="auth.json"
+        )
 
-    url = "https://ee.envision-energy.com/api/now/table/incident"
+        api_url = "https://ee.envision-energy.com/api/now/table/incident"
 
-    response = page.goto(url)
+        response = context.request.get(api_url)
 
-    data = response.json()
+        print("Status:", response.status)
+
+        if response.status != 200:
+            raise Exception(f"API failed with status {response.status}")
+
+        data = response.json()
+
         for item in data["result"]:
 
             tickets.append({
@@ -52,7 +58,9 @@ context = browser.new_context(
 try:
 
     df = fetch_data()
+
     st.success("Connected to ServiceNow")
+
     col1, col2 = st.columns(2)
 
     with col1:
@@ -65,14 +73,18 @@ try:
         )
 
     st.subheader("Tickets Table")
+
     st.dataframe(df, use_container_width=True)
+
     st.subheader("Tickets by Case State")
+
     fig1 = px.histogram(
         df,
         x="Case State"
     )
 
     st.plotly_chart(fig1, use_container_width=True)
+
     st.subheader("Tickets Distribution")
 
     fig2 = px.pie(
@@ -85,6 +97,7 @@ try:
 except Exception as e:
 
     st.error(f"Error: {e}")
+
     st.info(
         "Make sure auth.json exists and login session is valid."
     )
