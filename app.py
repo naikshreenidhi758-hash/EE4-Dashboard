@@ -37,7 +37,7 @@ def fetch_data():
             storage_state="auth.json"
         )
 
-        api_url = "https://ee.envision-energy.com/api/now/table/incident"
+        api_url = "https://ee.envision-energy.com"
 
         response = context.request.get(api_url)
 
