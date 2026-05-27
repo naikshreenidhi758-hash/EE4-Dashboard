@@ -34,7 +34,6 @@ def fetch_data():
     response = page.goto(url)
 
     data = response.json()
-
         for item in data["result"]:
 
             tickets.append({
