@@ -16,7 +16,7 @@ def fetch_data():
 
     tickets = []
 
-    with sync_playwright() as p:
+ with sync_playwright() as p:
 
     browser = p.chromium.launch(
         headless=True,
