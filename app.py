@@ -4,6 +4,9 @@ import plotly.express as px
 
 from playwright.sync_api import sync_playwright
 
+#add image
+st.image("envision.png")
+
 st.set_page_config(
     page_title="ServiceNow Dashboard",
     layout="wide"
