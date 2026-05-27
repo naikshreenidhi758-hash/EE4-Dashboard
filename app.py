@@ -17,19 +17,23 @@ def fetch_data():
     tickets = []
 
     with sync_playwright() as p:
-        browser = p.chromium.launch(
-            headless=True,
-            args=["--no-sandbox", "--disable-dev-shm-usage"]
-        )
 
-        context = browser.new_context(
-            storage_state="auth.json"
-        )
+    browser = p.chromium.launch(
+        headless=True,
+        args=["--no-sandbox", "--disable-dev-shm-usage"]
+    )
 
-        page = context.new_page()
-        url = "https://ee.envision-energy.com"
-        response = page.goto(url)
-        data = response.json()
+    context = browser.new_context(
+        storage_state="auth.json"
+    )
+
+    page = context.new_page()
+
+    url = "https://ee.envision-energy.com/api/now/table/incident"
+
+    response = page.goto(url)
+
+    data = response.json()
 
         for item in data["result"]:
 
