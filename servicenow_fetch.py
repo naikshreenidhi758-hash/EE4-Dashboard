@@ -20,9 +20,11 @@ with sync_playwright() as p:
     for item in data["result"]:
         tickets.append({
             "Number": item["number"],
-            "Priority": item["priority"],
-            "State": item["state"],
-            "Assigned To": item.get("assigned_to", "")
+            "Short Description": item["short_description"],
+             "Case State": item["case_state"],
+             "Site":item["site"],
+             "Register Time":item["register_time"],
+            "Close Time": item.get("close_time", "")
         })
 
     browser.close()
