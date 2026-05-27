@@ -12,7 +12,7 @@ with sync_playwright() as p:
     page = context.new_page()
 
     url = """
-    https://yourcompany.service-now.com/api/now/table/incident
+    https://ee.envision-energy.com/
     """
     response = page.goto(url)
     data = response.json()
