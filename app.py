@@ -35,8 +35,8 @@ def fetch_data():
                 "Short Description": item.get("short_description"),
                 "Case State": item.get("case_state"),
                 "Site": item.get("site"),
-                "Register time":item.get("register_time"),
-                "Close time": item.get("close_time", "")
+                "Register Time":item.get("register_time"),
+                "Close Time": item.get("close_time", "")
             })
 
         browser.close()
@@ -47,7 +47,7 @@ try:
 
     df = fetch_data()
     st.success("Connected to ServiceNow")
-    col1, col2, col3 = st.columns(3)
+    col1, col2= st.columns(2)
 
     with col1:
         st.metric("Total Tickets", len(df))
@@ -58,18 +58,11 @@ try:
             len(df[df["State"] != "Closed"])
         )
 
-    with col3:
-        st.metric(
-            "High Priority",
-            len(df[df["Priority"] == "1"])
-        )
-
+    
     st.subheader("Tickets Table")
     st.dataframe(df, use_container_width=True)
-    st.subheader("Tickets by Priority")
     fig1 = px.histogram(
         df,
-        x="Priority"
     )
 
     st.plotly_chart(fig1, use_container_width=True)
