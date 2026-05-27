@@ -87,16 +87,8 @@ try:
 
     st.subheader("Tickets by Case State")
 
-    fig1 = px.histogram(
-        df,
-        x="Case State"
-    )
-
-    st.plotly_chart(fig1, use_container_width=True)
-
-    st.subheader("Tickets Distribution")
-
-    fig2 = px.pie(
+    
+    fig1 = px.pie(
         df,
         names="Case State"
     )
