@@ -2,7 +2,7 @@ from playwright.sync_api import sync_playwright
 
 with sync_playwright() as p:
     browser = p.chromium.launch(
-         headless=True,
+         headless=False,
          args=[
              "--no-sandbox",
              "--disable-dev-shm-usage",
