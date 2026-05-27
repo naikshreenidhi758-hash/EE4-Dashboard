@@ -4,7 +4,7 @@ with sync_playwright() as p:
     browser = p.chromium.launch(headless=False)
     context = browser.new_context()
     page = context.new_page()
-    page.goto("https://yourcompany.service-now.com")
+    page.goto("https://ee.envision-energy.com")
     print("Login manually using Okta...")
     input("Press ENTER after login completes...")
     context.storage_state(path="auth.json")
