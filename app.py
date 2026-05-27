@@ -46,6 +46,21 @@ def fetch_data():
         if response.status != 200:
             raise Exception(f"API failed with status {response.status}")
 
+        print("Status:", response.status)
+
+        content_type = response.headers.get("content-type", "")
+
+        print("Content-Type:", content_type)
+
+        text = response.text()
+
+        print(text[:1000])
+
+        if "application/json" not in content_type:
+             raise Exception(
+                  f"Expected JSON but got: {content_type}"
+             )
+
         data = response.json()
 
         for item in data["result"]:
