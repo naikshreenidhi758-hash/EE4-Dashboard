@@ -108,7 +108,7 @@ try:
         names="Case State"
     )
 
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig1, use_container_width=True)
 
 except Exception as e:
 
