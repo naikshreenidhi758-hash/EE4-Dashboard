@@ -6,7 +6,7 @@ import plotly.express as px
 left, center, right = st.columns([1,2,1])
 
 with center:
-    st.image("envision.png", width=300)
+    st.image("envision.png", width=250,50,50)
 
     st.markdown(
         """
