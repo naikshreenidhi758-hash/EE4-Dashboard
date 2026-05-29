@@ -152,26 +152,30 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
-    #RIGHT SIDE-Ticket Status Over a Year
-    
     with right_col:
-        st.subheader("Ticket Status Over a Year")
-        status_chart=(
-            filtered_df["register time"]
-            .value_counts()
-            .reset_index()
-        )
-        status_chart.columns=["Register Time","count"]
-
-        fig2=pie.bar(
-            status_chart,
-            x="Register Time",
-            y="Count",
-            title="Ticket Status Over a Year"
-        )
-
-        st.plotly_chart(fig2, use_container_width=True)
-
+    st.subheader("Ticket Status Over a Year")
+ 
+    # Convert to datetime
+    filtered_df["register time"] = pd.to_datetime(filtered_df["register time"])
+ 
+    # Group by month
+    status_chart = (
+        filtered_df
+        .groupby(filtered_df["register time"].dt.strftime("%Y-%m"))
+        .size()
+        .reset_index(name="Count")
+    )
+ 
+    status_chart.columns = ["Month", "Count"]
+ 
+    fig2 = px.bar(
+        status_chart,
+        x="Month",
+        y="Count",
+        title="Ticket Status Over a Year"
+    )
+ 
+    st.plotly_chart(fig2, use_container_width=True)
     
 
     # Filter Only Open Tickets
