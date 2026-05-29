@@ -154,30 +154,24 @@ if uploaded_file:
  
         st.plotly_chart(fig1, use_container_width=True)
  
-    # ----------------------------
-    # Filtered Data
-    # ----------------------------
- 
-    # Convert register time column to datetime
-    df["register time"] = pd.to_datetime(
-        df["register time"],
-        errors="coerce"
-    )
- 
-    # Get current month and year
-    current_month = pd.Timestamp.now().month
-    current_year = pd.Timestamp.now().year
- 
-    # Apply current month filter
-    filtered_df = filtered_df[
-        (filtered_df["register time"].dt.month == current_month) &
-        (filtered_df["register time"].dt.year == current_year)
+    # Filter only open tickets
+    open_tickets_df = filtered_df[
+        filtered_df["case state"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin([
+            "open",
+            "register",
+            "effect confirmation",
+            "in processing"
+       ])
     ]
- 
+
     # Keep only required columns
-    filtered_df = filtered_df[required_columns]
- 
-    # Show Filtered Data
-    st.subheader("Current Month Ticket Summary")
- 
-    st.dataframe(filtered_df)
+    open_tickets_df = open_tickets_df[required_columns]
+
+    # Show only open tickets
+    st.subheader("Open Tickets Summary")
+
+    st.dataframe(open_tickets_df)
