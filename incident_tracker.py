@@ -33,6 +33,42 @@ if uploaded_file:
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file)
+
+    st.subheader("Statistics")
+ 
+    total_tickets = len(filtered_df)
+ 
+    open_tickets = len(
+        filtered_df[
+            filtered_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .isin([
+                "open",
+                "register",
+                "effect confirmation",
+                "in processing"
+            ])
+        ]
+    )
+ 
+    closed_tickets = len(
+        filtered_df[
+            filtered_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            == "closed"
+        ]
+    )
+ 
+    col1, col2, col3 = st.columns(3)
+ 
+    col1.metric("Total Tickets", total_tickets)
+    col2.metric("Open Tickets", open_tickets)
+    col3.metric("Closed Tickets", closed_tickets)
+    
  
     # Clean column names
     df.columns = df.columns.str.strip().str.lower()
@@ -90,40 +126,7 @@ if uploaded_file:
         (df["site"].isin(site_filter))
     ]
  
-    st.subheader("Statistics")
- 
-    total_tickets = len(filtered_df)
- 
-    open_tickets = len(
-        filtered_df[
-            filtered_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .isin([
-                "open",
-                "register",
-                "effect confirmation",
-                "in processing"
-            ])
-        ]
-    )
- 
-    closed_tickets = len(
-        filtered_df[
-            filtered_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            == "closed"
-        ]
-    )
- 
-    col1, col2, col3 = st.columns(3)
- 
-    col1.metric("Total Tickets", total_tickets)
-    col2.metric("Open Tickets", open_tickets)
-    col3.metric("Closed Tickets", closed_tickets)
+    
     
     # Create 2 columns
     left_col, right_col = st.columns(2)
