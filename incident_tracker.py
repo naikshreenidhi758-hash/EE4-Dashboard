@@ -2,20 +2,17 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
  
-# Create centered column layout
-left, center, right = st.columns([1,2,1])
-
-with center:
-    st.image("envision.png", width=250)
-
-    st.markdown(
-        """
-        <h2 style='text-align: center;'>
-            🎫 INDIA Software Ticket Report
-        </h2>
-        """,
-        unsafe_allow_html=True
-    )
+#add image
+st.image("envision.png")
+ 
+# Page Configuration
+st.set_page_config(
+    page_title="Software Ticket Dashboard",
+    layout="wide"
+)
+ 
+# Title
+st.title("🎫 INDIA  Software Ticket Report ")
  
 # Upload File
 uploaded_file = st.file_uploader(
