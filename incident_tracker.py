@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
  
 # image centering
-col1,col2,col3 =st.coloumns([1,2,1])
+col1,col2,col3 =st.columns([1,2,1])
 with col2:
    st.image("envision.png")
  
