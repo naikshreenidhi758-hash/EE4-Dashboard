@@ -33,9 +33,13 @@ if uploaded_file:
         df = pd.read_csv(uploaded_file)
     else:
         df = pd.read_excel(uploaded_file)
+     
+    # Clean column names
+    df.columns = df.columns.str.strip().str.lower()
+ 
 
      # Apply Filters
-    filtered_df = df[
+     filtered_df = df[
         (df["case state"].isin(status_filter)) &
         (df["site"].isin(site_filter))
     ]
