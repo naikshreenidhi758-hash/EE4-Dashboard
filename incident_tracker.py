@@ -68,36 +68,36 @@ if uploaded_file:
  
     total_tickets = len(filtered_df)
  
-     open_tickets = len(
-       filtered_df[
-           filtered_df["case state"]
-           .astype(str)
-           .str.strip()
-           .str.lower()
-           .isin([
-               "open",
-               "register",
-               "effect confirmation",
-               "in processing"
-             ])
-         ]
+    open_tickets = len(
+      filtered_df[
+          filtered_df["case state"]
+          .astype(str)
+          .str.strip()
+          .str.lower()
+          .isin([
+              "open",
+              "register",
+              "effect confirmation",
+              "in processing"
+            ])
+        ]
+      )
+ 
+      closed_tickets = len(
+         filtered_df[
+             filtered_df["case state"]
+             .astype(str)
+             .str.strip()
+             .str.lower()
+              == "closed"
+          ]
        )
  
-       closed_tickets = len(
-          filtered_df[
-              filtered_df["case state"]
-              .astype(str)
-              .str.strip()
-              .str.lower()
-               == "closed"
-           ]
-        )
+       col1, col2, col3 = st.columns(3)
  
-        col1, col2, col3 = st.columns(3)
- 
-        col1.metric("Total Tickets", total_tickets)
-        col2.metric("Open Tickets", open_tickets)
-        col3.metric("Closed Tickets", closed_tickets)
+       col1.metric("Total Tickets", total_tickets)
+       col2.metric("Open Tickets", open_tickets)
+       col3.metric("Closed Tickets", closed_tickets)
     
     # Sidebar Filters
     st.sidebar.header("Filters")
