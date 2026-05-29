@@ -63,39 +63,8 @@ if uploaded_file:
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
 
-    
-    # Sidebar Filters
-    st.sidebar.header("Filters")
- 
-    # Case State Filter
-    status_filter = st.sidebar.multiselect(
-        "Select Case State",
-        options=df["case state"].dropna().unique(),
-        default=df["case state"].dropna().unique()
-    )
- 
-    # Site Filter
-    site_filter = st.sidebar.multiselect(
-        "Select Site",
-        options=df["site"].dropna().unique(),
-        default=df["site"].dropna().unique()
-    )
- 
-    # Apply Filters
-    filtered_df = df[
-        (df["case state"].isin(status_filter)) &
-        (df["site"].isin(site_filter))
-    ]
- 
-    # Create 2 columns
-    left_col, right_col = st.columns(2)
- 
-    # ----------------------------
-    # LEFT SIDE - Statistics
-    # ----------------------------
-    with left_col:
- 
-        st.subheader("Statistics")
+
+     st.subheader("Statistics")
  
         total_tickets = len(filtered_df)
  
@@ -129,11 +98,37 @@ if uploaded_file:
         col1.metric("Total Tickets", total_tickets)
         col2.metric("Open Tickets", open_tickets)
         col3.metric("Closed Tickets", closed_tickets)
+    
+    # Sidebar Filters
+    st.sidebar.header("Filters")
+ 
+    # Case State Filter
+    status_filter = st.sidebar.multiselect(
+        "Select Case State",
+        options=df["case state"].dropna().unique(),
+        default=df["case state"].dropna().unique()
+    )
+ 
+    # Site Filter
+    site_filter = st.sidebar.multiselect(
+        "Select Site",
+        options=df["site"].dropna().unique(),
+        default=df["site"].dropna().unique()
+    )
+ 
+    # Apply Filters
+    filtered_df = df[
+        (df["case state"].isin(status_filter)) &
+        (df["site"].isin(site_filter))
+    ]
+ 
+    # Create 2 columns
+    left_col, right_col = st.columns(2)
  
     # ----------------------------
-    # RIGHT SIDE - Ticket Status
+    # LEFT SIDE - Ticket Status
     # ----------------------------
-    with right_col:
+    with left_col:
  
         st.subheader("Tickets by Case State")
  
