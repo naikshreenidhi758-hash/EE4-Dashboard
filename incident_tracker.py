@@ -10,9 +10,9 @@ with center:
 
     st.markdown(
         """
-        <h1 style='text-align: center;'>
+        <h2 style='text-align: center;'>
             🎫 INDIA Software Ticket Report
-        </h1>
+        </h2>
         """,
         unsafe_allow_html=True
     )
