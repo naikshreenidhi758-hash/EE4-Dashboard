@@ -127,7 +127,7 @@ if uploaded_file:
     # Create 2 Columns
     left_col, right_col = st.columns(2)
 
-    # LEFT SIDE - Ticket Status
+    # LEFT SIDE - Pie Chart
     with left_col:
 
         st.subheader("Tickets by Case State")
@@ -152,31 +152,37 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
-        with right_col:
+    # RIGHT SIDE - Bar Chart
+    with right_col:
+
         st.subheader("Ticket Status Over a Year")
- 
-         # Convert to datetime
-        filtered_df["register time"] = pd.to_datetime(filtered_df["register time"])
- 
-         # Group by month
+
+        # Convert to datetime
+        filtered_df["register time"] = pd.to_datetime(
+            filtered_df["register time"]
+        )
+
+        # Group by month
         status_chart = (
-              filtered_df
-              .groupby(filtered_df["register time"].dt.strftime("%Y-%m"))
-              .size()
-              .reset_index(name="Count")
-         )
- 
+            filtered_df
+            .groupby(
+                filtered_df["register time"]
+                .dt.strftime("%Y-%m")
+            )
+            .size()
+            .reset_index(name="Count")
+        )
+
         status_chart.columns = ["Month", "Count"]
- 
+
         fig2 = px.bar(
-             status_chart,
-             x="Month",
-             y="Count",
+            status_chart,
+            x="Month",
+            y="Count",
             title="Ticket Status Over a Year"
-         )
- 
-         st.plotly_chart(fig2, use_container_width=True)
-    
+        )
+
+        st.plotly_chart(fig2, use_container_width=True)
 
     # Filter Only Open Tickets
     open_tickets_df = filtered_df[
