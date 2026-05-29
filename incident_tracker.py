@@ -61,6 +61,48 @@ if uploaded_file:
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
  
+    # ----------------------------
+    # LEFT SIDE - Statistics
+    # ----------------------------
+    with left_col:
+ 
+        st.subheader("Statistics")
+ 
+        total_tickets = len(filtered_df)
+ 
+        open_tickets = len(
+            filtered_df[
+                filtered_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                .isin([
+                    "open",
+                    "register",
+                    "effect confirmation",
+                    "in processing"
+                ])
+            ]
+        )
+ 
+        closed_tickets = len(
+            filtered_df[
+                filtered_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                == "closed"
+            ]
+        )
+ 
+        col1, col2, col3 = st.columns(3)
+ 
+        col1.metric("Total Tickets", total_tickets)
+        col2.metric("Open Tickets", open_tickets)
+        col3.metric("Closed Tickets", closed_tickets)
+ 
+ 
+ 
     # Sidebar Filters
     st.sidebar.header("Filters")
  
@@ -172,6 +214,6 @@ if uploaded_file:
     open_tickets_df = open_tickets_df[required_columns]
 
     # Show only open tickets
-    st.subheader("Open Tickets Summary")
+    st.subheader(" Total Open Tickets ")
 
     st.dataframe(open_tickets_df)
