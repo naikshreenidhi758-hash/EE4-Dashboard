@@ -66,31 +66,31 @@ if uploaded_file:
 
     st.subheader("Statistics")
  
-        total_tickets = len(filtered_df)
+    total_tickets = len(filtered_df)
  
-        open_tickets = len(
-            filtered_df[
-                filtered_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .isin([
-                    "open",
-                    "register",
-                    "effect confirmation",
-                    "in processing"
-                ])
-            ]
-        )
+     open_tickets = len(
+       filtered_df[
+           filtered_df["case state"]
+           .astype(str)
+           .str.strip()
+           .str.lower()
+           .isin([
+               "open",
+               "register",
+               "effect confirmation",
+               "in processing"
+             ])
+         ]
+       )
  
-        closed_tickets = len(
-            filtered_df[
-                filtered_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                == "closed"
-            ]
+       closed_tickets = len(
+          filtered_df[
+              filtered_df["case state"]
+              .astype(str)
+              .str.strip()
+              .str.lower()
+               == "closed"
+           ]
         )
  
         col1, col2, col3 = st.columns(3)
