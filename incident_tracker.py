@@ -159,7 +159,7 @@ if uploaded_file:
         status_chart=(
             filtered_df["register time"]
             .value_counts()
-            .rest_index()
+            .reset_index()
         )
         status_chart.columns=["Register Time","count"]
 
