@@ -152,6 +152,28 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
+    #RIGHT SIDE-Ticket Status Over a Year
+    
+    with right_col:
+        st.subheader("Ticket Status Over a Year")
+        status_chart=(
+            filtered_df["register time"]
+            .value_counts()
+            .rest_index()
+        )
+        status_chart.columns=["Register Time","count"]
+
+        fig2=pie.bar(
+            status_chart,
+            x="Register Time"
+            y="Count"
+            title="Ticket Status Over a Year"
+        )
+
+        st.plotly_chart(fig2, use_container_width=True)
+
+    
+
     # Filter Only Open Tickets
     open_tickets_df = filtered_df[
         filtered_df["case state"]
