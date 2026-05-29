@@ -2,7 +2,9 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
  
-#add image
+# image centering
+col1,col2,col3 =st.coloumns([1,2,1])
+witjh col2:
 st.image("envision.png")
  
 # Page Configuration
@@ -11,8 +13,8 @@ st.set_page_config(
     layout="wide"
 )
  
-# Title
-st.title("🎫 INDIA  Software Ticket Report ")
+# Title centering
+st.markdown("<h1 style='text-align: center;'>🎫 INDIA  Software Ticket Report</h1>",unsafe_allow_html=True)
  
 # Upload File
 uploaded_file = st.file_uploader(
