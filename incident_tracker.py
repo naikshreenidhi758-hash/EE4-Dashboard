@@ -2,17 +2,20 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
  
-#add image
-st.image("envision.png")
- 
-# Page Configuration
-st.set_page_config(
-    page_title="Software Ticket Dashboard",
-    layout="wide"
-)
- 
-# Title
-st.title("🎫 INDIA  Software Ticket Report ")
+# Create centered column layout
+left, center, right = st.columns([1,2,1])
+
+with center:
+    st.image("envision.png", width=250)
+
+    st.markdown(
+        """
+        <h1 style='text-align: center;'>
+            🎫 INDIA Software Ticket Report
+        </h1>
+        """,
+        unsafe_allow_html=True
+    )
  
 # Upload File
 uploaded_file = st.file_uploader(
@@ -61,57 +64,7 @@ if uploaded_file:
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
 
-    # Apply Filters
-    filtered_df = df[
-        (df["case state"].isin(status_filter)) &
-        (df["site"].isin(site_filter))
-    ]
-
-    # Create 2 columns
-    left_col, right_col = st.columns(2)
- 
-    # ----------------------------
-    # LEFT SIDE - Statistics
-    # ----------------------------
-    with left_col:
- 
-        st.subheader("Statistics")
- 
-        total_tickets = len(filtered_df)
- 
-        open_tickets = len(
-            filtered_df[
-                filtered_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .isin([
-                    "open",
-                    "register",
-                    "effect confirmation",
-                    "in processing"
-                ])
-            ]
-        )
- 
-        closed_tickets = len(
-            filtered_df[
-                filtered_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                == "closed"
-            ]
-        )
- 
-        col1, col2, col3 = st.columns(3)
- 
-        col1.metric("Total Tickets", total_tickets)
-        col2.metric("Open Tickets", open_tickets)
-        col3.metric("Closed Tickets", closed_tickets)
- 
- 
- 
+    
     # Sidebar Filters
     st.sidebar.header("Filters")
  
