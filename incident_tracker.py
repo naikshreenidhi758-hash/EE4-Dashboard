@@ -5,7 +5,7 @@ import plotly.express as px
 # image centering
 col1,col2,col3 =st.coloumns([1,2,1])
 with col2:
-st.image("envision.png")
+   st.image("envision.png")
  
 # Page Configuration
 st.set_page_config(
