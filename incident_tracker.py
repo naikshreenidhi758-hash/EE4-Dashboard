@@ -64,7 +64,7 @@ if uploaded_file:
     st.dataframe(required_df)
 
 
-     st.subheader("Statistics")
+    st.subheader("Statistics")
  
         total_tickets = len(filtered_df)
  
