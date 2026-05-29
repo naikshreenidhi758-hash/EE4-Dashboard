@@ -60,6 +60,9 @@ if uploaded_file:
     # Show Raw Data
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
+
+    # Create 2 columns
+    left_col, right_col = st.columns(2)
  
     # ----------------------------
     # LEFT SIDE - Statistics
