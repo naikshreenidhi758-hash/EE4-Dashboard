@@ -2,10 +2,11 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
  
-# image centering
-col1,col2,col3 =st.columns([1,2,1])
+# add image
+col1, col2, col3 = st.columns([1,2,1])
+
 with col2:
-   st.image("envision.png")
+    st.image("envision.png")
  
 # Page Configuration
 st.set_page_config(
@@ -14,7 +15,10 @@ st.set_page_config(
 )
  
 # Title centering
-st.markdown("<h1 style='text-align: center;'>🎫 INDIA  Software Ticket Report</h1>",unsafe_allow_html=True)
+st.markdown(
+    "<h1 style='text-align: center;'>🎫 INDIA Software Ticket Report</h1>",
+    unsafe_allow_html=True
+)
  
 # Upload File
 uploaded_file = st.file_uploader(
@@ -63,42 +67,6 @@ if uploaded_file:
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
 
-
-    st.subheader("Statistics")
- 
-    total_tickets = len(filtered_df)
- 
-    open_tickets = len(
-      filtered_df[
-          filtered_df["case state"]
-          .astype(str)
-          .str.strip()
-          .str.lower()
-          .isin([
-              "open",
-              "register",
-              "effect confirmation",
-              "in processing"
-            ])
-        ]
-      )
- 
-      closed_tickets = len(
-         filtered_df[
-             filtered_df["case state"]
-             .astype(str)
-             .str.strip()
-             .str.lower()
-              == "closed"
-          ]
-       )
- 
-       col1, col2, col3 = st.columns(3)
- 
-       col1.metric("Total Tickets", total_tickets)
-       col2.metric("Open Tickets", open_tickets)
-       col3.metric("Closed Tickets", closed_tickets)
-    
     # Sidebar Filters
     st.sidebar.header("Filters")
  
@@ -122,6 +90,41 @@ if uploaded_file:
         (df["site"].isin(site_filter))
     ]
  
+    st.subheader("Statistics")
+ 
+    total_tickets = len(filtered_df)
+ 
+    open_tickets = len(
+        filtered_df[
+            filtered_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .isin([
+                "open",
+                "register",
+                "effect confirmation",
+                "in processing"
+            ])
+        ]
+    )
+ 
+    closed_tickets = len(
+        filtered_df[
+            filtered_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            == "closed"
+        ]
+    )
+ 
+    col1, col2, col3 = st.columns(3)
+ 
+    col1.metric("Total Tickets", total_tickets)
+    col2.metric("Open Tickets", open_tickets)
+    col3.metric("Closed Tickets", closed_tickets)
+    
     # Create 2 columns
     left_col, right_col = st.columns(2)
  
@@ -163,13 +166,13 @@ if uploaded_file:
             "register",
             "effect confirmation",
             "in processing"
-       ])
+        ])
     ]
 
     # Keep only required columns
     open_tickets_df = open_tickets_df[required_columns]
 
     # Show only open tickets
-    st.subheader(" Total Open Tickets ")
+    st.subheader("Total Open Tickets")
 
     st.dataframe(open_tickets_df)
