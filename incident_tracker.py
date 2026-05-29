@@ -166,7 +166,7 @@ if uploaded_file:
         fig2=pie.bar(
             status_chart,
             x="Register Time",
-            y="Count"
+            y="Count",
             title="Ticket Status Over a Year"
         )
 
