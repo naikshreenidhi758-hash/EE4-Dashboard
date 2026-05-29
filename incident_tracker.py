@@ -61,8 +61,8 @@ if uploaded_file:
     st.subheader("Ticket Data across INDIA")
     st.dataframe(required_df)
 
-     # Apply Filters
-     filtered_df = df[
+    # Apply Filters
+    filtered_df = df[
         (df["case state"].isin(status_filter)) &
         (df["site"].isin(site_filter))
     ]
