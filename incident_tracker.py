@@ -34,6 +34,12 @@ if uploaded_file:
     else:
         df = pd.read_excel(uploaded_file)
 
+     # Apply Filters
+    filtered_df = df[
+        (df["case state"].isin(status_filter)) &
+        (df["site"].isin(site_filter))
+    ]
+
     st.subheader("Statistics")
  
     total_tickets = len(filtered_df)
