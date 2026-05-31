@@ -274,7 +274,7 @@ if uploaded_file:
             "case state",
             "site",
             "register time",
-            "Pending Days"
+            "Pending from(in Days)"
         ]
     ].sort_values(
         by="Pending Days",
