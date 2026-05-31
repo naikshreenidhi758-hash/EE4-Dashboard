@@ -79,7 +79,7 @@ if uploaded_file:
     filtered_df = df[
         (df["case state"].isin(status_filter)) &
         (df["site"].isin(site_filter))
-    ]
+    ].copy()
 
     # Statistics
     st.subheader("Statistics")
@@ -174,70 +174,76 @@ if uploaded_file:
 
         current_year = pd.Timestamp.now().year
 
-        selected_year = st.selectbox(
-            "Select Year",
-            years,
-            index=years.index(current_year)
-            if current_year in years else 0
-        )
+        if len(years) > 0:
 
-        # Filter selected year
-        year_df = filtered_df[
-            filtered_df["register time"].dt.year == selected_year
-        ].copy()
-
-        # Month Name
-        year_df["Month"] = year_df["register time"].dt.strftime("%b")
-
-        # Open / Closed Group
-        year_df["Status Group"] = (
-            year_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .apply(
-                lambda x: "Closed"
-                if x == "closed"
-                else "Open"
+            selected_year = st.selectbox(
+                "Select Year",
+                years,
+                index=years.index(current_year)
+                if current_year in years else 0
             )
-        )
 
-        # Monthly Summary
-        monthly_status = (
-            year_df.groupby(
-                ["Month", "Status Group"]
+            # Filter selected year
+            year_df = filtered_df[
+                filtered_df["register time"].dt.year == selected_year
+            ].copy()
+
+            # Month Name
+            year_df["Month"] = year_df["register time"].dt.strftime("%b")
+
+            # Open / Closed Group
+            year_df["Status Group"] = (
+                year_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                .apply(
+                    lambda x: "Closed"
+                    if x == "closed"
+                    else "Open"
+                )
             )
-            .size()
-            .reset_index(name="Count")
-        )
 
-        # Month Order
-        month_order = [
-            "Jan", "Feb", "Mar", "Apr",
-            "May", "Jun", "Jul", "Aug",
-            "Sep", "Oct", "Nov", "Dec"
-        ]
+            # Monthly Summary
+            monthly_status = (
+                year_df.groupby(
+                    ["Month", "Status Group"]
+                )
+                .size()
+                .reset_index(name="Count")
+            )
 
-        monthly_status["Month"] = pd.Categorical(
-            monthly_status["Month"],
-            categories=month_order,
-            ordered=True
-        )
+            # Month Order
+            month_order = [
+                "Jan", "Feb", "Mar", "Apr",
+                "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec"
+            ]
 
-        monthly_status = monthly_status.sort_values("Month")
+            monthly_status["Month"] = pd.Categorical(
+                monthly_status["Month"],
+                categories=month_order,
+                ordered=True
+            )
 
-        fig2 = px.bar(
-            monthly_status,
-            x="Month",
-            y="Count",
-            color="Status Group",
-            barmode="group",
-            title=f"Open vs Closed Tickets - {selected_year}"
-        )
+            monthly_status = monthly_status.sort_values("Month")
 
-        st.plotly_chart(fig2, use_container_width=True)
+            fig2 = px.bar(
+                monthly_status,
+                x="Month",
+                y="Count",
+                color="Status Group",
+                barmode="group",
+                title=f"Open vs Closed Tickets - {selected_year}"
+            )
 
-    # Filter Only Open Tickets
+            st.plotly_chart(fig2, use_container_width=True)
+
+    
+    # Open Tickets Pending Days Report
+    
+    st.subheader("Open Tickets Pending Days")
+
     open_tickets_df = filtered_df[
         filtered_df["case state"]
         .astype(str)
@@ -249,12 +255,33 @@ if uploaded_file:
             "effect confirmation",
             "in processing"
         ])
-    ]
+    ].copy()
 
-    # Keep Only Required Columns
-    open_tickets_df = open_tickets_df[required_columns]
+    open_tickets_df["register time"] = pd.to_datetime(
+        open_tickets_df["register time"],
+        errors="coerce"
+    )
 
-    # Show Open Tickets
-    st.subheader("Total Open Tickets")
+    open_tickets_df["Pending Days"] = (
+        pd.Timestamp.now().normalize()
+        - open_tickets_df["register time"]
+    ).dt.days
 
-    st.dataframe(open_tickets_df)
+    open_tickets_display = open_tickets_df[
+        [
+            "number",
+            "short description",
+            "case state",
+            "site",
+            "register time",
+            "Pending Days"
+        ]
+    ].sort_values(
+        by="Pending Days",
+        ascending=False
+    )
+
+    st.dataframe(
+        open_tickets_display,
+        use_container_width=True
+    )
