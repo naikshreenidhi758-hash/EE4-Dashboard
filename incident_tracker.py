@@ -152,8 +152,8 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
-     # RIGHT SIDE - Bar Chart
-     with right_col:
+    # RIGHT SIDE - Year Wise Chart
+    with right_col:
 
         st.subheader("Ticket Status by Year")
 
@@ -165,17 +165,20 @@ if uploaded_file:
 
         # Available years
         years = sorted(
-            filtered_df["register time"].dt.year.dropna().unique(),
+            filtered_df["register time"]
+            .dt.year
+            .dropna()
+            .unique(),
             reverse=True
         )
 
-        # Default = current year if available
         current_year = pd.Timestamp.now().year
 
         selected_year = st.selectbox(
             "Select Year",
             years,
-            index=years.index(current_year) if current_year in years else 0
+            index=years.index(current_year)
+            if current_year in years else 0
         )
 
         # Filter selected year
@@ -183,31 +186,36 @@ if uploaded_file:
             filtered_df["register time"].dt.year == selected_year
         ].copy()
 
-        # Create Month column
+        # Month Name
         year_df["Month"] = year_df["register time"].dt.strftime("%b")
 
-        # Categorize status
+        # Open / Closed Group
         year_df["Status Group"] = (
             year_df["case state"]
             .astype(str)
             .str.strip()
             .str.lower()
             .apply(
-                lambda x: "Closed" if x == "closed" else "Open"
+                lambda x: "Closed"
+                if x == "closed"
+                else "Open"
             )
         )
 
-        # Monthly summary
+        # Monthly Summary
         monthly_status = (
-            year_df.groupby(["Month", "Status Group"])
+            year_df.groupby(
+                ["Month", "Status Group"]
+            )
             .size()
             .reset_index(name="Count")
         )
 
-        # Month order
+        # Month Order
         month_order = [
-            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            "Jan", "Feb", "Mar", "Apr",
+            "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec"
         ]
 
         monthly_status["Month"] = pd.Categorical(
@@ -218,7 +226,6 @@ if uploaded_file:
 
         monthly_status = monthly_status.sort_values("Month")
 
-        # Chart
         fig2 = px.bar(
             monthly_status,
             x="Month",
