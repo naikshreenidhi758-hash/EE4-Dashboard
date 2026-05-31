@@ -152,77 +152,83 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
-    # RIGHT SIDE - Bar Chart
-    with right_col:
+       # RIGHT SIDE - Bar Chart
+       with right_col:
 
-    st.subheader("Ticket Status by Year")
+        st.subheader("Ticket Status by Year")
 
-    # Convert register time to datetime
-    filtered_df["register time"] = pd.to_datetime(
-        filtered_df["register time"],
-        errors="coerce"
-    )
+        # Convert register time to datetime
+        filtered_df["register time"] = pd.to_datetime(
+            filtered_df["register time"],
+            errors="coerce"
+        )
 
-    # Available years
-    years = sorted(
-        filtered_df["register time"].dt.year.dropna().unique(),
-        reverse=True
-    )
+        # Available years
+        years = sorted(
+            filtered_df["register time"].dt.year.dropna().unique(),
+            reverse=True
+        )
 
-    # Default = current year if available
-    current_year = pd.Timestamp.now().year
+        # Default = current year if available
+        current_year = pd.Timestamp.now().year
 
-    selected_year = st.selectbox(
-        "Select Year",
-        years,
-        index=years.index(current_year) if current_year in years else 0
-    )
+        selected_year = st.selectbox(
+            "Select Year",
+            years,
+            index=years.index(current_year) if current_year in years else 0
+        )
 
-    # Filter selected year
-    year_df = filtered_df[
-        filtered_df["register time"].dt.year == selected_year
-    ].copy()
+        # Filter selected year
+        year_df = filtered_df[
+            filtered_df["register time"].dt.year == selected_year
+        ].copy()
 
-    # Create Month column
-    year_df["Month"] = year_df["register time"].dt.strftime("%b")
+        # Create Month column
+        year_df["Month"] = year_df["register time"].dt.strftime("%b")
 
-    # Categorize status
-    year_df["Status Group"] = year_df["case state"].astype(str).str.strip().str.lower().apply(
-        lambda x: "Closed" if x == "closed" else "Open"
-    )
+        # Categorize status
+        year_df["Status Group"] = (
+            year_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .apply(
+                lambda x: "Closed" if x == "closed" else "Open"
+            )
+        )
 
-    # Monthly summary
-    monthly_status = (
-        year_df.groupby(["Month", "Status Group"])
-        .size()
-        .reset_index(name="Count")
-    )
+        # Monthly summary
+        monthly_status = (
+            year_df.groupby(["Month", "Status Group"])
+            .size()
+            .reset_index(name="Count")
+        )
 
-    # Month order
-    month_order = [
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-    ]
+        # Month order
+        month_order = [
+            "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+            "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+        ]
 
-    monthly_status["Month"] = pd.Categorical(
-        monthly_status["Month"],
-        categories=month_order,
-        ordered=True
-    )
+        monthly_status["Month"] = pd.Categorical(
+            monthly_status["Month"],
+            categories=month_order,
+            ordered=True
+        )
 
-    monthly_status = monthly_status.sort_values("Month")
+        monthly_status = monthly_status.sort_values("Month")
 
-    # Chart
-    fig2 = px.bar(
-        monthly_status,
-        x="Month",
-        y="Count",
-        color="Status Group",
-        barmode="group",
-        title=f"Open vs Closed Tickets - {selected_year}"
-    )
+        # Chart
+        fig2 = px.bar(
+            monthly_status,
+            x="Month",
+            y="Count",
+            color="Status Group",
+            barmode="group",
+            title=f"Open vs Closed Tickets - {selected_year}"
+        )
 
-    st.plotly_chart(fig2, use_container_width=True)
+        st.plotly_chart(fig2, use_container_width=True)
 
     # Filter Only Open Tickets
     open_tickets_df = filtered_df[
