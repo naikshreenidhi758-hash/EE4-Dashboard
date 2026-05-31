@@ -152,8 +152,8 @@ if uploaded_file:
 
         st.plotly_chart(fig1, use_container_width=True)
 
-       # RIGHT SIDE - Bar Chart
-       with right_col:
+     # RIGHT SIDE - Bar Chart
+     with right_col:
 
         st.subheader("Ticket Status by Year")
 
