@@ -262,7 +262,7 @@ if uploaded_file:
         errors="coerce"
     )
 
-    open_tickets_df["Pending Days"] = (
+    open_tickets_df["Pending from(in Days)"] = (
         pd.Timestamp.now().normalize()
         - open_tickets_df["register time"]
     ).dt.days
@@ -277,7 +277,7 @@ if uploaded_file:
             "Pending from(in Days)"
         ]
     ].sort_values(
-        by="Pending Days",
+        by="Pending from(in Days)",
         ascending=False
     )
 
