@@ -118,7 +118,7 @@ if uploaded_file:
     col3.metric("Closed Tickets", closed_tickets)
 
     # Ticket Data
-    st.subheader("Ticket Data across INDIA")
+    st.subheader("Ticket Data across INDIA 🗺️")
 
     required_df = filtered_df[required_columns]
 
