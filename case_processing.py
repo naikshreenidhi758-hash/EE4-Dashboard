@@ -9,6 +9,6 @@ st.page_config(
 
 #title
 st.markdown(
-  "<h1 style="text-align:center;>INDIA Project-Case processing Status</h1>
+  "<h1 style="text-align:center;>INDIA Project-Case processing Status</h1>",
   unsafe_allow_html=True
   
