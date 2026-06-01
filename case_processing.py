@@ -9,5 +9,5 @@ st.set_page_config(
 )
 
 #title
-st.title("INDIA Project-Case processing Status")
+st.title("INDIA Project-Case processing Status📋")
   
