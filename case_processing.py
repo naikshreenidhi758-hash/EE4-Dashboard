@@ -4,7 +4,7 @@ import plotly.express as px
 
 #page configuration
 st.page_config(
- page_title="Case Processing Dashboard"
+ page_title="Case Processing Dashboard",
   layout="wide"
 )
 
