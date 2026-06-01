@@ -8,7 +8,5 @@ st.page_config(
   layout="wide"
 
 #title
-st.markdown(
-  "<h1 style="text-align:center;>INDIA Project-Case processing Status</h1>",
-  unsafe_allow_html=True
+st.title("INDIA Project-Case processing Status")
   
