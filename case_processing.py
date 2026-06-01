@@ -10,4 +10,8 @@ st.set_page_config(
 
 #title
 st.title("INDIA Project-Case processing Status📋")
+
+site_url=https://envisionint.sharepoint.com/sites/ExtPRJ_NetworkDoc
+
+file_url=https://envisionint.sharepoint.com/:x:/r/sites/ExtPRJ_NetworkDoc
   
