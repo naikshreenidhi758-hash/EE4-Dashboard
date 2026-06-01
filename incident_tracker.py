@@ -155,7 +155,7 @@ if uploaded_file:
     # RIGHT SIDE - Year Wise Chart
     with right_col:
 
-        st.subheader("Ticket Status by Year")
+        st.subheader("Tickets Status by Year")
 
         # Convert register time to datetime
         filtered_df["register time"] = pd.to_datetime(
