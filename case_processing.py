@@ -11,6 +11,8 @@ st.set_page_config(
 #title
 st.title("INDIA Project-Case processing Status📋")
 
+#read from sharepoint
+df.load_sharepoint_data()
 site_url=https://envisionint.sharepoint.com/sites
 
 file_url=https://envisionint.sharepoint.com/:x:/r/sites
