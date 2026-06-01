@@ -6,6 +6,7 @@ import plotly.express as px
 st.page_config(
  page_title="Case Processing Dashboard"
   layout="wide"
+)
 
 #title
 st.title("INDIA Project-Case processing Status")
