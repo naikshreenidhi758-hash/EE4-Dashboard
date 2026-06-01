@@ -242,7 +242,7 @@ if uploaded_file:
     
     # Open Tickets Pending Days Report
     
-    st.subheader("Open Tickets Pending Days")
+    st.subheader("Currently Open Tickets")
 
     open_tickets_df = filtered_df[
         filtered_df["case state"]
