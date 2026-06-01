@@ -82,7 +82,7 @@ if uploaded_file:
     ].copy()
 
     # Statistics
-    st.subheader("Statistics")
+    st.subheader(" 📊Statistics")
 
     total_tickets = len(filtered_df)
 
@@ -130,7 +130,7 @@ if uploaded_file:
     # LEFT SIDE - Pie Chart
     with left_col:
 
-        st.subheader("Tickets by Case State")
+        st.subheader("📈Tickets by Case State")
 
         status_chart = (
             filtered_df["case state"]
@@ -242,7 +242,7 @@ if uploaded_file:
     
     # Open Tickets Pending Days Report
     
-    st.subheader("Currently Open Tickets")
+    st.subheader("Currently Open Tickets 🟢")
 
     open_tickets_df = filtered_df[
         filtered_df["case state"]
