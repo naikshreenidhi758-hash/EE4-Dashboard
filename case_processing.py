@@ -12,7 +12,7 @@ st.set_page_config(
 st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
 
 # Read Excel
-df = pd.read_excel(India project synchronous.xlsx)
+df = pd.read_excel(India project synchronous.xlsx),
 
 st.dataframe(df)
   
