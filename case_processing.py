@@ -24,17 +24,16 @@ df.columns = df.columns.str.strip().str.lower()
 
 # Required Columns
 required_columns = [
-    "project code",
-    "project name",
-    "first enginner(india team)",
-    "Second engineer(china team) ",
-    "priority",
+    "Project Code",
+    "First enginner(India Team)",
+    "Second engineer(China Team) ",
+    "Priority",
     "start date",
     "end time",
     "Status"
 ]
 
-eng1_count = df["first engineer"].value_counts().reset_index()
+eng1_count = df["First engineer(India Team)"].value_counts().reset_index()
 eng1_count.columns = ["engineer", "Project code"]
 
 fig = px.bar(
