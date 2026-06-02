@@ -15,15 +15,7 @@ st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
 df = pd.read_excel(
     "India project synchronous.xlsx",
     sheet_name="CASE processing",
-    usecols=[
-        "project code",
-        "First engineeer(India Team)",
-        "second engineer(china Team)",
-        "priority",
-        "start date",
-        "end time",
-        "Status"
-    ]          
+    
 )
 
 st.dataframe(df)
