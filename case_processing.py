@@ -22,14 +22,14 @@ st.dataframe(df)
 # Clean Column Names
 df.columns = df.columns.str.strip().str.lower()
 
-    # Required Columns
-    required_columns = [
-        "project code",
-        "project name",
-        "first enginner(india team)",
-        "Second engineer(china team) ",
-        "priority",
-        "start date",
-        "end time",
-        "Status"
-    ]
+# Required Columns
+required_columns = [
+    "project code",
+    "project name",
+    "first enginner(india team)",
+    "Second engineer(china team) ",
+    "priority",
+    "start date",
+    "end time",
+    "Status"
+]
