@@ -16,4 +16,5 @@ df.load_sharepoint_data()
 site_url=https://envisionint.sharepoint.com/sites
 
 file_url=https://envisionint.sharepoint.com/:x:/r/sites
+df = pd.read_excel(file_url)
   
