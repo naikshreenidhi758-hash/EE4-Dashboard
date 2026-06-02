@@ -13,8 +13,8 @@ st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
 
 # Read Excel
 df = pd.read_excel(
-    "CaseProcessing.xlsx",
-    sheet_name="Project_Status"
+    "India project synchronous.xlsx",
+    sheet_name="CASE processing"
 )
 
 st.dataframe(df)
