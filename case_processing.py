@@ -17,6 +17,19 @@ df = pd.read_excel(
     sheet_name="CASE processing",
     
 )
-
 st.dataframe(df)
-  
+
+# Clean Column Names
+df.columns = df.columns.str.strip().str.lower()
+
+    # Required Columns
+    required_columns = [
+        "Project Code",
+        "Project name",
+        "First enginner(India Team)",
+        "Second engineer(China Team) ",
+        "Priority",
+        "start date",
+        "end time",
+        "Status"
+    ]
