@@ -33,3 +33,15 @@ required_columns = [
     "end time",
     "Status"
 ]
+
+eng1_count = df["first engineer"].value_counts().reset_index()
+eng1_count.columns = ["engineer", "Project code"]
+
+fig = px.bar(
+    eng1_count,
+    x="engineer",
+    y="Project code",
+    title="Projects Assigned to First Engineer"
+)
+
+st.plotly_chart(fig, use_container_width=True)
