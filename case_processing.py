@@ -14,33 +14,32 @@ st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
 # Read Excel
 df = pd.read_excel(
     "India project synchronous.xlsx",
-    sheet_name="CASE processing",
-    
+    sheet_name="CASE processing"
 )
-st.dataframe(df)
 
-# Clean Column Names
+# Clean column names
 df.columns = df.columns.str.strip().str.lower()
 
-# Required Columns
-required_columns = [
-    "Project Code",
-    "First enginner(India Team)",
-    "Second engineer(China Team) ",
-    "Priority",
-    "start date",
-    "end time",
-    "Status"
-]
+# Show available columns
+st.write("Columns in file:")
+st.write(df.columns.tolist())
 
-eng1_count = df["First engineer(India Team)"].value_counts().reset_index()
-eng1_count.columns = ["engineer", "Project code"]
+# Count projects by first engineer
+eng1_count = (
+    df["first engineer(india team)"]
+    .value_counts()
+    .reset_index()
+)
 
+eng1_count.columns = ["engineer", "project_count"]
+
+# Bar Chart
 fig = px.bar(
     eng1_count,
     x="engineer",
-    y="Project code",
-    title="Projects Assigned to First Engineer"
+    y="project_count",
+    title="Projects Assigned to First Engineer",
+    text="project_count"
 )
 
 st.plotly_chart(fig, use_container_width=True)
