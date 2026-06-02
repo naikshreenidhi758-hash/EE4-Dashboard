@@ -20,10 +20,6 @@ df = pd.read_excel(
 # Clean column names
 df.columns = df.columns.str.strip().str.lower()
 
-# Show available columns
-st.write("Columns in file:")
-st.write(df.columns.tolist())
-
 # Count projects by first engineer
 eng1_count = (
     df["first engineer(india team)"]
