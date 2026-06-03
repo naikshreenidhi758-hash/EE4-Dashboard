@@ -108,10 +108,10 @@ priority_count.columns = [
 
 
 # Convert register time to datetime
-        filtered_df["status"] = pd.to_datetime(
-            filtered_df["status"],
-            errors="coerce"
-        )
+    filtered_df["status"] = pd.to_datetime(
+        filtered_df["status"],
+        errors="coerce"
+    )
 
         # Available years
         years = sorted(
