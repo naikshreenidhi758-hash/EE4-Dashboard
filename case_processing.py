@@ -52,16 +52,25 @@ fig_bar = px.bar(
     title="Projects Assigned to First Engineer"
 )
 
-status_count = df["Status"].value_counts().reset_index()
+# Status Count
+status_count = (
+    df["status"]
+    .fillna("Unknown")
+    .value_counts()
+    .reset_index()
+)
+
 status_count.columns = ["Status", "Count"]
- 
+
 # Pie Chart
-fig_pie = px.pie(
+fig = px.pie(
     status_count,
     names="Status",
     values="Count",
     title="Projects by Status"
 )
+
+st.plotly_chart(fig, use_container_width=True)
 
 # Display side-by-side
 col1, col2 = st.columns(2)
