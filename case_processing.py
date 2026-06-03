@@ -30,6 +30,9 @@ eng1_count = (
     .value_counts()
     .reset_index()
 )
+#Rename column
+eng1_count.columns=["engineer", "project_count"]
+
 
 eng1_count["color"] = eng1_count["engineer"].apply(
     lambda x: "Unassigned" if x == "Unassigned" else "Assigned"
