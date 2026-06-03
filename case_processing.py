@@ -25,14 +25,6 @@ df["first engineer(india team)"] = (
     .fillna("Unassigned")
 )
 
-col1, col2 = st.columns(2)
-
-with col1:
-    st.plotly_chart(fig_bar, use_container_width=True)
-
-with col2:
-    st.plotly_chart(fig_pie, use_container_width=True)
-
 eng1_count = (
     df["first engineer(india team)"]
     .value_counts()
@@ -79,3 +71,12 @@ fig = px.pie(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+with col2:
+    st.plotly_chart(fig_pie, use_container_width=True)
+
