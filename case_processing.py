@@ -38,6 +38,7 @@ eng1_count["color"] = eng1_count["engineer"].apply(
     lambda x: "Unassigned" if x == "Unassigned" else "Assigned"
 )
 
+#bar chart
 fig = px.bar(
     eng1_count,
     x="engineer",
