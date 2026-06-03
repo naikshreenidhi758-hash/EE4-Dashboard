@@ -67,11 +67,10 @@ fig_bar = px.bar(
     barmode="stack",
     title="Cases by Engineer and Status",
     color_discrete_map={
-        "Closed": "green",
-        "Open": "red",
-        "In Progress": "orange",
-        "Pending": "blue",
-        "Unknown": "gray"
+        "Closed": "blue",
+        "In Progress": "green",
+        "Pending": "orange",
+        "Unassigned": "red"
     }
 )
 
