@@ -94,7 +94,7 @@ with col2:
 
 #convert date columns
 df["start date"]=pd.to_datetime(df["start date"],errors="coerce")
-df["end time']=pd.to_datetime(df["end date"],*errors=coerce")
+df["end time']=pd.to_datetime(df["end date"],"errors=coerce")
 
 #calculating days between start date and end date
 df["case_days"]=(df["end date"]-df["start date"]).dt.days
@@ -131,7 +131,7 @@ fig_pending=px.bar(
     :>15 Days":"red"
     }
     )
-    st.plotly_chart(fig_pending,use_container_widtTrue)
+    st.plotly_chart(fig_pending,use_container_width=True)
     
 
 
