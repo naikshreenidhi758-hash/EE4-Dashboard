@@ -39,7 +39,7 @@ fig = px.bar(
     x="engineer",
     y="project_count",
     color="engineer",
-    color_discretr_map={
+    color_discrete_map={
         "Unassigner":"red"
     },
     title="Projects Assigned to First Engineer",
