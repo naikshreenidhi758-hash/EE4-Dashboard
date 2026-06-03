@@ -20,7 +20,11 @@ df = pd.read_excel(
 # Clean column names
 df.columns = df.columns.str.strip().str.lower()
 
-# Count projects by first engineer
+df["first engineer(india team)"] = (
+    df["first engineer(india team)"]
+    .fillna("Unassigned")
+)
+
 eng1_count = (
     df["first engineer(india team)"]
     .value_counts()
