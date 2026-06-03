@@ -124,14 +124,14 @@ years = sorted(
 
 current_month = pd.Timestamp.now().year
 
-    if len(months) > 0:
+if len(months) > 0:
 
-        selected_month = st.selectbox(
-            "Select month",
-             years,
-             index=months.index(current_month)
+    selected_month = st.selectbox(
+        "Select month",
+            years,
+            index=months.index(current_month)
              if current_month in month else 0
-        )
+    )
 
         # Filter selected month
         month_df = filtered_df[
