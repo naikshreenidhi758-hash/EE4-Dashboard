@@ -31,7 +31,6 @@ df["first engineer(india team)"] = df["first engineer(india team)"].replace(
     "", "Unassigned"
 )
 
-
 df["status"] = (
     df["status"]
     .fillna("Unknown")
