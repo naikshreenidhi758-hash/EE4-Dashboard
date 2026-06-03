@@ -44,8 +44,8 @@ df["start date"] = pd.to_datetime(
     errors="coerce"
 )
 
-df["end date"] = pd.to_datetime(
-    df["end date"],
+df["end time"] = pd.to_datetime(
+    df["end time"],
     errors="coerce"
 )
 
