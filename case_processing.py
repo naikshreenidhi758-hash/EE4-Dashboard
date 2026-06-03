@@ -63,7 +63,7 @@ status_count = (
 status_count.columns = ["Status", "Count"]
 
 # Pie Chart
-fig = px.pie(
+fig_pie= px.pie(
     status_count,
     names="Status",
     values="Count",
