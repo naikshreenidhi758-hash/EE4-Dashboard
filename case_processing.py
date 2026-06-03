@@ -51,3 +51,14 @@ fig = px.bar(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+status_count=df["Status"].value_counts().reset_index()
+status_count.columns=["Status","Count"]
+
+fig=px.pie(
+    status_count,
+    names="Status",
+    values="Count",
+    title='Projects by Status"t
+)
+st.plotly_chart(fig, use_container_width=True)
