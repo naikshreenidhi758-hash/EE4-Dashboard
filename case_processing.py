@@ -59,6 +59,6 @@ fig=px.pie(
     status_count,
     names="Status",
     values="Count",
-    title='Projects by Status"
+    title="Projects by Status"
 )
 st.plotly_chart(fig, use_container_width=True)
