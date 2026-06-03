@@ -126,9 +126,16 @@ fig_bar.update_traces(
     textposition="inside"
 )
 
+# Clean Priority Column
+df["priority"] = (
+    df["priority"]
+    .fillna("Unknown")
+    .astype(str)
+    .str.strip()
+    .str.title()
+)
 
 # Priority Pie Chart
-
 priority_count = (
     df["priority"]
     .fillna("Unknown")
