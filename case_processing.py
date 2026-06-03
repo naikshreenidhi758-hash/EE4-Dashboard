@@ -20,38 +20,45 @@ df = pd.read_excel(
 # Clean column names
 df.columns = df.columns.str.strip().str.lower()
 
+# Replace blanks
 df["first engineer(india team)"] = (
     df["first engineer(india team)"]
     .fillna("Unassigned")
 )
 
-eng1_count = (
-    df["first engineer(india team)"]
-    .value_counts()
-    .reset_index()
-)
-#Rename column
-eng1_count.columns=["engineer", "project_count"]
-
-
-eng1_count["color"] = eng1_count["engineer"].apply(
-    lambda x: "Unassigned" if x == "Unassigned" else "Assigned"
+df["status"] = (
+    df["status"]
+    .fillna("Unknown")
 )
 
-# Bar Chart
+# Count cases by Engineer and Status
+eng_status = (
+    df.groupby(
+        ["first engineer(india team)", "status"]
+    )
+    .size()
+    .reset_index(name="count")
+)
+
+# Stacked Bar
 fig_bar = px.bar(
-    eng1_count,
-    x="engineer",
-    y="project_count",
-    color="color",
+    eng_status,
+    x="first engineer(india team)",
+    y="count",
+    color="status",
+    text="count",
+    barmode="stack",
+    title="Cases by Engineer and Status",
     color_discrete_map={
-        "Assigned": "blue",
+        "Closed": "green",
+        "Open": "purple",
+        "In Progress": "blue",
+        "Pending": "gold",
         "Unassigned": "red"
-    },
-    text="project_count",
-    title="Projects Assigned to First Engineer"
+    }
 )
 
+st.plotly_chart(fig_bar, use_container_width=True)
 # Status Count
 status_count = (
     df["status"]
