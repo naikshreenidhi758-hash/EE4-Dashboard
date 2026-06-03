@@ -142,15 +142,15 @@ if len(months) > 0:
     month_df["Month"] = month_df["status"].dt.strftime("%b")
 
     # Open / Closed Group
-        month_df["Status Group"] = (
-            month_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .apply(
+    month_df["Status Group"] = (
+        month_df["case state"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .apply(
                     
-            )
         )
+    )
 
     # Monthly Summary
     monthly_status = (
@@ -168,24 +168,24 @@ if len(months) > 0:
         "Sep", "Oct", "Nov", "Dec"
     ]
 
-            monthly_status["Month"] = pd.Categorical(
-                monthly_status["Month"],
-                categories=month_order,
-                ordered=True
-            )
+    monthly_status["Month"] = pd.Categorical(
+        monthly_status["Month"],
+        categories=month_order,
+        ordered=True
+    )
 
-            monthly_status = monthly_status.sort_values("Month")
+    monthly_status = monthly_status.sort_values("Month")
 
-            fig2 = px.bar(
-                monthly_status,
-                x="Month",
-                y="Count",
-                color="Status Group",
-                barmode="group",
-                title=f"Open vs Closed Tickets - {selected_year}"
-            )
+    fig2 = px.bar(
+        monthly_status,
+        x="Month",
+        y="Count",
+        color="Status Group",
+        barmode="group",
+        title=f"Open vs Closed Tickets - {selected_year}"
+    )
 
-            st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
 fig_pie = px.pie(
     priority_count,
