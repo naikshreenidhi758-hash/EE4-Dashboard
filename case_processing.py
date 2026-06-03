@@ -133,40 +133,40 @@ if len(months) > 0:
              if current_month in month else 0
     )
 
-        # Filter selected month
-        month_df = filtered_df[
-            filtered_df["status"].dt.month == selected_month
-        ].copy()
+    # Filter selected month
+    month_df = filtered_df[
+        filtered_df["status"].dt.month == selected_month
+    ].copy()
 
-        # Month Name
-        month_df["Month"] = month_df["status"].dt.strftime("%b")
+    # Month Name
+    month_df["Month"] = month_df["status"].dt.strftime("%b")
 
-        # Open / Closed Group
-            month_df["Status Group"] = (
-                month_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .apply(
+    # Open / Closed Group
+        month_df["Status Group"] = (
+            month_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .apply(
                     
-                )
             )
+        )
 
-            # Monthly Summary
-            monthly_status = (
-                year_df.groupby(
-                    ["Month", "Status Group"]
-                )
-                .size()
-                .reset_index(name="Count")
-            )
+    # Monthly Summary
+    monthly_status = (
+        year_df.groupby(
+            ["Month", "Status Group"]
+        )
+        .size()
+        .reset_index(name="Count")
+    )
 
-            # Month Order
-            month_order = [
-                "Jan", "Feb", "Mar", "Apr",
-                "May", "Jun", "Jul", "Aug",
-                "Sep", "Oct", "Nov", "Dec"
-            ]
+    # Month Order
+    month_order = [
+        "Jan", "Feb", "Mar", "Apr",
+        "May", "Jun", "Jul", "Aug",
+        "Sep", "Oct", "Nov", "Dec"
+    ]
 
             monthly_status["Month"] = pd.Categorical(
                 monthly_status["Month"],
