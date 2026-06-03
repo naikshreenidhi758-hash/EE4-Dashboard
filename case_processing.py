@@ -25,6 +25,14 @@ df["first engineer(india team)"] = (
     .fillna("Unassigned")
 )
 
+col1, col2 = st.columns(2)
+
+with col1:
+    st.plotly_chart(fig_bar, use_container_width=True)
+
+with col2:
+    st.plotly_chart(fig_pie, use_container_width=True)
+
 eng1_count = (
     df["first engineer(india team)"]
     .value_counts()
@@ -52,16 +60,22 @@ fig = px.bar(
 
 st.plotly_chart(fig, use_container_width=True)
 
-#Rename column
-status_count.columns=["Status","Count"]
+# Status Count
+status_count = (
+    df["status"]
+    .fillna("Unknown")
+    .value_counts()
+    .reset_index()
+)
 
-status_count=df["Status"].value_counts().reset_index()
-status_count.columns=["Status","Count"]
+status_count.columns = ["Status", "Count"]
 
-fig=px.pie(
+# Pie Chart
+fig = px.pie(
     status_count,
     names="Status",
     values="Count",
     title="Projects by Status"
 )
+
 st.plotly_chart(fig, use_container_width=True)
