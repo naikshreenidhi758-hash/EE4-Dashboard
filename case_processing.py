@@ -104,6 +104,89 @@ priority_count.columns = [
     "Count"
 ]
 
+
+
+
+# Convert register time to datetime
+        filtered_df["status"] = pd.to_datetime(
+            filtered_df["status"],
+            errors="coerce"
+        )
+
+        # Available years
+        years = sorted(
+            filtered_df["status"]
+            .dt.year
+            .dropna()
+            .unique(),
+            reverse=True
+        )
+
+        current_month = pd.Timestamp.now().year
+
+        if len(months) > 0:
+
+            selected_month = st.selectbox(
+                "Select month",
+                years,
+                index=months.index(current_month)
+                if current_month in month else 0
+            )
+
+            # Filter selected month
+            month_df = filtered_df[
+                filtered_df["status"].dt.month == selected_month
+            ].copy()
+
+            # Month Name
+            month_df["Month"] = month_df["status"].dt.strftime("%b")
+
+            # Open / Closed Group
+            month_df["Status Group"] = (
+                month_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                .apply(
+                    
+                )
+            )
+
+            # Monthly Summary
+            monthly_status = (
+                year_df.groupby(
+                    ["Month", "Status Group"]
+                )
+                .size()
+                .reset_index(name="Count")
+            )
+
+            # Month Order
+            month_order = [
+                "Jan", "Feb", "Mar", "Apr",
+                "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec"
+            ]
+
+            monthly_status["Month"] = pd.Categorical(
+                monthly_status["Month"],
+                categories=month_order,
+                ordered=True
+            )
+
+            monthly_status = monthly_status.sort_values("Month")
+
+            fig2 = px.bar(
+                monthly_status,
+                x="Month",
+                y="Count",
+                color="Status Group",
+                barmode="group",
+                title=f"Open vs Closed Tickets - {selected_year}"
+            )
+
+            st.plotly_chart(fig2, use_container_width=True)
+
 fig_pie = px.pie(
     priority_count,
     names="Priority",
@@ -114,7 +197,7 @@ fig_pie = px.pie(
         "High": "red",
         "Medium": "orange",
         "Low": "green",
-        "Unknown": "gray"
+        
     }
 )
 
