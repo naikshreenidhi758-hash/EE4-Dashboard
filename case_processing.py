@@ -175,27 +175,21 @@ with col2:
         use_container_width=True
     )
 
-# ==================================================
-# Pending Cases Age Analysis by Engineer
-# ==================================================
+# ==========================================
+# Pending Cases Aging Analysis
+# ==========================================
 
-pending_df = df[
-    df["status"].str.strip().str.lower() == "pending"
-].copy()
+# Cases where End Time is blank
+pending_df = df[df["end time"].isna()].copy()
 
-# Remove rows without start date
-pending_df = pending_df[
-    pending_df["start date"].notna()
-]
-
-# Calculate age from today
+# Age calculation
 today = pd.Timestamp.today().normalize()
 
 pending_df["case_days"] = (
     today - pending_df["start date"]
 ).dt.days
 
-# Create buckets
+# Buckets
 pending_df["age_bucket"] = pd.cut(
     pending_df["case_days"],
     bins=[-1, 7, 15, float("inf")],
@@ -206,7 +200,7 @@ pending_df["age_bucket"] = pd.cut(
     ]
 )
 
-# Count per Engineer + Bucket
+# Engineer + Bucket summary
 pending_summary = (
     pending_df.groupby(
         ["first engineer(india team)", "age_bucket"],
@@ -216,7 +210,12 @@ pending_summary = (
     .reset_index(name="count")
 )
 
-# Stacked Bar
+# Remove zero counts
+pending_summary = pending_summary[
+    pending_summary["count"] > 0
+]
+
+# Chart
 fig_pending = px.bar(
     pending_summary,
     x="first engineer(india team)",
@@ -224,7 +223,7 @@ fig_pending = px.bar(
     color="age_bucket",
     text="count",
     barmode="stack",
-    title="Pending Cases Aging by Engineer",
+    title="Open Cases Aging by Engineer",
     color_discrete_map={
         "0-7 Days": "green",
         "8-15 Days": "orange",
