@@ -128,11 +128,8 @@ fig_pending=px.bar(
     color_discrete_map={
     "0-7 Days":"green",
     "8-15 Days":"orange",
-    :>15 Days":"red"
+    ">15 Days":"red"
     }
     )
     st.plotly_chart(fig_pending,use_container_width=True)
     
-
-
-
