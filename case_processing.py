@@ -52,6 +52,9 @@ fig = px.bar(
 
 st.plotly_chart(fig, use_container_width=True)
 
+#Rename column
+status_count.columns=["Status","Count"]
+
 status_count=df["Status"].value_counts().reset_index()
 status_count.columns=["Status","Count"]
 
