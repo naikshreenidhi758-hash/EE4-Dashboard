@@ -70,7 +70,7 @@ fig_pie= px.pie(
     title="Projects by Status"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig_pie, use_container_width=True)
 
 # Display side-by-side
 col1, col2 = st.columns(2)
