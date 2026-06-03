@@ -52,6 +52,9 @@ fig_bar = px.bar(
     title="Projects Assigned to First Engineer"
 )
 
+status_count = df["Status"].value_counts().reset_index()
+status_count.columns = ["Status", "Count"]
+ 
 # Pie Chart
 fig_pie = px.pie(
     status_count,
