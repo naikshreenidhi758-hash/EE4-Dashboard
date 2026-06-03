@@ -50,15 +50,14 @@ fig_bar = px.bar(
     barmode="stack",
     title="Cases by Engineer and Status",
     color_discrete_map={
-        "Closed": "green",
+        "Closed": "blue",
         "Open": "purple",
-        "In Progress": "blue",
-        "Pending": "gold",
+        "In Progress": "green",
+        "Pending": "yellow",
         "Unassigned": "red"
     }
 )
 
-st.plotly_chart(fig_bar, use_container_width=True)
 # Status Count
 status_count = (
     df["status"]
