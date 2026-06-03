@@ -113,16 +113,16 @@ filtered_df["status"] = pd.to_datetime(
     errors="coerce"
 )
 
-        # Available years
-        years = sorted(
-            filtered_df["status"]
-            .dt.year
-            .dropna()
-            .unique(),
-            reverse=True
-        )
+# Available years
+years = sorted(
+   filtered_df["status"]
+   .dt.year
+   .dropna()
+   .unique(),
+    reverse=True
+)
 
-        current_month = pd.Timestamp.now().year
+  current_month = pd.Timestamp.now().year
 
         if len(months) > 0:
 
