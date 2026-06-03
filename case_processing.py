@@ -38,8 +38,8 @@ eng1_count["color"] = eng1_count["engineer"].apply(
     lambda x: "Unassigned" if x == "Unassigned" else "Assigned"
 )
 
-#bar chart
-fig = px.bar(
+# Bar Chart
+fig_bar = px.bar(
     eng1_count,
     x="engineer",
     y="project_count",
@@ -48,31 +48,19 @@ fig = px.bar(
         "Assigned": "blue",
         "Unassigned": "red"
     },
-    text="project_count"
+    text="project_count",
+    title="Projects Assigned to First Engineer"
 )
-
-st.plotly_chart(fig, use_container_width=True)
-
-# Status Count
-status_count = (
-    df["status"]
-    .fillna("Unknown")
-    .value_counts()
-    .reset_index()
-)
-
-status_count.columns = ["Status", "Count"]
 
 # Pie Chart
-fig = px.pie(
+fig_pie = px.pie(
     status_count,
     names="Status",
     values="Count",
     title="Projects by Status"
 )
 
-st.plotly_chart(fig, use_container_width=True)
-
+# Display side-by-side
 col1, col2 = st.columns(2)
 
 with col1:
@@ -80,4 +68,3 @@ with col1:
 
 with col2:
     st.plotly_chart(fig_pie, use_container_width=True)
-
