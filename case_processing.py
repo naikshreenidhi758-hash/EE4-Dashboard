@@ -20,10 +20,19 @@ df = pd.read_excel(
 # Clean column names
 df.columns = df.columns.str.strip().str.lower()
 
-# Replace blanks
 df["first engineer(india team)"] = (
     df["first engineer(india team)"]
-    .fillna("Unassigned")
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+df["first engineer(india team)"] = df["first engineer(india team)"].replace(
+    "", "Unassigned"
+)
+
+st.write(
+    df["first engineer(india team)"].value_counts(dropna=False)
 )
 
 df["status"] = (
