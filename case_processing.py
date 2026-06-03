@@ -131,5 +131,6 @@ fig_pending=px.bar(
     ">15 Days":"red"
     }
     )
-    st.plotly_chart(fig_pending,use_container_width=True)
+
+st.plotly_chart(fig_pending,use_container_width=True)
     
