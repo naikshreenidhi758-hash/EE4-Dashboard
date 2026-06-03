@@ -31,9 +31,6 @@ df["first engineer(india team)"] = df["first engineer(india team)"].replace(
     "", "Unassigned"
 )
 
-st.write(
-    df["first engineer(india team)"].value_counts(dropna=False)
-)
 
 df["status"] = (
     df["status"]
