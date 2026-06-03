@@ -31,18 +31,19 @@ eng1_count = (
     .reset_index()
 )
 
-eng1_count.columns = ["engineer", "project_count"]
+eng1_count["color"] = eng1_count["engineer"].apply(
+    lambda x: "Unassigned" if x == "Unassigned" else "Assigned"
+)
 
-# Bar Chart
 fig = px.bar(
     eng1_count,
     x="engineer",
     y="project_count",
-    color="engineer",
+    color="color",
     color_discrete_map={
-        "Unassigner":"red"
+        "Assigned": "blue",
+        "Unassigned": "red"
     },
-    title="Projects Assigned to First Engineer",
     text="project_count"
 )
 
