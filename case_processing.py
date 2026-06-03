@@ -122,26 +122,26 @@ years = sorted(
     reverse=True
 )
 
-  current_month = pd.Timestamp.now().year
+current_month = pd.Timestamp.now().year
 
-        if len(months) > 0:
+    if len(months) > 0:
 
-            selected_month = st.selectbox(
-                "Select month",
-                years,
-                index=months.index(current_month)
-                if current_month in month else 0
-            )
+        selected_month = st.selectbox(
+            "Select month",
+             years,
+             index=months.index(current_month)
+             if current_month in month else 0
+        )
 
-            # Filter selected month
-            month_df = filtered_df[
-                filtered_df["status"].dt.month == selected_month
-            ].copy()
+        # Filter selected month
+        month_df = filtered_df[
+            filtered_df["status"].dt.month == selected_month
+        ].copy()
 
-            # Month Name
-            month_df["Month"] = month_df["status"].dt.strftime("%b")
+        # Month Name
+        month_df["Month"] = month_df["status"].dt.strftime("%b")
 
-            # Open / Closed Group
+        # Open / Closed Group
             month_df["Status Group"] = (
                 month_df["case state"]
                 .astype(str)
