@@ -40,7 +40,7 @@ fig = px.bar(
     y="project_count",
     color="engineer",
     color_discretr_map={
-        "Unassigner":""red"
+        "Unassigner":"red"
     },
     title="Projects Assigned to First Engineer",
     text="project_count"
