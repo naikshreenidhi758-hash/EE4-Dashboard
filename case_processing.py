@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ==================================================
+
 # Page Configuration
-# ==================================================
 st.set_page_config(
     page_title="Case Processing Dashboard",
     layout="wide"
@@ -12,22 +11,17 @@ st.set_page_config(
 
 st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
 
-# ==================================================
 # Read Excel
-# ==================================================
 df = pd.read_excel(
     "India project synchronous.xlsx",
     sheet_name="CASE processing"
 )
 
-# ==================================================
+
 # Clean Column Names
-# ==================================================
 df.columns = df.columns.str.strip().str.lower()
 
-# ==================================================
 # Clean Engineer Column
-# ==================================================
 df["first engineer(india team)"] = (
     df["first engineer(india team)"]
     .fillna("")
@@ -36,9 +30,8 @@ df["first engineer(india team)"] = (
     .replace("", "Unassigned")
 )
 
-# ==================================================
+
 # Clean Status Column
-# ==================================================
 df["status"] = (
     df["status"]
     .fillna("Unknown")
@@ -46,9 +39,8 @@ df["status"] = (
     .str.strip()
 )
 
-# ==================================================
+
 # Convert Dates
-# ==================================================
 df["start date"] = pd.to_datetime(
     df["start date"],
     errors="coerce"
@@ -59,9 +51,8 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-# ==================================================
+
 # KPI Section
-# ==================================================
 st.markdown("### 📊 Key Metrics")
 
 kpi1, kpi2, kpi3, kpi4 = st.columns(4)
@@ -105,9 +96,8 @@ with kpi4:
 
 st.markdown("---")
 
-# ==================================================
+
 # Engineer vs Status
-# ==================================================
 eng_status = (
     df.groupby(
         ["first engineer(india team)", "status"]
@@ -125,11 +115,10 @@ fig_bar = px.bar(
     barmode="stack",
     title="Cases by Engineer and Status",
     color_discrete_map={
-        "Closed": "green",
+        "Closed": "blue",
         "Pending": "orange",
-        "In Progress": "blue",
-        "Open": "purple",
-        "Unknown": "gray"
+        "In Progress": "green",
+        "Unassigned": "red"
     }
 )
 
@@ -137,30 +126,44 @@ fig_bar.update_traces(
     textposition="inside"
 )
 
-# ==================================================
-# Status Pie Chart
-# ==================================================
-status_count = (
-    df["status"]
+
+# Priority Pie Chart
+
+priority_count = (
+    df["priority"]
+    .fillna("Unknown")
+    .astype(str)
+    .str.strip()
     .value_counts()
     .reset_index()
 )
 
-status_count.columns = [
-    "Status",
+priority_count.columns = [
+    "Priority",
     "Count"
 ]
 
 fig_pie = px.pie(
-    status_count,
-    names="Status",
+    priority_count,
+    names="Priority",
     values="Count",
-    title="Projects by Status"
+    title="Projects by Priority",
+    color="Priority",
+    color_discrete_map={
+        "High": "red",
+        "Medium": "orange",
+        "Low": "green",
+        "Unknown": "gray"
+    }
 )
 
-# ==================================================
+fig_pie.update_traces(
+    textposition="inside",
+    textinfo="percent+label"
+)
+
+
 # Show Side by Side
-# ==================================================
 col1, col2 = st.columns(2)
 
 with col1:
@@ -175,9 +178,8 @@ with col2:
         use_container_width=True
     )
 
-# ==========================================
+
 # Pending Cases Aging Analysis
-# ==========================================
 
 # Cases where End Time is blank
 pending_df = df[df["end time"].isna()].copy()
@@ -223,7 +225,7 @@ fig_pending = px.bar(
     color="age_bucket",
     text="count",
     barmode="stack",
-    title="Open Cases Aging by Engineer",
+    title="Pending cases ",
     color_discrete_map={
         "0-7 Days": "green",
         "8-15 Days": "orange",
@@ -240,8 +242,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-# ==================================================
+
 # Optional Data Preview
-# ==================================================
 with st.expander("View Raw Data"):
     st.dataframe(df)
