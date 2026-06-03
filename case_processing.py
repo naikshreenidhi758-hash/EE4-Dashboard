@@ -51,53 +51,7 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-
-# KPI Section
-st.markdown("### 📊 Key Metrics")
-
-kpi1, kpi2, kpi3, kpi4 = st.columns(4)
-
-with kpi1:
-    st.metric(
-        "Total Cases",
-        len(df)
-    )
-
-with kpi2:
-    st.metric(
-        "Closed Cases",
-        len(
-            df[
-                df["status"].str.lower() == "closed"
-            ]
-        )
-    )
-
-with kpi3:
-    st.metric(
-        "Pending Cases",
-        len(
-            df[
-                df["status"].str.lower() == "pending"
-            ]
-        )
-    )
-
-with kpi4:
-    st.metric(
-        "Unassigned Cases",
-        len(
-            df[
-                df["first engineer(india team)"]
-                == "Unassigned"
-            ]
-        )
-    )
-
-st.markdown("---")
-
-
-# Engineer vs Status
+# Engineer vs Status 
 eng_status = (
     df.groupby(
         ["first engineer(india team)", "status"]
@@ -113,7 +67,7 @@ fig_bar = px.bar(
     color="status",
     text="count",
     barmode="stack",
-    title="Cases by Engineer and Status",
+    title="Cases by Engineer and Status 📊",
     color_discrete_map={
         "Closed": "blue",
         "Pending": "orange",
