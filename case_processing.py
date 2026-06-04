@@ -140,7 +140,6 @@ st.plotly_chart(
     fig_status,
     use_container_width=True
 )
-)
 
 
 # ENGINEER VS STATUS
