@@ -32,14 +32,14 @@ df["first engineer(india team)"] = (
 
 df["status"] = (
     df["status"]
-    .fillna("Unknown")
+    .fillna("Unassigned")
     .astype(str)
     .str.strip()
 )
 
 df["priority"] = (
     df["priority"]
-    .fillna("Unknown")
+    .fillna("Unassigned")
     .astype(str)
     .str.strip()
     .str.title()
@@ -91,16 +91,17 @@ filtered_df = df[
 ].copy()
 
 
-# KPI METRICS
-st.subheader(
-    f"📅 {selected_month} {selected_year} Summary"
-)
+# KPI METRICS (All Data)
 
-total_cases = len(filtered_df)
+st.subheader("📊 Overall Project Summary")
+
+total_cases = len(df)
 
 closed_cases = len(
-    filtered_df[
-        filtered_df["status"]
+    df[
+        df["status"]
+        .astype(str)
+        .str.strip()
         .str.lower()
         .eq("closed")
     ]
