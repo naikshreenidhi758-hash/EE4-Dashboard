@@ -162,16 +162,16 @@ st.plotly_chart(
     use_container_width=True
 )
 
-    fig2 = px.bar(
-        monthly_status,
-        x="Month",
-        y="Count",
-        color="Status Group",
-        barmode="group",
-        title=f"Open vs Closed Tickets - {selected_year}"
-    )
+fig2 = px.bar(
+    monthly_status,
+    x="Month",
+    y="Count",
+    color="Status Group",
+    barmode="group",
+    title=f"Open vs Closed Tickets - {selected_year}"
+)
 
-    st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, use_container_width=True)
 
 fig_pie = px.pie(
     priority_count,
