@@ -208,7 +208,7 @@ pending_df["age_bucket"] = pd.cut(
 )
 
 pending_summary = (
-    pending_df.groupby(
+    df.groupby(
         ["first engineer(india team)", "age_bucket"],
         observed=False
     )
