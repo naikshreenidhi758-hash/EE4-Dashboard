@@ -186,9 +186,10 @@ with col1:
     )
 
 
-# PENDING AGING ANALYSIS
-pending_df = filtered_df[
-    filtered_df["end time"].isna()
+# PENDING AGING ANALYSIS (Overall Data)
+
+pending_df = df[
+    df["end time"].isna()
 ].copy()
 
 today = pd.Timestamp.today().normalize()
@@ -208,7 +209,7 @@ pending_df["age_bucket"] = pd.cut(
 )
 
 pending_summary = (
-    df.groupby(
+    pending_df.groupby(
         ["first engineer(india team)", "age_bucket"],
         observed=False
     )
@@ -227,13 +228,12 @@ fig_pending = px.bar(
     color="age_bucket",
     text="count",
     barmode="stack",
-    title="Pending Cases Aging Analysis",
+    title="Overall Pending Cases Aging Analysis",
     color_discrete_map={
-        "0-7 Days":"blue",
-        "8-15 Days":"orange",
-        ">15 Days":"red"
+        "0-7 Days": "blue",
+        "8-15 Days": "orange",
+        ">15 Days": "red"
     }
-        
 )
 
 fig_pending.update_traces(
