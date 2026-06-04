@@ -40,16 +40,43 @@ df["status"] = (
 )
 
 
-# Convert Dates
-df["start date"] = pd.to_datetime(
-    df["start date"],
-    errors="coerce"
+
+# Year and Month Filters
+
+# Extract Year and Month
+df["year"] = df["start date"].dt.year
+df["month"] = df["start date"].dt.month
+df["month_name"] = df["start date"].dt.strftime("%B")
+
+# Select Year
+years = sorted(
+    df["year"].dropna().unique(),
+    reverse=True
 )
 
-df["end time"] = pd.to_datetime(
-    df["end time"],
-    errors="coerce"
+selected_year = st.sidebar.selectbox(
+    "Select Year",
+    years
 )
+
+# Available months for selected year
+available_months = (
+    df[df["year"] == selected_year]
+    .sort_values("month")
+    ["month_name"]
+    .unique()
+)
+
+selected_month = st.sidebar.selectbox(
+    "Select Month",
+    available_months
+)
+
+# Filter Data
+filtered_df = df[
+    (df["year"] == selected_year) &
+    (df["month_name"] == selected_month)
+].copy()
 
 # Engineer vs Status 
 eng_status = (
@@ -107,74 +134,33 @@ priority_count.columns = [
 
 
 
-# Convert register time to datetime
-filtered_df["status"] = pd.to_datetime(
-    filtered_df["status"],
-    errors="coerce"
+st.subheader(
+    f"📅 Ticket Status - {selected_month} {selected_year}"
 )
 
-# Available years
-years = sorted(
-   filtered_df["status"]
-   .dt.year
-   .dropna()
-   .unique(),
-    reverse=True
+status_summary = (
+    filtered_df.groupby("status")
+    .size()
+    .reset_index(name="Count")
 )
 
-current_month = pd.Timestamp.now().year
+fig_month = px.bar(
+    status_summary,
+    x="status",
+    y="Count",
+    color="status",
+    text="Count",
+    title=f"Ticket Status - {selected_month} {selected_year}"
+)
 
-if len(months) > 0:
+fig_month.update_traces(
+    textposition="outside"
+)
 
-    selected_month = st.selectbox(
-        "Select month",
-            years,
-            index=months.index(current_month)
-             if current_month in month else 0
-    )
-
-    # Filter selected month
-    month_df = filtered_df[
-        filtered_df["status"].dt.month == selected_month
-    ].copy()
-
-    # Month Name
-    month_df["Month"] = month_df["status"].dt.strftime("%b")
-
-    # Open / Closed Group
-    month_df["Status Group"] = (
-        month_df["case state"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .apply(
-                    
-        )
-    )
-
-    # Monthly Summary
-    monthly_status = (
-        year_df.groupby(
-            ["Month", "Status Group"]
-        )
-        .size()
-        .reset_index(name="Count")
-    )
-
-    # Month Order
-    month_order = [
-        "Jan", "Feb", "Mar", "Apr",
-        "May", "Jun", "Jul", "Aug",
-        "Sep", "Oct", "Nov", "Dec"
-    ]
-
-    monthly_status["Month"] = pd.Categorical(
-        monthly_status["Month"],
-        categories=month_order,
-        ordered=True
-    )
-
-    monthly_status = monthly_status.sort_values("Month")
+st.plotly_chart(
+    fig_month,
+    use_container_width=True
+)
 
     fig2 = px.bar(
         monthly_status,
