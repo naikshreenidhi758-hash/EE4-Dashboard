@@ -118,7 +118,7 @@ c3.metric("✅ Closed Cases", closed_cases)
 
 # STATUS CHART
 status_summary = (
-    filtered_df.groupby("status")
+    df.groupby("status")
     .size()
     .reset_index(name="Count")
 )
@@ -129,14 +129,17 @@ fig_status = px.bar(
     y="Count",
     color="status",
     text="Count",
-    title=f"Ticket Status - {selected_month} {selected_year}"
+    title="Overall Ticket Status"
 )
 
-fig_status.update_traces(textposition="outside")
+fig_status.update_traces(
+    textposition="outside"
+)
 
 st.plotly_chart(
     fig_status,
     use_container_width=True
+)
 )
 
 
