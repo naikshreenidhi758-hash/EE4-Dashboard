@@ -173,29 +173,7 @@ fig_bar.update_traces(
 )
 
 
-# PRIORITY PIE
-priority_count = (
-    filtered_df["priority"]
-    .value_counts()
-    .reset_index()
-)
 
-priority_count.columns = [
-    "Priority",
-    "Count"
-]
-
-fig_pie = px.pie(
-    priority_count,
-    names="Priority",
-    values="Count",
-    title="Projects by Priority"
-)
-
-fig_pie.update_traces(
-    textposition="inside",
-    textinfo="label+value"
-)
 
 
 # SIDE BY SIDE CHARTS
@@ -204,12 +182,6 @@ col1, col2 = st.columns(2)
 with col1:
     st.plotly_chart(
         fig_bar,
-        use_container_width=True
-    )
-
-with col2:
-    st.plotly_chart(
-        fig_pie,
         use_container_width=True
     )
 
