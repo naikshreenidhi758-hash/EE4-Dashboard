@@ -252,7 +252,13 @@ fig_pending = px.bar(
     color="age_bucket",
     text="count",
     barmode="stack",
-    title="Pending Cases Aging Analysis"
+    title="Pending Cases Aging Analysis",
+    color_discrete_map={
+        "0-7 Days":"blue",
+        "8-15 Days":"orange",
+        ">15 Days":"red"
+    }
+        
 )
 
 fig_pending.update_traces(
