@@ -160,21 +160,17 @@ fig_bar = px.bar(
     barmode="stack",
     title="Cases by Engineer and Status",
     color_discrete_map={
-    "closed":"blue",
-    "ongoing":"green",
-    "pending on manufactures":"orange",
-    "pending from universe":"yellow",
-    "unassigned":"red"
+    "Closed":"blue",
+    "Ongoing":"green",
+    "Pending on Manufactures":"orange",
+    "Pending from Universe":"yellow",
+    "Unassigned":"red"
 }
 )
 
 fig_bar.update_traces(
     textposition="inside"
 )
-
-
-
-
 
 # SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
