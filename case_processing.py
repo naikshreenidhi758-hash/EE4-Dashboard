@@ -245,7 +245,3 @@ st.plotly_chart(
     use_container_width=True
 )
 
-
-# RAW DATA
-with st.expander("View Filtered Data"):
-    st.dataframe(filtered_df)
