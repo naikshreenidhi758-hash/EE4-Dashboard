@@ -155,7 +155,7 @@ fig_bar = px.bar(
     color="status",
     text="count",
     barmode="stack",
-    title="Cases by Engineer and Status"
+    title="Cases by Engineer and Status",
     color_discrete_map={
     "closed":"blue",
     "ongoing":"green",
