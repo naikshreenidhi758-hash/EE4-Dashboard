@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# --------------------------------------------------
+
 # PAGE CONFIG
-# --------------------------------------------------
 st.set_page_config(
     page_title="Case Processing Dashboard",
     layout="wide"
@@ -12,22 +11,18 @@ st.set_page_config(
 
 st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
 
-# --------------------------------------------------
 # LOAD EXCEL
-# --------------------------------------------------
 df = pd.read_excel(
     "India project synchronous.xlsx",
     sheet_name="CASE processing"
 )
 
-# --------------------------------------------------
+
 # CLEAN COLUMN NAMES
-# --------------------------------------------------
 df.columns = df.columns.str.strip().str.lower()
 
-# --------------------------------------------------
+
 # CLEAN DATA
-# --------------------------------------------------
 df["first engineer(india team)"] = (
     df["first engineer(india team)"]
     .fillna("Unassigned")
@@ -50,9 +45,8 @@ df["priority"] = (
     .str.title()
 )
 
-# --------------------------------------------------
+
 # DATE CONVERSION
-# --------------------------------------------------
 df["start date"] = pd.to_datetime(
     df["start date"],
     errors="coerce"
@@ -63,9 +57,8 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-# --------------------------------------------------
+
 # YEAR / MONTH FILTERS
-# --------------------------------------------------
 df["year"] = df["start date"].dt.year
 df["month"] = df["start date"].dt.month
 df["month_name"] = df["start date"].dt.strftime("%B")
@@ -97,9 +90,8 @@ filtered_df = df[
     (df["month_name"] == selected_month)
 ].copy()
 
-# --------------------------------------------------
+
 # KPI METRICS
-# --------------------------------------------------
 st.subheader(
     f"📅 {selected_month} {selected_year} Summary"
 )
@@ -122,9 +114,8 @@ c1.metric("📋 Total Cases", total_cases)
 c2.metric("⏳ Pending Cases", pending_cases)
 c3.metric("✅ Closed Cases", closed_cases)
 
-# --------------------------------------------------
+
 # STATUS CHART
-# --------------------------------------------------
 status_summary = (
     filtered_df.groupby("status")
     .size()
@@ -147,9 +138,8 @@ st.plotly_chart(
     use_container_width=True
 )
 
-# --------------------------------------------------
+
 # ENGINEER VS STATUS
-# --------------------------------------------------
 eng_status = (
     filtered_df.groupby(
         ["first engineer(india team)", "status"]
@@ -166,15 +156,21 @@ fig_bar = px.bar(
     text="count",
     barmode="stack",
     title="Cases by Engineer and Status"
+    color_discrete_map={
+    "closed":"blue",
+    "ongoing":"green",
+    "pending on manufactures":"orange",
+    "pending from universe":"yellow",
+    "unassigned":'red"
+}
 )
 
 fig_bar.update_traces(
     textposition="inside"
 )
 
-# --------------------------------------------------
+
 # PRIORITY PIE
-# --------------------------------------------------
 priority_count = (
     filtered_df["priority"]
     .value_counts()
@@ -198,9 +194,8 @@ fig_pie.update_traces(
     textinfo="label+value"
 )
 
-# --------------------------------------------------
+
 # SIDE BY SIDE CHARTS
-# --------------------------------------------------
 col1, col2 = st.columns(2)
 
 with col1:
@@ -215,9 +210,8 @@ with col2:
         use_container_width=True
     )
 
-# --------------------------------------------------
+
 # PENDING AGING ANALYSIS
-# --------------------------------------------------
 pending_df = filtered_df[
     filtered_df["end time"].isna()
 ].copy()
@@ -270,8 +264,7 @@ st.plotly_chart(
     use_container_width=True
 )
 
-# --------------------------------------------------
+
 # RAW DATA
-# --------------------------------------------------
 with st.expander("View Filtered Data"):
     st.dataframe(filtered_df)
