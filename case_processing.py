@@ -204,6 +204,12 @@ pending_df["age_bucket"] = pd.cut(
     ]
 )
 
+pending_df["age_bucket"] = (
+    pending_df["age_bucket"]
+    .cat.add_categories(["Start Date Missing"])
+    .fillna("Start Date Missing")
+)
+
 pending_summary = (
     pending_df.groupby(
         ["first engineer(india team)", "age_bucket"],
