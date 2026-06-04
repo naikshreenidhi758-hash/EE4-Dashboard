@@ -161,7 +161,7 @@ fig_bar = px.bar(
     "ongoing":"green",
     "pending on manufactures":"orange",
     "pending from universe":"yellow",
-    "unassigned":'red"
+    "unassigned":"red"
 }
 )
 
