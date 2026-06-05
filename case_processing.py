@@ -189,7 +189,7 @@ fig_bar = px.bar(
     "Ongoing":"green",
     "Pending on Manufactures":"orange",
     "Pending from Universe":"yellow",
-    "Unassigned":"red"
+    
 }
 )
 
