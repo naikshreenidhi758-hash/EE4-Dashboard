@@ -142,9 +142,23 @@ st.plotly_chart(
 )
 
 # ENGINEER VS STATUS
+# Clean engineer column
 filtered_df["first engineer(india team)"] = (
     filtered_df["first engineer(india team)"]
-    .fillna("Unassigned")
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+# Replace empty strings and 'nan' strings
+filtered_df["first engineer(india team)"] = filtered_df[
+    "first engineer(india team)"
+].replace(["", "nan", "None"], "Unassigned")
+
+# Check counts
+st.write(
+    filtered_df["first engineer(india team)"]
+    .value_counts(dropna=False)
 )
 filtered_df["first engineer(india team)"] = (
     filtered_df["first engineer(india team)"]
@@ -190,6 +204,12 @@ st.write(
     filtered_df["first engineer(india team)"]
     .value_counts(dropna=False)
 )
+
+st.write(
+    filtered_df["first engineer(india team)"]
+    .unique()
+)
+
 # SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
 
