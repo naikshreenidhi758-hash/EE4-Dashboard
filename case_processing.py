@@ -141,16 +141,41 @@ st.plotly_chart(
     use_container_width=True
 )
 
-# Count cases by Engineer and Status
+# ENGINEER VS STATUS
+# Clean engineer column
+filtered_df["first engineer(india team)"] = (
+    filtered_df["first engineer(india team)"]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+# Replace empty strings and 'nan' strings
+filtered_df["first engineer(india team)"] = filtered_df[
+    "first engineer(india team)"
+].replace(["", "nan", "None"], "Unassigned")
+
+
+filtered_df["first engineer(india team)"] = (
+    filtered_df["first engineer(india team)"]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
+filtered_df.loc[
+    filtered_df["first engineer(india team)"] == "",
+    "first engineer(india team)"
+] = "Unassigned"
 eng_status = (
-    df.groupby(
-        ["first engineer(india team)", "status"]
+    filtered_df.groupby(
+        ["first engineer(india team)", "status"],
+        dropna=False
     )
     .size()
     .reset_index(name="count")
 )
- 
-# Stacked Bar
+
 fig_bar = px.bar(
     eng_status,
     x="first engineer(india team)",
@@ -160,24 +185,18 @@ fig_bar = px.bar(
     barmode="stack",
     title="Cases by Engineer and Status",
     color_discrete_map={
-        "Closed": "blue",
-        "Open": "purple",
-        "In Progress": "green",
-        "Pending": "yellow",
-        "Unassigned": "red"
-    }
+    "Closed":"blue",
+    "Ongoing":"green",
+    "Pending on Manufactures":"orange",
+    "Pending from Universe":"yellow",
+    "Unassigned":"red"
+}
 )
- 
-# Status Count
-status_count = (
-    df["status"]
-    .fillna("Unknown")
-    .value_counts()
-    .reset_index()
+
+fig_bar.update_traces(
+    textposition="inside"
 )
- 
-status_count.columns = ["Status", "Count"]
- 
+
 # SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
 
