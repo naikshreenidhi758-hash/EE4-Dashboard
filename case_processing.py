@@ -142,10 +142,24 @@ st.plotly_chart(
 )
 
 
+filtered_df["first engineer(india team)"] = (
+    filtered_df["first engineer(india team)"]
+    .fillna("Unassigned")
+    .replace("", "Unassigned")
+    .astype(str)
+    .str.strip()
+)
+
+filtered_df.loc[
+    filtered_df["first engineer(india team)"] == "",
+    "first engineer(india team)"
+] = "Unassigned"
+
 # ENGINEER VS STATUS
 eng_status = (
     filtered_df.groupby(
-        ["first engineer(india team)", "status"]
+        ["first engineer(india team)", "status"],
+        dropna=False
     )
     .size()
     .reset_index(name="count")
