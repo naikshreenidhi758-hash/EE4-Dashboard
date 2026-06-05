@@ -17,7 +17,6 @@ df = pd.read_excel(
     sheet_name="CASE processing"
 )
 
-
 # CLEAN COLUMN NAMES
 df.columns = df.columns.str.strip().str.lower()
 
