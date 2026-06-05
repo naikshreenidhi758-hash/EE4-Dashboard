@@ -144,20 +144,11 @@ st.plotly_chart(
 # ENGINEER VS STATUS
 filtered_df["first engineer(india team)"] = (
     filtered_df["first engineer(india team)"]
-    .fillna("")
-    .astype(str)
-    .str.strip()
-)
-
-filtered_df["first engineer(india team)"] = (
-    filtered_df["first engineer(india team)"]
-    .replace("", "Unassigned")
-)
-
-filtered_df["first engineer(india team)"] = (
-    filtered_df["first engineer(india team)"]
     .fillna("Unassigned")
-    .replace("", "Unassigned")
+)
+filtered_df["first engineer(india team)"] = (
+    filtered_df["first engineer(india team)"]
+    .fillna("")
     .astype(str)
     .str.strip()
 )
@@ -166,8 +157,6 @@ filtered_df.loc[
     filtered_df["first engineer(india team)"] == "",
     "first engineer(india team)"
 ] = "Unassigned"
-
-
 eng_status = (
     filtered_df.groupby(
         ["first engineer(india team)", "status"],
@@ -197,7 +186,10 @@ fig_bar = px.bar(
 fig_bar.update_traces(
     textposition="inside"
 )
-
+st.write(
+    filtered_df["first engineer(india team)"]
+    .value_counts(dropna=False)
+)
 # SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
 
