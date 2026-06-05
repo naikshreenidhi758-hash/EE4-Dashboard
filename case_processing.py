@@ -143,32 +143,26 @@ st.plotly_chart(
 
 # ENGINEER VS STATUS
 # Clean engineer column
-filtered_df["first engineer(india team)"] = (
-    filtered_df["first engineer(india team)"]
+df.columns = df.columns.str.strip().str.lower()
+ 
+df["first engineer(india team)"] = (
+    df["first engineer(india team)"]
     .fillna("")
     .astype(str)
     .str.strip()
 )
 
-# Replace empty strings and 'nan' strings
-filtered_df["first engineer(india team)"] = filtered_df[
-    "first engineer(india team)"
-].replace(["", "nan", "None"], "Unassigned")
-
-
-filtered_df["first engineer(india team)"] = (
-    filtered_df["first engineer(india team)"]
-    .fillna("")
-    .astype(str)
-    .str.strip()
+df["first engineer(india team)"] = df["first engineer(india team)"].replace(
+    "", "Unassigned"
 )
 
-filtered_df.loc[
-    filtered_df["first engineer(india team)"] == "",
+df.loc[
+    df["first engineer(india team)"] == "",
     "first engineer(india team)"
 ] = "Unassigned"
+
 eng_status = (
-    filtered_df.groupby(
+    df.groupby(
         ["first engineer(india team)", "status"],
         dropna=False
     )
