@@ -156,7 +156,6 @@ filtered_df["first engineer(india team)"] = filtered_df[
 ].replace(["", "nan", "None"], "Unassigned")
 
 
-)
 filtered_df["first engineer(india team)"] = (
     filtered_df["first engineer(india team)"]
     .fillna("")
