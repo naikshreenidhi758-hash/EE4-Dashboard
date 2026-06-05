@@ -155,10 +155,7 @@ filtered_df["first engineer(india team)"] = filtered_df[
     "first engineer(india team)"
 ].replace(["", "nan", "None"], "Unassigned")
 
-# Check counts
-st.write(
-    filtered_df["first engineer(india team)"]
-    .value_counts(dropna=False)
+
 )
 filtered_df["first engineer(india team)"] = (
     filtered_df["first engineer(india team)"]
@@ -200,16 +197,6 @@ fig_bar = px.bar(
 fig_bar.update_traces(
     textposition="inside"
 )
-st.write(
-    filtered_df["first engineer(india team)"]
-    .value_counts(dropna=False)
-)
-
-st.write(
-    filtered_df["first engineer(india team)"]
-    .unique()
-)
-
 # SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
 
