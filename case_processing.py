@@ -210,7 +210,13 @@ with col1:
 
 # PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
-    df["end time"].isna()
+    (df["end time"].isna()) &
+    (
+        df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower() != "closed"
+    )
 ].copy()
 
 pending_df["effective_start_date"] = (
