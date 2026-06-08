@@ -216,7 +216,7 @@ pending_df = df[
 
 pending_df["effective_start_date"] = (
     pending_df["start date"]
-    .fillna(pending_df["Filled_Date(or case created date)"])
+    .fillna(pending_df["Filled_Date(or case created date))"])
 )
 today = pd.Timestamp.today().normalize()
 
@@ -229,7 +229,7 @@ df["start date"] = pd.to_datetime(
     errors="coerce"
 )
 
-df["Filled_Date(or case created date"] = pd.to_datetime(
+df["Filled_Date(or case created date)"] = pd.to_datetime(
     df["Filled_Date(or case created date)"],
     errors="coerce"
 )
