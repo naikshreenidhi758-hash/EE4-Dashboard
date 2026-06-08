@@ -215,21 +215,38 @@ pending_df = df[
 
 pending_df["effective_start_date"] = (
     pending_df["start date"]
-    .fillna(pending_df["filled_Date"])
+    .fillna(pending_df["filled_date"])
 )
+
 today = pd.Timestamp.today().normalize()
 
 pending_df["case_days"] = (
     today - pending_df["effective_start_date"]
 ).dt.days
 
+
 df["start date"] = pd.to_datetime(
     df["start date"],
     errors="coerce"
 )
 
-df["filled-Date"] = pd.to_datetime(
-    df["filled_Date"],
+df["filled_date"] = pd.to_datetime(
+    df["filled_date"],
+    errors="coerce"
+)
+
+df["start date"] = pd.to_datetime(
+    df["start date"],
+    errors="coerce"
+)
+
+df["end time"] = pd.to_datetime(
+    df["end time"],
+    errors="coerce"
+)
+
+df["filled_date"] = pd.to_datetime(
+    df["filled_date"],
     errors="coerce"
 )
 
