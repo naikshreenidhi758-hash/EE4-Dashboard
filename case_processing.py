@@ -168,6 +168,7 @@ filtered_df.loc[
     filtered_df["first engineer(india team)"] == "",
     "first engineer(india team)"
 ] = "Unassigned"
+
 eng_status = (
     filtered_df.groupby(
         ["first engineer(india team)", "status"],
@@ -198,7 +199,6 @@ fig_bar.update_traces(
     textposition="inside"
 )
 
-
 # SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
 
@@ -207,7 +207,6 @@ with col1:
         fig_bar,
         use_container_width=True
     )
-
 
 # PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
@@ -229,7 +228,7 @@ df["start date"] = pd.to_datetime(
     errors="coerce"
 )
 
-df["Filled_Date"] = pd.to_datetime(
+df["Filled-Date"] = pd.to_datetime(
     df["Filled_Date"],
     errors="coerce"
 )
