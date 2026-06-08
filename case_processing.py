@@ -224,6 +224,16 @@ pending_df["case_days"] = (
     today - pending_df["effective_start_date"]
 ).dt.days
 
+df["start date"] = pd.to_datetime(
+    df["start date"],
+    errors="coerce"
+)
+
+df["Filled_Date(or case created date)"] = pd.to_datetime(
+    df["Filled_Date(or case created date)"],
+    errors="coerce"
+)
+
 pending_df["age_bucket"] = pd.cut(
     pending_df["case_days"],
     bins=[-1, 7, 15, float("inf")],
