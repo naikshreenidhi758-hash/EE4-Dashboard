@@ -17,6 +17,8 @@ df = pd.read_excel(
     sheet_name="CASE processing"
 )
 
+df.columns = df.columns.str.strip()
+
 # CLEAN COLUMN NAMES
 df.columns = df.columns.str.strip().str.lower()
 
@@ -216,7 +218,6 @@ pending_df["effective_start_date"] = (
     pending_df["start date"]
     .fillna(pending_df["Filled_Date(or case created date)"])
 )
-
 today = pd.Timestamp.today().normalize()
 
 pending_df["case_days"] = (
