@@ -213,10 +213,15 @@ pending_df = df[
     df["end time"].isna()
 ].copy()
 
+pending_df["effective_start_date"] = (
+    pending_df["start date"]
+    .fillna(pending_df["Filled_Date(or case created date)"])
+)
+
 today = pd.Timestamp.today().normalize()
 
 pending_df["case_days"] = (
-    today - pending_df["start date"]
+    today - pending_df["effective_start_date"]
 ).dt.days
 
 pending_df["age_bucket"] = pd.cut(
@@ -227,12 +232,6 @@ pending_df["age_bucket"] = pd.cut(
         "8-15 Days",
         ">15 Days"
     ]
-)
-
-pending_df["age_bucket"] = (
-    pending_df["age_bucket"]
-    .cat.add_categories(["Start Date Missing"])
-    .fillna("Start Date Missing")
 )
 
 pending_summary = (
