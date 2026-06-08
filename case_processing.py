@@ -208,7 +208,6 @@ with col1:
 
 
 # PENDING AGING ANALYSIS (Overall Data)
-
 pending_df = df[
     df["end time"].isna()
 ].copy()
