@@ -29,7 +29,7 @@ df["company"] = (
 )
 
 # DEBUG SECTION
-st.subheader("Company Values Found")
+st.subheader("Infra EE4 Cases")
 
 company_counts = df["company"].value_counts()
 
