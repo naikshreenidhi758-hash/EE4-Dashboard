@@ -13,8 +13,7 @@ st.title("Customer Service")
 
 # LOAD EXCEL
 df = pd.read_excel(
-    
-    
+)   
 
 df.columns = df.columns.str.strip()
 
