@@ -106,6 +106,24 @@ sheet2_summary = pd.DataFrame({
     "Count": [infra_count, universe_count]
 })
 
+# COUNT INFRA AND UNIVERSE
+infra_count = len(
+    df[df["infra dependecies"].str.contains("infra", na=False)]
+)
+
+universe_count = len(
+    df[df["infra dependecies"].str.contains("universe", na=False)]
+)
+
+# KPI CARDS
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric("Infra Cases", infra_count)
+
+with col2:
+    st.metric("Universe Cases", universe_count)
+
 # PIE CHART
 fig2 = px.pie(
     sheet2_summary,
@@ -154,6 +172,24 @@ sheet3_summary = pd.DataFrame({
     "Count": [infra_count, universe_count]
 })
 
+
+# COUNT INFRA AND UNIVERSE
+infra_count = len(
+    df[df["infra dependecies"].str.contains("infra", na=False)]
+)
+
+universe_count = len(
+    df[df["infra dependecies"].str.contains("universe", na=False)]
+)
+
+# KPI CARDS
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric("Infra Cases", infra_count)
+
+with col2:
+    st.metric("Universe Cases", universe_count
 # PIE CHART
 fig3 = px.pie(
     sheet3_summary,
