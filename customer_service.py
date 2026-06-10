@@ -82,8 +82,8 @@ df_sheet2 = pd.read_excel(
 df_sheet2.columns = df_sheet2.columns.str.strip().str.lower()
 
 # CLEAN VALUES
-df_sheet2["Infra Dependecies"] = (
-    df_sheet2["Infra Dependecies"]
+df_sheet2["infra dependecies"] = (
+    df_sheet2["infra dependecies"]
     .fillna("")
     .astype(str)
     .str.strip()
@@ -93,13 +93,13 @@ df_sheet2["Infra Dependecies"] = (
 # COUNTS
 infra_count = len(
     df_sheet2[
-        df_sheet2["Infra Dependecies"] == "yes"
+        df_sheet2["infra dependecies"] == "yes"
     ]
 )
 
 universe_count = len(
     df_sheet2[
-        df_sheet2["Infra Dependecies"] == "no"
+        df_sheet2["infra dependecies"] == "no"
     ]
 )
 
