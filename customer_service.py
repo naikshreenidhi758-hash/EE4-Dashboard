@@ -121,3 +121,51 @@ st.plotly_chart(
     fig2,
     use_container_width=True
 )
+# THIRD SHEET
+df_sheet3 = pd.read_excel(
+    "sn_customerservice_case.xlsx",
+    sheet_name="Galileo"
+)
+
+# CLEAN COLUMN NAMES
+df_sheet3.columns = df_sheet3.columns.str.strip().str.lower()
+
+# CLEAN VALUES
+df_sheet3["infra dependecies"] = (
+    df_sheet3["infra dependecies"]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+    .str.lower()
+)
+# COUNTS
+infra_count = len(
+    df_sheet3[
+        df_sheet3["infra dependecies"] == "yes"
+    ]
+)
+
+universe_count = len(
+    df_sheet3[
+        df_sheet3["infra dependecies"] == "no"
+    ]
+)
+
+# SUMMARY DATAFRAME
+sheet2_summary = pd.DataFrame({
+    "Team": ["Infra", "Universe"],
+    "Count": [infra_count, universe_count]
+})
+
+# PIE CHART
+fig3 = px.pie(
+    sheet3_summary,
+    names="Team",
+    values="Count",
+    title="Galileo"
+)
+
+st.plotly_chart(
+    fig3,
+    use_container_width=True
+)
