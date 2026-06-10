@@ -1,5 +1,4 @@
 import streamlit as st
-from openpyxl import load_workbook
 import pandas as pd
 import plotly.express as px
 
@@ -12,38 +11,39 @@ st.set_page_config(
 st.title("Infra vs Universe Cases")
 
 # LOAD EXCEL
-df = pd.read_excel("sn_customerservice_case.xlsx")
+df = pd.read_excel(
+    "sn_customerservice_case.xlsx",
+    sheet_name="Infra EE4 Cases"
+)
 
 # CLEAN COLUMN NAMES
 df.columns = df.columns.str.strip().str.lower()
 
-# LOAD WORKBOOK
-wb = load_workbook("sn_customerservice_case.xlsx")
-ws = wb["Infra EE4 Cases"]  # Change if sheet name is different
+df["company"] = (
+    df["company"]
+    .fillna("Unknown")
+    .astype(str)
+    .str.strip()
+    .str.lower()
+)
 
-infra_count = 0
-universe_count = 0
+infra_count = len(df[df["company"] == "infra"])
+universe_count = len(df[df["company"] == "universe"])
 
-# Short Description column = D = index 3
-for row in ws.iter_rows(min_row=2):
-    cell = row[3]
+# COUNT CASES
+company_summary = (
+    df["company"]
+    .value_counts()
+    .reset_index()
+)
 
-    color = cell.fill.fgColor.rgb
+company_summary.columns = ["Company", "Count"]
 
-    if color == "FF00FF00":      # Green
-        infra_count += 1
-
-    elif color == "FFFF0000":    # Red
-        universe_count += 1
-
-# Create DataFrame for Pie Chart
-team_summary = pd.DataFrame({
-    "Team": ["Infra", "Universe"],
-    "Count": [infra_count, universe_count]
-})
-
-# Show counts
+# KPI Metrics
 col1, col2 = st.columns(2)
+
+infra_count = len(df[df["company"] == "Infra"])
+universe_count = len(df[df["company"] == "Universe"])
 
 with col1:
     st.metric("Infra Cases", infra_count)
@@ -51,14 +51,10 @@ with col1:
 with col2:
     st.metric("Universe Cases", universe_count)
 
-for row in ws.iter_rows(min_row=2):
-    cell = row[3]
-    st.write(cell.fill.fgColor.rgb)
-
-# Pie Chart
+# PIE CHART
 fig = px.pie(
-    team_summary,
-    names="Team",
+    company_summary,
+    names="Company",
     values="Count",
     title="Infra vs Universe Distribution"
 )
