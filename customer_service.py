@@ -71,3 +71,53 @@ st.plotly_chart(
     fig,
     use_container_width=True
 )
+
+# SECOND SHEET
+df_sheet2 = pd.read_excel(
+    "sn_customerservice_case.xlsx",
+    sheet_name="Enos Public IP issue"
+)
+
+# CLEAN COLUMN NAMES
+df_sheet2.columns = df_sheet2.columns.str.strip().str.lower()
+
+# CLEAN VALUES
+df_sheet2["infra defendencies"] = (
+    df_sheet2["infra defendencies"]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+    .str.lower()
+)
+
+# COUNTS
+infra_count = len(
+    df_sheet2[
+        df_sheet2["infra defendencies"] == "yes"
+    ]
+)
+
+universe_count = len(
+    df_sheet2[
+        df_sheet2["infra defendencies"] == "no"
+    ]
+)
+
+# SUMMARY DATAFRAME
+sheet2_summary = pd.DataFrame({
+    "Team": ["Infra", "Universe"],
+    "Count": [infra_count, universe_count]
+})
+
+# PIE CHART
+fig2 = px.pie(
+    sheet2_summary,
+    names="Team",
+    values="Count",
+    title="Enos Public IP Issue - Infra vs Universe"
+)
+
+st.plotly_chart(
+    fig2,
+    use_container_width=True
+)
