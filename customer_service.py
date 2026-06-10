@@ -31,9 +31,6 @@ df["company"] = (
 # DEBUG SECTION
 st.subheader("Infra EE4 Cases")
 
-company_counts = df["company"].value_counts()
-
-st.dataframe(company_counts)
 
 # COUNT INFRA AND UNIVERSE
 infra_count = len(
