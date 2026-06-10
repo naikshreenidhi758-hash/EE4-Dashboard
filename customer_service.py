@@ -51,6 +51,10 @@ with col1:
 with col2:
     st.metric("Universe Cases", universe_count)
 
+for row in ws.iter_rows(min_row=2):
+    cell = row[3]
+    st.write(cell.fill.fgColor.rgb)
+
 # Pie Chart
 fig = px.pie(
     team_summary,
