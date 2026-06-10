@@ -152,7 +152,7 @@ universe_count = len(
 )
 
 # SUMMARY DATAFRAME
-sheet2_summary = pd.DataFrame({
+sheet3_summary = pd.DataFrame({
     "Team": ["Infra", "Universe"],
     "Count": [infra_count, universe_count]
 })
