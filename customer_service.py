@@ -4,7 +4,7 @@ import plotly.express as px
 
 # PAGE CONFIG
 st.set_page_config(
-    page_title="Customer Service",
+    page_title="Customer Service Dashboard",
     layout="wide"
 )
 
@@ -19,31 +19,33 @@ df = pd.read_excel(
 # CLEAN COLUMN NAMES
 df.columns = df.columns.str.strip().str.lower()
 
+# CLEAN COMPANY COLUMN
 df["company"] = (
     df["company"]
-    .fillna("Unknown")
+    .fillna("")
     .astype(str)
     .str.strip()
     .str.lower()
 )
 
-infra_count = len(df[df["company"] == "infra"])
-universe_count = len(df[df["company"] == "universe"])
+# DEBUG SECTION
+st.subheader("Company Values Found")
 
-# COUNT CASES
-company_summary = (
-    df["company"]
-    .value_counts()
-    .reset_index()
+company_counts = df["company"].value_counts()
+
+st.dataframe(company_counts)
+
+# COUNT INFRA AND UNIVERSE
+infra_count = len(
+    df[df["company"].str.contains("infra", na=False)]
 )
 
-company_summary.columns = ["Company", "Count"]
+universe_count = len(
+    df[df["company"].str.contains("universe", na=False)]
+)
 
-# KPI Metrics
+# KPI CARDS
 col1, col2 = st.columns(2)
-
-infra_count = len(df[df["company"] == "Infra"])
-universe_count = len(df[df["company"] == "Universe"])
 
 with col1:
     st.metric("Infra Cases", infra_count)
@@ -51,12 +53,21 @@ with col1:
 with col2:
     st.metric("Universe Cases", universe_count)
 
+# PIE CHART DATA
+team_summary = pd.DataFrame({
+    "Team": ["Infra", "Universe"],
+    "Count": [infra_count, universe_count]
+})
+
 # PIE CHART
 fig = px.pie(
-    company_summary,
-    names="Company",
+    team_summary,
+    names="Team",
     values="Count",
-    title="Infra vs Universe Distribution"
+    title="Infra vs Universe Case Distribution"
 )
 
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
