@@ -9,11 +9,9 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Customer Service")
+excel_url = "https://envisionint-my.sharepoint.com"
 
-# LOAD EXCEL
-df = pd.read_excel(
-)   
+df = pd.read_excel(excel_url)
 
 df.columns = df.columns.str.strip()
 
