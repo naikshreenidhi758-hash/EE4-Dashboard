@@ -189,7 +189,8 @@ with col1:
     st.metric("Infra Cases", infra_count)
 
 with col2:
-    st.metric("Universe Cases", universe_count
+    st.metric("Universe Cases", universe_count)
+    
 # PIE CHART
 fig3 = px.pie(
     sheet3_summary,
