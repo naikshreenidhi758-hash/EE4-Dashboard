@@ -8,198 +8,153 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Infra vs Universe Cases")
+st.title("Customer Service Dashboard")
 
-# LOAD EXCEL
-df = pd.read_excel(
-    "sn_customerservice_case.xlsx",
+excel_file = "sn_customerservice_case.xlsx"
+
+
+# SHEET 1 : Infra EE4 Cases
+st.header("Infra EE4 Cases")
+
+df1 = pd.read_excel(
+    excel_file,
     sheet_name="Infra EE4 Cases"
 )
 
-# CLEAN COLUMN NAMES
-df.columns = df.columns.str.strip().str.lower()
+df1.columns = df1.columns.str.strip().str.lower()
 
-# CLEAN COMPANY COLUMN
-df["company"] = (
-    df["company"]
+df1["company"] = (
+    df1["company"]
     .fillna("")
     .astype(str)
     .str.strip()
     .str.lower()
 )
 
-# DEBUG SECTION
-st.subheader("Infra EE4 Cases")
-
-
-# COUNT INFRA AND UNIVERSE
-infra_count = len(
-    df[df["company"].str.contains("infra", na=False)]
+infra_count_1 = len(
+    df1[df1["company"].str.contains("infra", na=False)]
 )
 
-universe_count = len(
-    df[df["company"].str.contains("universe", na=False)]
+universe_count_1 = len(
+    df1[df1["company"].str.contains("universe", na=False)]
 )
 
-# KPI CARDS
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Infra Cases", infra_count)
+    st.metric("Infra Cases", infra_count_1)
 
 with col2:
-    st.metric("Universe Cases", universe_count)
+    st.metric("Universe Cases", universe_count_1)
 
-# PIE CHART DATA
-team_summary = pd.DataFrame({
+summary1 = pd.DataFrame({
     "Team": ["Infra", "Universe"],
-    "Count": [infra_count, universe_count]
+    "Count": [infra_count_1, universe_count_1]
 })
 
-# PIE CHART
-fig = px.pie(
-    team_summary,
+fig1 = px.pie(
+    summary1,
     names="Team",
     values="Count",
-    title="Infra vs Universe Case Distribution"
+    title="Infra EE4 Cases - Infra vs Universe"
 )
 
-st.plotly_chart(
-    fig,
-    use_container_width=True
-)
+st.plotly_chart(fig1, use_container_width=True)
 
-# SECOND SHEET
-df_sheet2 = pd.read_excel(
-    "sn_customerservice_case.xlsx",
+
+# SHEET 2 : Enos Public IP issue
+st.header("Enos Public IP Issue")
+
+df2 = pd.read_excel(
+    excel_file,
     sheet_name="Enos Public IP issue"
 )
 
-# CLEAN COLUMN NAMES
-df_sheet2.columns = df_sheet2.columns.str.strip().str.lower()
+df2.columns = df2.columns.str.strip().str.lower()
 
-# CLEAN VALUES
-df_sheet2["infra dependecies"] = (
-    df_sheet2["infra dependecies"]
+df2["infra dependecies"] = (
+    df2["infra dependecies"]
     .fillna("")
     .astype(str)
     .str.strip()
     .str.lower()
 )
 
-# COUNTS
-infra_count = len(
-    df_sheet2[
-        df_sheet2["infra dependecies"] == "yes"
-    ]
+infra_count_2 = len(
+    df2[df2["infra dependecies"] == "yes"]
 )
 
-universe_count = len(
-    df_sheet2[
-        df_sheet2["infra dependecies"] == "no"
-    ]
+universe_count_2 = len(
+    df2[df2["infra dependecies"] == "no"]
 )
 
-# SUMMARY DATAFRAME
-sheet2_summary = pd.DataFrame({
-    "Team": ["infra", "universe"],
-    "Count": [infra_count, universe_count]
-})
-
-# COUNT INFRA AND UNIVERSE
-infra_count = len(
-    df[df["infra dependecies"].str.contains("infra", na=False)]
-)
-
-universe_count = len(
-    df[df["infra dependecies"].str.contains("universe", na=False)]
-)
-
-# KPI CARDS
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("infra Cases", infra_count)
+    st.metric("Infra Cases", infra_count_2)
 
 with col2:
-    st.metric("universe Cases", universe_count)
+    st.metric("Universe Cases", universe_count_2)
 
-# PIE CHART
+summary2 = pd.DataFrame({
+    "Team": ["Infra", "Universe"],
+    "Count": [infra_count_2, universe_count_2]
+})
+
 fig2 = px.pie(
-    sheet2_summary,
+    summary2,
     names="Team",
     values="Count",
     title="Enos Public IP Issue - Infra vs Universe"
 )
 
-st.plotly_chart(
-    fig2,
-    use_container_width=True
-)
-# THIRD SHEET
-df_sheet3 = pd.read_excel(
-    "sn_customerservice_case.xlsx",
+st.plotly_chart(fig2, use_container_width=True)
+
+
+# SHEET 3 : Galileo
+st.header("Galileo")
+
+df3 = pd.read_excel(
+    excel_file,
     sheet_name="Galileo"
 )
 
-# CLEAN COLUMN NAMES
-df_sheet3.columns = df_sheet3.columns.str.strip().str.lower()
+df3.columns = df3.columns.str.strip().str.lower()
 
-# CLEAN VALUES
-df_sheet3["infra dependecies"] = (
-    df_sheet3["infra dependecies"]
+df3["infra dependecies"] = (
+    df3["infra dependecies"]
     .fillna("")
     .astype(str)
     .str.strip()
     .str.lower()
 )
-# COUNTS
-infra_count = len(
-    df_sheet3[
-        df_sheet3["infra dependecies"] == "yes"
-    ]
+
+infra_count_3 = len(
+    df3[df3["infra dependecies"] == "yes"]
 )
 
-universe_count = len(
-    df_sheet3[
-        df_sheet3["infra dependecies"] == "no"
-    ]
+universe_count_3 = len(
+    df3[df3["infra dependecies"] == "no"]
 )
 
-# SUMMARY DATAFRAME
-sheet3_summary = pd.DataFrame({
-    "Team": ["Infra", "Universe"],
-    "Count": [infra_count, universe_count]
-})
-
-
-# COUNT INFRA AND UNIVERSE
-infra_count = len(
-    df[df["infra dependecies"].str.contains("infra", na=False)]
-)
-
-universe_count = len(
-    df[df["infra dependecies"].str.contains("universe", na=False)]
-)
-
-# KPI CARDS
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Infra Cases", infra_count)
+    st.metric("Infra Cases", infra_count_3)
 
 with col2:
-    st.metric("Universe Cases", universe_count)
-    
-# PIE CHART
+    st.metric("Universe Cases", universe_count_3)
+
+summary3 = pd.DataFrame({
+    "Team": ["Infra", "Universe"],
+    "Count": [infra_count_3, universe_count_3]
+})
+
 fig3 = px.pie(
-    sheet3_summary,
+    summary3,
     names="Team",
     values="Count",
-    title="Galileo"
+    title="Galileo - Infra vs Universe"
 )
 
-st.plotly_chart(
-    fig3,
-    use_container_width=True
-)
+st.plotly_chart(fig3, use_container_width=True)
