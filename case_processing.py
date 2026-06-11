@@ -116,7 +116,7 @@ with c2:
 
 with c3:
     st.metric("✅ Closed Cases", closed_cases)
-
+    
 # STATUS CHART
 status_summary = (
     df.groupby("status")
