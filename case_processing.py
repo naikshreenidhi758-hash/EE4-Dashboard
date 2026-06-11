@@ -58,7 +58,6 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-
 # YEAR / MONTH FILTERS
 df["year"] = df["start date"].dt.year
 df["month"] = df["start date"].dt.month
