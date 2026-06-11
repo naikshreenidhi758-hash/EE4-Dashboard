@@ -108,11 +108,11 @@ sheet2_summary = pd.DataFrame({
 
 # COUNT INFRA AND UNIVERSE
 infra_count = len(
-    df[df["infra dependecies"].str.contains("infra", na=False)]
+    df[df["infra dependecies"].str.contains("Infra", na=False)]
 )
 
 universe_count = len(
-    df[df["infra dependecies"].str.contains("universe", na=False)]
+    df[df["infra dependecies"].str.contains("Universe", na=False)]
 )
 
 # KPI CARDS
