@@ -8,7 +8,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("Customer Service Dashboard")
+st.title("Customer Service")
 
 excel_file = "sn_customerservice_case.xlsx"
 
