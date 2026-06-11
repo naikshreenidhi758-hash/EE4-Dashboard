@@ -102,27 +102,27 @@ universe_count = len(
 
 # SUMMARY DATAFRAME
 sheet2_summary = pd.DataFrame({
-    "Team": ["Infra", "Universe"],
+    "Team": ["infra", "universe"],
     "Count": [infra_count, universe_count]
 })
 
 # COUNT INFRA AND UNIVERSE
 infra_count = len(
-    df[df["infra dependecies"].str.contains("Infra", na=False)]
+    df[df["infra dependecies"].str.contains("infra", na=False)]
 )
 
 universe_count = len(
-    df[df["infra dependecies"].str.contains("Universe", na=False)]
+    df[df["infra dependecies"].str.contains("universe", na=False)]
 )
 
 # KPI CARDS
 col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Infra Cases", infra_count)
+    st.metric("infra Cases", infra_count)
 
 with col2:
-    st.metric("Universe Cases", universe_count)
+    st.metric("universe Cases", universe_count)
 
 # PIE CHART
 fig2 = px.pie(
