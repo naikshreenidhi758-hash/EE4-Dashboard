@@ -112,10 +112,28 @@ pending_cases = total_cases - closed_cases
 
 c1, c2, c3 = st.columns(3)
 
-c1.metric("📋 Total Cases", total_cases)
-c2.metric("⏳ Pending Cases", pending_cases)
-c3.metric("✅ Closed Cases", closed_cases)
+with c1:
+    st.metric("📋 Total Cases", total_cases)
 
+with c2:
+    st.metric("⏳ Pending Cases", pending_cases)
+
+    if st.button("View Pending Cases"):
+        pending_case_list = df[
+            df["status"].astype(str)
+            .str.strip()
+            .str.lower()
+            .ne("closed")
+        ]
+
+        st.subheader("Pending Cases List")
+        st.dataframe(
+            pending_case_list,
+            use_container_width=True
+        )
+
+with c3:
+    st.metric("✅ Closed Cases", closed_cases)
 
 # STATUS CHART
 status_summary = (
