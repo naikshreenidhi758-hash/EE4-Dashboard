@@ -100,21 +100,6 @@ with c1:
 with c2:
     st.metric("⏳ Pending Cases", pending_cases)
 
-with c3:
-    st.metric("✅ Closed Cases", closed_cases)
-
-with st.expander(f"View {pending_cases} Pending Cases"):
-    pending_case_list = df[
-        df["status"].astype(str)
-        .str.strip()
-        .str.lower()
-        .ne("closed")
-    ]
-
-    st.dataframe(
-        pending_case_list,
-        use_container_width=True
-    )
     if st.button("View Pending Cases"):
         pending_case_list = df[
             df["status"].astype(str)
