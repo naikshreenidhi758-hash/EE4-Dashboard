@@ -113,7 +113,7 @@ with c1:
 with c2:
     st.metric("⏳ Pending Cases", pending_cases)
 
-   with st.expander(f"View All {pending_cases} Pending Cases"):
+with st.expander(f"View All {pending_cases} Pending Cases"):
     pending_case_list = df[
         df["status"]
         .astype(str)
