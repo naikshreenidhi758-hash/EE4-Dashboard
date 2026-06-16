@@ -91,8 +91,22 @@ filtered_df = df[
 ].copy()
 
 
-c1, c2, c3 = st.columns(3)
+# KPI METRICS
+total_cases = len(df)
 
+closed_cases = len(
+    df[
+        df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .eq("closed")
+    ]
+)
+
+pending_cases = total_cases - closed_cases
+
+c1, c2, c3 = st.columns(3)
 with c1:
     st.metric("📋 Total Cases", total_cases)
 
