@@ -9,7 +9,7 @@ st.set_page_config(
     layout="wide"
 )
 
-st.title("🇮🇳 INDIA Project - Case Processing Status 📋")
+st.title("INDIA Project - Case Processing Status 📋")
 
 # LOAD EXCEL
 df = pd.read_excel(
