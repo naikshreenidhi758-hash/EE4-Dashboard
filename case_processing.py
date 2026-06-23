@@ -80,9 +80,20 @@ available_months = (
     .unique()
 )
 
+from datetime import datetime
+
+current_month = datetime.now().strftime("%B")
+
+# Find current month index
+if current_month in available_months:
+    default_month_index = list(available_months).index(current_month)
+else:
+    default_month_index = 0
+
 selected_month = st.sidebar.selectbox(
     "Select Month",
-    available_months
+    available_months,
+    index=default_month_index
 )
 
 filtered_df = df[
