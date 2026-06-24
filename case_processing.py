@@ -188,6 +188,29 @@ filtered_df["first engineer(india team)"] = (
     .str.strip()
 )
 
+st.write("Selected Month:", selected_month)
+
+pending_month = filtered_df[
+    filtered_df["status"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+    .ne("closed")
+]
+
+st.write("Pending Cases in Selected Month:", len(pending_month))
+
+st.dataframe(
+    pending_month[
+        [
+            "first engineer(india team)",
+            "status",
+            "start date",
+            "end time"
+        ]
+    ]
+)
+
 filtered_df.loc[
     filtered_df["first engineer(india team)"] == "",
     "first engineer(india team)"
