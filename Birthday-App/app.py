@@ -30,8 +30,8 @@ st.image(
      caption="ALWAYS KEEP SMILE MY GIRLL❤️"
 )
 st.image(
-    "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg"
+    "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg",
      width=250
 
 )
-st.success("YOU WILL BE ALWAYS MY GIRL ❤️")
+st.success("                  YOU WILL BE ALWAYS MY GIRL ❤️               ")
