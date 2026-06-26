@@ -28,12 +28,6 @@ st.image(
     caption="Always Keep Smiling My Girl ❤️"
 )
 
-st.image(
-    "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg"
-)
-
-st.success("❤️ You Will Always Be My Girl ❤️")
-
 with st.expander("💌 Click Here ❤️"):
 
     left_col, right_col = st.columns([1, 2])
