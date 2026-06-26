@@ -51,23 +51,23 @@ with st.expander("💌 Click Here ❤️"):
     # RIGHT COLUMN
     with right_col:
         st.markdown("""
-# ❤️ Dear Neela ❤️
+           # ❤️ Dear Neela ❤️
 
-Happy Birthday to the most amazing person! 🎂
+           Happy Birthday to the most amazing person! 🎂
 
-May every dream of yours come true. 🌸
+           May every dream of yours come true. 🌸
 
-May your smile never fade. 😊
+           May your smile never fade. 😊
 
-May you always stay happy, healthy, and successful. 🌟
+           May you always stay happy, healthy, and successful. 🌟
 
-Thank you for being such a wonderful person.
+           Thank you for being such a wonderful person.
 
-Your kindness, your smile, and your presence make every moment brighter.
+           Your kindness, your smile, and your presence make every moment brighter.
 
-No matter where life takes us, I wish you endless happiness and countless beautiful memories.
+           No matter where life takes us, I wish you endless happiness and countless beautiful memories.
 
-🎉 Have the Best Birthday Ever! 🎉
+          🎉 Have the Best Birthday Ever! 🎉
 
-❤️ Always Keep Smiling ❤️
-""")
+          ❤️ Always Keep Smiling ❤️
+     """)
