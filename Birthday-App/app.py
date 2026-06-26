@@ -18,7 +18,7 @@ st.markdown(
 )
 
 st.image(
-    "https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/10/jimin-1665636114.jpg",
+    https://wallpaperaccess.com/full/1627574.jpg",
      caption="Happy Birthday my Girlll ❤️🎂"
 )
 st.success("May all your dreams come true! ❤️")
@@ -33,7 +33,7 @@ st.image(
 )
 st.success("                  YOU WILL BE ALWAYS MY GIRL ❤️               ")
 
-with st.expander("💌 Click Here to Open Your Birthday Letter ❤️"):
+with st.button("💌 Click Here ❤️"):
 
     st.image(
         "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg",
