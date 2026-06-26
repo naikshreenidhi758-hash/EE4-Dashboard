@@ -18,12 +18,12 @@ st.markdown(
 )
 
 st.image(
-     https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/10/jimin-1665636114.jpg",
+    "https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/10/jimin-1665636114.jpg",
      caption="Happy Birthday my Girlll ❤️🎂"
 )
 st.success("May all your dreams come true! ❤️")
 st.image(
-     https://wallpaperaccess.com/full/1627574.jpg",
+    "https://wallpaperaccess.com/full/1627574.jpg",
      caption="ALWAYS KEEP SMILE MY GIRLL❤️"
 )
 st.image(
