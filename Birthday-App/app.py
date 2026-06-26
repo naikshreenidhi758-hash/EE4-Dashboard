@@ -34,40 +34,46 @@ st.image(
 
 st.success("❤️ You Will Always Be My Girl ❤️")
 
-# LETTER
 with st.expander("💌 Click Here ❤️"):
 
-    # Create two columns
     left_col, right_col = st.columns([1, 2])
 
-    # LEFT COLUMN
+    # LEFT SIDE
     with left_col:
         st.image(
             "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg",
-            width=250,
-            caption="❤️ My Favorite ❤️"
+            width=250
         )
 
-    # RIGHT COLUMN
+    # RIGHT SIDE
     with right_col:
         st.markdown("""
-           # ❤️ Dear Neela ❤️
+# ❤️ Dear Neela ❤️
 
-           Happy Birthday to the most amazing person! 🎂
+## ❤️ YOU WILL BE ALWAYS MY GIRL ❤️
+""")
 
-           May every dream of yours come true. 🌸
+    # Letter starts below the image
+    st.markdown("""
+---
 
-           May your smile never fade. 😊
+### 💌 My Letter To You
 
-           May you always stay happy, healthy, and successful. 🌟
+Happy Birthday to the most amazing person! 🎂
 
-           Thank you for being such a wonderful person.
+May every dream of yours come true. 🌸
 
-           Your kindness, your smile, and your presence make every moment brighter.
+May your smile never fade. 😊
 
-           No matter where life takes us, I wish you endless happiness and countless beautiful memories.
+May you always stay happy, healthy, and successful. 🌟
 
-          🎉 Have the Best Birthday Ever! 🎉
+Thank you for being such a wonderful person.
 
-          ❤️ Always Keep Smiling ❤️
-     """)
+Your kindness, your smile, and your presence make every moment brighter.
+
+No matter where life takes us, I wish you endless happiness and countless beautiful memories.
+
+🎉 Have the Best Birthday Ever! 🎉
+
+❤️ Always Keep Smiling ❤️
+""")
