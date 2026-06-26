@@ -34,12 +34,21 @@ st.image(
 st.success("                  YOU WILL BE ALWAYS MY GIRL ❤️               ")
 
 with st.expander("💌 Click Here ❤️"):
+    
+    # Create 2 Columns
+    left_col, right_col = st.columns(2)
 
+    # LEFT SIDE - 
+    with left_col: 
+        
     st.image(
         "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg",
         width=250
     )
-
+    #RIGHT SIDE
+    with right_col:
+    caption=" YOU WILL BE ALWAYS MY GIRL ❤️"  
+    
     st.markdown("""
 # ❤️ Dear Neela ❤️
 
