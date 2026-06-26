@@ -32,3 +32,24 @@ st.image(
 
 )
 st.success("                  YOU WILL BE ALWAYS MY GIRL ❤️               ")
+
+with st.expander("💌 Click Here to Open Your Birthday Letter ❤️"):
+
+    st.image(
+        "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg",
+        width=250
+    )
+
+    st.markdown("""
+# ❤️ Dear Neela ❤️
+
+Happy Birthday to the most amazing person!
+
+May every dream of yours come true.
+May your smile never fade.
+May you always stay happy and healthy.
+
+Thank you for being the wonderful person you are.
+
+🎂 Have the best birthday ever! 🎉
+""")
