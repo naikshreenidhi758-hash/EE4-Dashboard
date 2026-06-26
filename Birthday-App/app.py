@@ -2,7 +2,7 @@ import streamlit as st
 
 st.set_page_config(page_title="Happy Birthday", page_icon="🎂")
 
-st.title("🎉The small surprise for birthday girl🎉")
+st.title("🎉HAPPYYYYYYYY BIRTHDAYYYYY🎉")
 
 st.balloons()
 
