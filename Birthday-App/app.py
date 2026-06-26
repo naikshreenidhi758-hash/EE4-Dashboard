@@ -18,12 +18,12 @@ st.markdown(
 )
 
 st.image(
-    https://wallpaperaccess.com/full/1627574.jpg",
+     https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/10/jimin-1665636114.jpg",
      caption="Happy Birthday my Girlll ❤️🎂"
 )
 st.success("May all your dreams come true! ❤️")
 st.image(
-    "https://wallpapers.com/images/hd/bts-jimin-for-chilsung-0cz1sgen4s3zol85.jpg",
+     https://wallpaperaccess.com/full/1627574.jpg",
      caption="ALWAYS KEEP SMILE MY GIRLL❤️"
 )
 st.image(
@@ -33,7 +33,7 @@ st.image(
 )
 st.success("                  YOU WILL BE ALWAYS MY GIRL ❤️               ")
 
-with st.button("💌 Click Here ❤️"):
+with st.expander("💌 Click Here ❤️"):
 
     st.image(
         "https://i.pinimg.com/originals/46/c6/b0/46c6b01da21acbdac9941cb3a0cc6601.jpg",
