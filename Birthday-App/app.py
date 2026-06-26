@@ -22,12 +22,8 @@ st.markdown(
 """
 )
 
-st.image(
-    "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=900",
-    caption="Happy Birthday 🎂"
-)
-
 st.success("May all your dreams come true! ❤️")
 st.image(
-    "https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/10/jimin-1665636114.jpg"
+    "https://resize.indiatvnews.com/en/resize/newbucket/1200_-/2022/10/jimin-1665636114.jpg",
+     caption="Happy Birthday my Girlll ❤️🎂"
 )
