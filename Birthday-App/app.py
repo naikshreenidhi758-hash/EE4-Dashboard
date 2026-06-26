@@ -10,13 +10,10 @@ st.markdown(
     """
 # ❤️ Happy Birthday NEELA ❤️
 
-## 🎂 Wishing You
+## 🎂 Wishing You On your birthday, may joy fill your heart and love surround your soul, reminding you of the countless blessings your friendship brings into every life you touch
 
 - 💖 Happiness
-- 🌹 Love
 - 🌟 Success
-- 😊 Good Health
-- 🎁 Endless Joy
 
 ### 🎉 Have an Amazing Birthday! 🎉
 """
