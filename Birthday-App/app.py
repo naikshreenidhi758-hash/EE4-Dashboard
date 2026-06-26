@@ -12,8 +12,8 @@ st.markdown(
 
 ## 🎂 Wishing You On your birthday,
 -may joy fill your heart and love surround your soul, reminding you of the countless blessings your friendship brings into every life you touch
-- 💖 Happiness
-- 🌟 Success
+ 💖 Happiness and
+ 🌟 Success
 
 ### 🎉 Have an Amazing Birthday! 🎉
 """
@@ -24,3 +24,6 @@ st.image(
      caption="Happy Birthday my Girlll ❤️🎂"
 )
 st.success("May all your dreams come true! ❤️")
+st.image(
+    "https://wallpapers.com/images/hd/bts-jimin-for-chilsung-0cz1sgen4s3zol85.jpg",
+     caption="ALWAYS KEEP SMILE MY GIRLL❤️"
