@@ -22,11 +22,8 @@ st.image(
 )
 
 st.success("May all your dreams come true! ❤️")
+st.success("Always Keep Smiling My Girl ❤️")
 
-st.image(
-    "https://wallpaperaccess.com/full/1627574.jpg",
-    caption="Always Keep Smiling My Girl ❤️"
-)
 
 with st.expander("💌 Click Here ❤️"):
 
