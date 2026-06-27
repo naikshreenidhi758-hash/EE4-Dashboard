@@ -2,9 +2,6 @@ import streamlit as st
 
 st.set_page_config(page_title="Happy Birthday", page_icon="🎂")
 
-with open("birthday.mp3.mp3", "rb") as audio_file:
-    st.audio(audio_file.read(), format="audio/mp3")
-
 st.balloons()
 
 st.markdown("""
