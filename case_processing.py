@@ -58,19 +58,28 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-# YEAR / MONTH FILTERS
+# ==========================
+# DATE FILTERS
+# ==========================
+
+# Year
 df["year"] = df["start date"].dt.year
+
+# Month Number
 df["month"] = df["start date"].dt.month
-df["month_name"] = df["start date"].dt.strftime("%B")
-# Month
+
+# Month Name
 df["month_name"] = df["start date"].dt.strftime("%B")
 
-# Week Number (ISO week)
-df["week_no"] = df["start date"].dt.isocalendar().week
+# Week Number
+df["week_no"] = df["start date"].dt.isocalendar().week.astype(int)
 
-# Display format
+# Week Display Name
 df["week_name"] = "Week " + df["week_no"].astype(str)
 
+# -------------------------
+# YEAR
+# -------------------------
 years = sorted(
     df["year"].dropna().unique(),
     reverse=True
@@ -81,18 +90,39 @@ selected_year = st.sidebar.selectbox(
     years
 )
 
+# -------------------------
+# MONTH
+# -------------------------
 available_months = (
     df[df["year"] == selected_year]
-    .sort_values("month")
-    ["month_name"]
+    .sort_values("month")["month_name"]
     .unique()
 )
 
+from datetime import datetime
+
+current_month = datetime.now().strftime("%B")
+
+if current_month in available_months:
+    default_month = list(available_months).index(current_month)
+else:
+    default_month = 0
+
+selected_month = st.sidebar.selectbox(
+    "Select Month",
+    available_months,
+    index=default_month
+)
+
+# -------------------------
+# WEEK
+# -------------------------
 available_weeks = (
     df[
         (df["year"] == selected_year) &
         (df["month_name"] == selected_month)
-    ]["week_name"]
+    ]
+    .sort_values("week_no")["week_name"]
     .unique()
 )
 
@@ -101,22 +131,9 @@ selected_week = st.sidebar.selectbox(
     available_weeks
 )
 
-from datetime import datetime
-
-current_month = datetime.now().strftime("%B")
-
-# Find current month index
-if current_month in available_months:
-    default_month_index = list(available_months).index(current_month)
-else:
-    default_month_index = 0
-
-selected_month = st.sidebar.selectbox(
-    "Select Month",
-    available_months,
-    index=default_month_index
-)
-
+# -------------------------
+# FILTER DATA
+# -------------------------
 filtered_df = df[
     (df["year"] == selected_year) &
     (df["month_name"] == selected_month) &
