@@ -62,7 +62,7 @@ df["end time"] = pd.to_datetime(
 df["year"] = df["start date"].dt.year
 df["month"] = df["start date"].dt.month
 df["month_name"] = df["start date"].dt.strftime("%B")
-df["week_wise"]=df["start week"].dt.strftime("%B")
+df["week_wise"]=df["start date"].dt.strftime("%B")
 
 years = sorted(
     df["year"].dropna().unique(),
