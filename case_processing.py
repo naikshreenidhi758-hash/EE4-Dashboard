@@ -48,31 +48,21 @@ df["priority"] = (
 
 
 # DATE CONVERSION
-date_columns = ["start date", "end time", "filled_date"]
+df["start date"] = pd.to_datetime(
+    df["start date"],
+    errors="coerce"
+)
 
-for col in date_columns:
-    df[col] = pd.to_datetime(df[col], errors="coerce")
+df["end time"] = pd.to_datetime(
+    df["end time"],
+    errors="coerce"
+)
 
-
-# DATE FILTERS
-
-# Year
+# YEAR / MONTH FILTERS
 df["year"] = df["start date"].dt.year
-
-# Month Number
 df["month"] = df["start date"].dt.month
-
-# Month Name
 df["month_name"] = df["start date"].dt.strftime("%B")
-
-# Week Number
-df["week_no"] = df["start date"].dt.isocalendar().week.astype(int)
-
-# Week Display Name
-df["week_name"] = "Week " + df["week_no"].astype(str)
-
-
-# YEAR
+df["week_wise"]=df["start date"].dt.strftime("%B")
 
 years = sorted(
     df["year"].dropna().unique(),
@@ -84,12 +74,21 @@ selected_year = st.sidebar.selectbox(
     years
 )
 
-
-# MONTH
-
 available_months = (
     df[df["year"] == selected_year]
-    .sort_values("month")["month_name"]
+    .sort_values("month")
+    ["month_name"]
+    .unique()
+)
+
+selected_week=st.sidebar.selectbox(
+    "Select Week",
+    weeks
+)
+available_weeks=(
+    df[df["week"]==selected_week]
+    .sort_values("week")
+    ["week_no"]
     .unique()
 )
 
@@ -97,47 +96,26 @@ from datetime import datetime
 
 current_month = datetime.now().strftime("%B")
 
+# Find current month index
 if current_month in available_months:
-    default_month = list(available_months).index(current_month)
+    default_month_index = list(available_months).index(current_month)
 else:
-    default_month = 0
+    default_month_index = 0
 
 selected_month = st.sidebar.selectbox(
     "Select Month",
     available_months,
-    index=default_month
+    index=default_month_index
 )
 
-
-# WEEK
-available_weeks = (
-    df[
-        (df["year"] == selected_year) &
-        (df["month_name"] == selected_month)
-    ]
-    .sort_values("week_no")["week_name"]
-    .unique()
-)
-
-selected_week = st.sidebar.selectbox(
-    "Select Week",
-    available_weeks
-)
-
-
-# FILTER DATA
 filtered_df = df[
     (df["year"] == selected_year) &
-    (df["month_name"] == selected_month) &
-    (df["week_name"] == selected_week)
+    (df["month_name"] == selected_month)
 ].copy()
 
+
 # KPI METRICS
-total_cases = len(filtered_df)
-
-closed_cases = filtered_df["status"].str.lower().eq("closed").sum()
-
-pending_cases = total_cases - closed_cases
+total_cases = len(df)
 
 closed_cases = len(
     df[
@@ -159,11 +137,13 @@ with c2:
     st.metric("⏳ Pending Cases", pending_cases)
 
 with st.expander(f"View All {pending_cases} Pending Cases"):
-    pending_case_list = filtered_df[
-    filtered_df["status"]
-    .str.lower()
-    .ne("closed")
-]
+    pending_case_list = df[
+        df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .ne("closed")
+    ]
 
     st.dataframe(
         pending_case_list,
@@ -175,10 +155,11 @@ with c3:
     
 # STATUS CHART
 status_summary = (
-    filtered_df.groupby("status")
+    df.groupby("status")
     .size()
     .reset_index(name="Count")
 )
+
 fig_status = px.bar(
     status_summary,
     x="status",
@@ -212,6 +193,13 @@ filtered_df["first engineer(india team)"] = filtered_df[
 ].replace(["", "nan", "None"], "Unassigned")
 
 
+filtered_df["first engineer(india team)"] = (
+    filtered_df["first engineer(india team)"]
+    .fillna("")
+    .astype(str)
+    .str.strip()
+)
+
 filtered_df.loc[
     filtered_df["first engineer(india team)"] == "",
     "first engineer(india team)"
@@ -225,7 +213,6 @@ eng_status = (
     .size()
     .reset_index(name="count")
 )
-filtered_df["status"] = filtered_df["status"].str.title()
 
 fig_bar = px.bar(
     eng_status,
@@ -238,9 +225,9 @@ fig_bar = px.bar(
     color_discrete_map={
     "Closed":"blue",
     "Ongoing":"green",
-    "Pending On Manufactures":"orange",
-    "Pending From Universe":"yellow",
-    "Unassigned":"gray"
+    "Pending on Manufactures":"orange",
+    "Pending from Universe":"yellow",
+    
 }
 )
 
@@ -258,7 +245,7 @@ with col1:
     )
 
 # PENDING AGING ANALYSIS (Overall Data)
-pending_df = filtered_df[
+pending_df = df[
     (df["end time"].isna()) &
     (
         df["status"]
@@ -268,11 +255,10 @@ pending_df = filtered_df[
     )
 ].copy()
 
-pending_df["effective_start_date"] = pending_df["start date"]
-
-pending_df["effective_start_date"] = pending_df[
-    "effective_start_date"
-].fillna(pending_df["filled_date"])
+pending_df["effective_start_date"] = (
+    pending_df["start date"]
+    .fillna(pending_df["filled_date"])
+)
 
 today = pd.Timestamp.today().normalize()
 
@@ -348,8 +334,7 @@ fig_pending.update_traces(
     textposition="inside"
 )
 
-with col2:
-    st.plotly_chart(
-        fig_pending,
-        use_container_width=True
-    )
+st.plotly_chart(
+    fig_pending,
+    use_container_width=True
+)
