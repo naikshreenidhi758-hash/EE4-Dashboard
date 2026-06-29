@@ -52,7 +52,6 @@ date_columns = ["start date", "end time", "filled_date"]
 
 for col in date_columns:
     df[col] = pd.to_datetime(df[col], errors="coerce")
-)
 
 
 # DATE FILTERS
