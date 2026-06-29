@@ -62,6 +62,7 @@ df["end time"] = pd.to_datetime(
 df["year"] = df["start date"].dt.year
 df["month"] = df["start date"].dt.month
 df["month_name"] = df["start date"].dt.strftime("%B")
+df["week_wise"]=df["start week"].dt.strftime("%B")
 
 years = sorted(
     df["year"].dropna().unique(),
@@ -77,6 +78,17 @@ available_months = (
     df[df["year"] == selected_year]
     .sort_values("month")
     ["month_name"]
+    .unique()
+)
+
+selected_week=st.sidebar.selectbox(
+    "Select Week",
+    weeks
+)
+available_weeks=(
+    df[df["week"]==selected_week]
+    .sort_values("week")
+    ["week_no"]
     .unique()
 )
 
