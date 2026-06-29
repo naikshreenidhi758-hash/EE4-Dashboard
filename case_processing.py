@@ -350,26 +350,6 @@ pending_summary = pending_summary[
     pending_summary["count"] > 0
 ]
 
-print("Total pending:", len(pending_df))
-print("Total in summary:", pending_summary["count"].sum())
-
-print(
-    pending_df["age_bucket"]
-    .value_counts(dropna=False)
-)
-
-print(
-    pending_df[
-        pending_df["age_bucket"].isna()
-    ][[
-    
-        "first engineer(india team)",
-        "start date",
-        "filled_date",
-       
-        
-    ]]
-)
 
 fig_pending = px.bar(
     pending_summary,
