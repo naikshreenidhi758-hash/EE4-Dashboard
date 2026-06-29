@@ -48,19 +48,14 @@ df["priority"] = (
 
 
 # DATE CONVERSION
-df["start date"] = pd.to_datetime(
-    df["start date"],
-    errors="coerce"
+date_columns = ["start date", "end time", "filled_date"]
+
+for col in date_columns:
+    df[col] = pd.to_datetime(df[col], errors="coerce")
 )
 
-df["end time"] = pd.to_datetime(
-    df["end time"],
-    errors="coerce"
-)
 
-# ==========================
 # DATE FILTERS
-# ==========================
 
 # Year
 df["year"] = df["start date"].dt.year
@@ -77,9 +72,9 @@ df["week_no"] = df["start date"].dt.isocalendar().week.astype(int)
 # Week Display Name
 df["week_name"] = "Week " + df["week_no"].astype(str)
 
-# -------------------------
+
 # YEAR
-# -------------------------
+
 years = sorted(
     df["year"].dropna().unique(),
     reverse=True
@@ -90,9 +85,9 @@ selected_year = st.sidebar.selectbox(
     years
 )
 
-# -------------------------
+
 # MONTH
-# -------------------------
+
 available_months = (
     df[df["year"] == selected_year]
     .sort_values("month")["month_name"]
@@ -114,9 +109,8 @@ selected_month = st.sidebar.selectbox(
     index=default_month
 )
 
-# -------------------------
+
 # WEEK
-# -------------------------
 available_weeks = (
     df[
         (df["year"] == selected_year) &
@@ -131,9 +125,8 @@ selected_week = st.sidebar.selectbox(
     available_weeks
 )
 
-# -------------------------
+
 # FILTER DATA
-# -------------------------
 filtered_df = df[
     (df["year"] == selected_year) &
     (df["month_name"] == selected_month) &
@@ -141,7 +134,11 @@ filtered_df = df[
 ].copy()
 
 # KPI METRICS
-total_cases = len(df)
+total_cases = len(filtered_df)
+
+closed_cases = filtered_df["status"].str.lower().eq("closed").sum()
+
+pending_cases = total_cases - closed_cases
 
 closed_cases = len(
     df[
@@ -163,13 +160,11 @@ with c2:
     st.metric("⏳ Pending Cases", pending_cases)
 
 with st.expander(f"View All {pending_cases} Pending Cases"):
-    pending_case_list = df[
-        df["status"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .ne("closed")
-    ]
+    pending_case_list = filtered_df[
+    filtered_df["status"]
+    .str.lower()
+    .ne("closed")
+]
 
     st.dataframe(
         pending_case_list,
@@ -181,11 +176,10 @@ with c3:
     
 # STATUS CHART
 status_summary = (
-    df.groupby("status")
+    filtered_df.groupby("status")
     .size()
     .reset_index(name="Count")
 )
-
 fig_status = px.bar(
     status_summary,
     x="status",
@@ -219,13 +213,6 @@ filtered_df["first engineer(india team)"] = filtered_df[
 ].replace(["", "nan", "None"], "Unassigned")
 
 
-filtered_df["first engineer(india team)"] = (
-    filtered_df["first engineer(india team)"]
-    .fillna("")
-    .astype(str)
-    .str.strip()
-)
-
 filtered_df.loc[
     filtered_df["first engineer(india team)"] == "",
     "first engineer(india team)"
@@ -239,6 +226,7 @@ eng_status = (
     .size()
     .reset_index(name="count")
 )
+filtered_df["status"] = filtered_df["status"].str.title()
 
 fig_bar = px.bar(
     eng_status,
@@ -251,9 +239,9 @@ fig_bar = px.bar(
     color_discrete_map={
     "Closed":"blue",
     "Ongoing":"green",
-    "Pending on Manufactures":"orange",
-    "Pending from Universe":"yellow",
-    
+    "Pending On Manufactures":"orange",
+    "Pending From Universe":"yellow",
+    "Unassigned":"gray"
 }
 )
 
@@ -271,7 +259,7 @@ with col1:
     )
 
 # PENDING AGING ANALYSIS (Overall Data)
-pending_df = df[
+pending_df = filtered_df[
     (df["end time"].isna()) &
     (
         df["status"]
@@ -281,10 +269,11 @@ pending_df = df[
     )
 ].copy()
 
-pending_df["effective_start_date"] = (
-    pending_df["start date"]
-    .fillna(pending_df["filled_date"])
-)
+pending_df["effective_start_date"] = pending_df["start date"]
+
+pending_df["effective_start_date"] = pending_df[
+    "effective_start_date"
+].fillna(pending_df["filled_date"])
 
 today = pd.Timestamp.today().normalize()
 
@@ -360,8 +349,8 @@ fig_pending.update_traces(
     textposition="inside"
 )
 
-st.plotly_chart(
-    fig_pending,
-    use_container_width=True
-)
-
+with col2:
+    st.plotly_chart(
+        fig_pending,
+        use_container_width=True
+    )
