@@ -58,11 +58,26 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-# YEAR / MONTH FILTERS
+
+# YEAR / MONTH / WEEK FILTER
+
+# Year
 df["year"] = df["start date"].dt.year
+
+# Month Number
 df["month"] = df["start date"].dt.month
+
+# Month Name
 df["month_name"] = df["start date"].dt.strftime("%B")
 
+# Week Number
+df["week_no"] = df["start date"].dt.isocalendar().week.astype(int)
+
+# Week Display Name
+df["week_name"] = "Week " + df["week_no"].astype(str)
+
+
+# YEAR
 
 years = sorted(
     df["year"].dropna().unique(),
@@ -74,19 +89,19 @@ selected_year = st.sidebar.selectbox(
     years
 )
 
+
+# MONTH
+
 available_months = (
     df[df["year"] == selected_year]
-    .sort_values("month")
-    ["month_name"]
+    .sort_values("month")["month_name"]
     .unique()
 )
-
 
 from datetime import datetime
 
 current_month = datetime.now().strftime("%B")
 
-# Find current month index
 if current_month in available_months:
     default_month_index = list(available_months).index(current_month)
 else:
@@ -98,11 +113,36 @@ selected_month = st.sidebar.selectbox(
     index=default_month_index
 )
 
+
+# WEEK
+available_weeks = (
+    df[
+        (df["year"] == selected_year) &
+        (df["month_name"] == selected_month)
+    ]
+    .sort_values("week_no")["week_name"]
+    .unique()
+)
+
+week_options = ["All Weeks"] + list(available_weeks)
+
+selected_week = st.sidebar.selectbox(
+    "Select Week",
+    week_options
+)
+
+
+# FILTER DATA
+
 filtered_df = df[
     (df["year"] == selected_year) &
     (df["month_name"] == selected_month)
 ].copy()
 
+if selected_week != "All Weeks":
+    filtered_df = filtered_df[
+        filtered_df["week_name"] == selected_week
+    ]
 
 # KPI METRICS
 total_cases = len(df)
