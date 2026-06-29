@@ -362,12 +362,12 @@ print(
     pending_df[
         pending_df["age_bucket"].isna()
     ][[
-        "case id",
+    
         "first engineer(india team)",
         "start date",
         "filled_date",
-        "effective_start_date",
-        "case_days"
+       
+        
     ]]
 )
 
