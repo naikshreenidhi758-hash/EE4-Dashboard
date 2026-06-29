@@ -71,11 +71,16 @@ df["month"] = df["start date"].dt.month
 df["month_name"] = df["start date"].dt.strftime("%B")
 
 # Week Number
-df["week_no"] = df["start date"].dt.isocalendar().week.astype(int)
+df["start date"] = pd.to_datetime(df["start date"], errors="coerce")
 
-# Week Display Name
+df["week_no"] = (
+    df["start date"]
+    .dt.isocalendar()
+    .week
+    .astype("Int64")
+)
+
 df["week_name"] = "Week " + df["week_no"].astype(str)
-
 
 # YEAR
 
