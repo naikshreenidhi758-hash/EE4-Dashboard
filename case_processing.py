@@ -58,7 +58,6 @@ df["end time"] = pd.to_datetime(
     errors="coerce"
 )
 
-
 # YEAR / MONTH / WEEK FILTER
 
 # Year
