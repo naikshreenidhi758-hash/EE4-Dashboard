@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-
+import numpy as np
 
 # PAGE CONFIG
 st.set_page_config(
@@ -327,14 +327,20 @@ df["filled_date"] = pd.to_datetime(
     errors="coerce"
 )
 
-pending_df["age_bucket"] = pd.cut(
-    pending_df["case_days"],
-    bins=[-1, 7, 15, float("inf")],
-    labels=[
+import numpy as np
+
+pending_df["age_bucket"] = np.select(
+    [
+        pending_df["case_days"] <= 7,
+        pending_df["case_days"].between(8, 15),
+        pending_df["case_days"] > 15
+    ],
+    [
         "0-7 Days",
         "8-15 Days",
         ">15 Days"
-    ]
+    ],
+    default="Unknown"
 )
 
 pending_summary = (
