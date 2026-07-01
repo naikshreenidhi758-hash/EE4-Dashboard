@@ -260,7 +260,9 @@ fig_bar = px.bar(
     "Closed":"blue",
     "Ongoing":"green",
     "Pending on Manufactures":"orange",
-    "Pending from Universe":"yellow",
+    "Pending on Universe":"yellow",
+    "Not Started":"pink", 
+     "Blank":"black",   
     
 }
 )
