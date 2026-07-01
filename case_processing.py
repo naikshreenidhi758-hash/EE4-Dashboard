@@ -371,22 +371,7 @@ fig_pending = px.bar(
     }
 )
 
-engineer = st.selectbox(
-    "Engineer",
-    sorted(pending_df["first engineer(india team)"].unique())
-)
 
-bucket = st.selectbox(
-    "Age Bucket",
-    ["0-7 Days","8-15 Days",">15 Days"]
-)
-
-st.dataframe(
-    pending_df[
-        (pending_df["first engineer(india team)"]==engineer) &
-        (pending_df["age_bucket"]==bucket)
-    ]
-)
 fig_pending.update_traces(
     textposition="inside"
 )
