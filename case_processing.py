@@ -46,10 +46,14 @@ df["priority"] = (
     .str.title()
 )
 
-
 # DATE CONVERSION
 df["start date"] = pd.to_datetime(
     df["start date"],
+    errors="coerce"
+)
+
+df["filled_date"] = pd.to_datetime(
+    df["filled_date"],
     errors="coerce"
 )
 
@@ -57,7 +61,34 @@ df["end time"] = pd.to_datetime(
     df["end time"],
     errors="coerce"
 )
+
+# Use start date if available, otherwise filled date
 df["effective_date"] = df["start date"].fillna(df["filled_date"])
+# YEAR
+df["year"] = df["effective_date"].dt.year
+
+# MONTH
+df["month"] = df["effective_date"].dt.month
+
+# MONTH NAME
+df["month_name"] = df["effective_date"].dt.strftime("%B")
+
+# WEEK NUMBER
+df["week_no"] = (
+    df["effective_date"]
+    .dt.isocalendar()
+    .week
+    .astype("Int64")
+)
+
+# WEEK NAME
+df["week_name"] = "Week " + df["week_no"].astype(str)
+
+
+
+
+
+
 
 # YEAR / MONTH / WEEK FILTER
 
@@ -295,33 +326,6 @@ today = pd.Timestamp.today().normalize()
 pending_df["case_days"] = (
     today - pending_df["effective_start_date"]
 ).dt.days
-
-
-df["start date"] = pd.to_datetime(
-    df["start date"],
-    errors="coerce"
-)
-
-df["filled_date"] = pd.to_datetime(
-    df["filled_date"],
-    errors="coerce"
-)
-
-df["start date"] = pd.to_datetime(
-    df["start date"],
-    errors="coerce"
-)
-
-df["end time"] = pd.to_datetime(
-    df["end time"],
-    errors="coerce"
-)
-
-df["filled_date"] = pd.to_datetime(
-    df["filled_date"],
-    errors="coerce"
-)
-
 
 
 pending_df["age_bucket"] = np.select(
