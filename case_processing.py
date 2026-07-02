@@ -57,30 +57,24 @@ df["end time"] = pd.to_datetime(
     df["end time"],
     errors="coerce"
 )
+df["effective_date"] = df["start date"].fillna(df["filled_date"])
 
 # YEAR / MONTH / WEEK FILTER
 
-# Year
-df["year"] = df["start date"].dt.year
+df["year"] = df["effective_date"].dt.year
 
-# Month Number
-df["month"] = df["start date"].dt.month
+df["month"] = df["effective_date"].dt.month
 
-# Month Name
-df["month_name"] = df["start date"].dt.strftime("%B")
-
-# Week Number
-df["start date"] = pd.to_datetime(df["start date"], errors="coerce")
+df["month_name"] = df["effective_date"].dt.strftime("%B")
 
 df["week_no"] = (
-    df["start date"]
+    df["effective_date"]
     .dt.isocalendar()
     .week
     .astype("Int64")
 )
 
 df["week_name"] = "Week " + df["week_no"].astype(str)
-
 # YEAR
 
 years = sorted(
