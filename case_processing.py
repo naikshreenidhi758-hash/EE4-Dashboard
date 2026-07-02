@@ -85,11 +85,6 @@ df["week_no"] = (
 df["week_name"] = "Week " + df["week_no"].astype(str)
 
 
-
-
-
-
-
 # YEAR / MONTH / WEEK FILTER
 
 df["year"] = df["effective_date"].dt.year
@@ -355,7 +350,6 @@ pending_summary = pending_summary[
     pending_summary["count"] > 0
 ]
 
-
 fig_pending = px.bar(
     pending_summary,
     x="first engineer(india team)",
@@ -370,7 +364,6 @@ fig_pending = px.bar(
         ">15 Days": "red"
     }
 )
-
 
 fig_pending.update_traces(
     textposition="inside"
