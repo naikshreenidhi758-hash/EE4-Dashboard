@@ -119,6 +119,7 @@ if uploaded_file:
 
 # Ticket Data
 st.subheader("Ticket Data across INDIA 🗺️")
+
 required_df = filtered_df[required_columns]
 
 st.dataframe(required_df)
