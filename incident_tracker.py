@@ -197,63 +197,62 @@ with right_col:
                 if current_year in years else 0
             )
 
-            # Filter selected year
-            year_df = filtered_df[
-                filtered_df["register time"].dt.year == selected_year
-            ].copy()
+        # Filter selected year
+        year_df = filtered_df[
+            filtered_df["register time"].dt.year == selected_year
+        ].copy()
 
-            # Month Name
-            year_df["Month"] = year_df["register time"].dt.strftime("%b")
+        # Month Name
+        year_df["Month"] = year_df["register time"].dt.strftime("%b")
 
-            # Open / Closed Group
-            year_df["Status Group"] = (
-                year_df["case state"]
-                .astype(str)
-                .str.strip()
-                .str.lower()
-                .apply(
-                    lambda x: "Closed"
-                    if x == "closed"
-                    else "Open"
-                )
+        # Open / Closed Group
+        year_df["Status Group"] = (
+            year_df["case state"]
+            .astype(str)
+            .str.strip()
+            .str.lower()
+            .apply(
+                lambda x: "Closed"
+                if x == "closed"
+                else "Open"
             )
+        )
 
-            # Monthly Summary
-            monthly_status = (
-                year_df.groupby(
-                    ["Month", "Status Group"]
-                )
-                .size()
-                .reset_index(name="Count")
+        # Monthly Summary
+        monthly_status = (
+            year_df.groupby(
+                ["Month", "Status Group"]
             )
+            .size()
+            .reset_index(name="Count")
+        )
 
-            # Month Order
-            month_order = [
-                "Jan", "Feb", "Mar", "Apr",
-                "May", "Jun", "Jul", "Aug",
-                "Sep", "Oct", "Nov", "Dec"
-            ]
+        # Month Order
+        month_order = [
+            "Jan", "Feb", "Mar", "Apr",
+            "May", "Jun", "Jul", "Aug",
+            "Sep", "Oct", "Nov", "Dec"
+        ]
 
-            monthly_status["Month"] = pd.Categorical(
-                monthly_status["Month"],
-                categories=month_order,
-                ordered=True
-            )
+        monthly_status["Month"] = pd.Categorical(
+            monthly_status["Month"],
+            categories=month_order,
+            ordered=True
+        )
 
-            monthly_status = monthly_status.sort_values("Month")
+        monthly_status = monthly_status.sort_values("Month")
 
-            fig2 = px.bar(
-                monthly_status,
-                x="Month",
-                y="Count",
-                color="Status Group",
-                barmode="group",
-                title=f"Open vs Closed Tickets - {selected_year}"
-            )
+        fig2 = px.bar(
+            monthly_status,
+            x="Month",
+            y="Count",
+            color="Status Group",
+            barmode="group",
+            title=f"Open vs Closed Tickets - {selected_year}"
+        )
 
-            st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, use_container_width=True)
 
-    
     # Open Tickets Pending Days Report
     
     st.subheader("🟢Currently Open Tickets")
