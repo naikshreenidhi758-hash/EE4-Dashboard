@@ -138,29 +138,29 @@ required_df = filtered_df[required_columns]
 
 st.dataframe(required_df)
 
-    # Create 2 Columns
-    left_col, right_col = st.columns(2)
+# Create 2 Columns
+left_col, right_col = st.columns(2)
 
-    # LEFT SIDE - Pie Chart
-    with left_col:
+# LEFT SIDE - Pie Chart
+with left_col:
 
-        st.subheader("📈Tickets by Case State")
+    st.subheader("📈Tickets by Case State")
 
-        status_chart = (
-            filtered_df["case state"]
-            .value_counts()
-            .reset_index()
-        )
+    status_chart = (
+        filtered_df["case state"]
+        .value_counts()
+        .reset_index()
+    )
 
-        status_chart.columns = ["Case State", "Count"]
+    status_chart.columns = ["Case State", "Count"]
 
-        fig1 = px.pie(
-            status_chart,
-            names="Case State",
-            values="Count",
-            hole=0.5,
-            title="Case State Distribution"
-        )
+    fig1 = px.pie(
+        status_chart,
+        names="Case State",
+        values="Count",
+        hole=0.5,
+        title="Case State Distribution"
+    )
 
         fig1.update_traces(textinfo="value")
 
