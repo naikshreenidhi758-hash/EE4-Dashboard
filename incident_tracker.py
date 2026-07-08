@@ -162,20 +162,20 @@ with left_col:
         title="Case State Distribution"
     )
 
-        fig1.update_traces(textinfo="value")
+    fig1.update_traces(textinfo="value")
 
-        st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, use_container_width=True)
 
-    # RIGHT SIDE - Year Wise Chart
-    with right_col:
+# RIGHT SIDE - Year Wise Chart
+with right_col:
 
-        st.subheader("📅Tickets Status by Year")
+    st.subheader("📅Tickets Status by Year")
 
-        # Convert register time to datetime
-        filtered_df["register time"] = pd.to_datetime(
-            filtered_df["register time"],
-            errors="coerce"
-        )
+    # Convert register time to datetime
+    filtered_df["register time"] = pd.to_datetime(
+        filtered_df["register time"],
+        errors="coerce"
+    )
 
         # Available years
         years = sorted(
