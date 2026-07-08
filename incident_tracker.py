@@ -256,31 +256,31 @@ open_tickets_df = filtered_df[
     ])
 ].copy()
 
-    open_tickets_df["register time"] = pd.to_datetime(
-        open_tickets_df["register time"],
-        errors="coerce"
-    )
+open_tickets_df["register time"] = pd.to_datetime(
+    open_tickets_df["register time"],
+    errors="coerce"
+)
 
-    open_tickets_df["Pending from(in Days)"] = (
-        pd.Timestamp.now().normalize()
-        - open_tickets_df["register time"]
-    ).dt.days
+open_tickets_df["Pending from(in Days)"] = (
+    pd.Timestamp.now().normalize()
+    - open_tickets_df["register time"]
+).dt.days
 
-    open_tickets_display = open_tickets_df[
-        [
-            "number",
-            "short description",
-            "case state",
-            "site",
-            "register time",
-            "Pending from(in Days)"
+open_tickets_display = open_tickets_df[
+    [
+        "number",
+        "short description",
+        "case state",
+        "site",
+        "register time",
+        "Pending from(in Days)"
         ]
-    ].sort_values(
-        by="Pending from(in Days)",
-        ascending=False
-    )
+].sort_values(
+    by="Pending from(in Days)",
+    ascending=False
+)
 
-    st.dataframe(
-        open_tickets_display,
-        use_container_width=True
-    )
+st.dataframe(
+    open_tickets_display,
+    use_container_width=True
+)
