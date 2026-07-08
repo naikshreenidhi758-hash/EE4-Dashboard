@@ -134,9 +134,7 @@ col3.metric("Closed Tickets", closed_tickets)
 
 # Ticket Data
 st.subheader("Ticket Data across INDIA 🗺️")
-    
-
-    required_df = filtered_df[required_columns]
+required_df = filtered_df[required_columns]
 
 st.dataframe(required_df)
 
