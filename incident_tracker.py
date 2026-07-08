@@ -133,10 +133,10 @@ with left_col:
     st.subheader("📈Tickets by Case State")
 
     status_chart = (
-        filtered_df["case state"]
-        .value_counts()
-        .reset_index()
-    )
+     filtered_df["case state"]
+     .value_counts()
+     .reset_index()
+ )
 
     status_chart.columns = ["Case State", "Count"]
 
