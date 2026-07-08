@@ -125,10 +125,10 @@ with st.expander(f"View  {total_tickets} total_tickets"):
         .ne("closed")
     ]
 
-    st.dataframe(
-        total_tickets_list,
-        use_container_width=True
-    )
+st.dataframe(
+    total_tickets_list,
+    use_container_width=True
+)
     
     col3.metric("Closed Tickets", closed_tickets)
 
