@@ -117,12 +117,12 @@ if uploaded_file:
     col2.metric("Open Tickets", open_tickets)
     col3.metric("Closed Tickets", closed_tickets)
 
-# Ticket Data
-st.subheader("Ticket Data across INDIA 🗺️")
+ # Ticket Data
+ st.subheader("Ticket Data across INDIA 🗺️")
 
-required_df = filtered_df[required_columns]
+ required_df = filtered_df[required_columns]
 
-st.dataframe(required_df)
+ st.dataframe(required_df)
 
 # Create 2 Columns
 left_col, right_col = st.columns(2)
