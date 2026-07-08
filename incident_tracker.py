@@ -177,23 +177,23 @@ with right_col:
         errors="coerce"
     )
 
-        # Available years
-        years = sorted(
-            filtered_df["register time"]
-            .dt.year
-            .dropna()
-            .unique(),
-            reverse=True
-        )
+    # Available years
+    years = sorted(
+        filtered_df["register time"]
+        .dt.year
+        .dropna()
+        .unique(),
+        reverse=True
+    )
 
-        current_year = pd.Timestamp.now().year
+    current_year = pd.Timestamp.now().year
 
-        if len(years) > 0:
+    if len(years) > 0:
 
-            selected_year = st.selectbox(
-                "Select Year",
-                years,
-                index=years.index(current_year)
+        selected_year = st.selectbox(
+            "Select Year",
+             years,
+            index=years.index(current_year)
                 if current_year in years else 0
             )
 
