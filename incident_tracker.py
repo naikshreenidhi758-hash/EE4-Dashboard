@@ -239,22 +239,22 @@ with right_col:
 
     st.plotly_chart(fig2, use_container_width=True)
 
-    # Open Tickets Pending Days Report
+# Open Tickets Pending Days Report
     
-    st.subheader("🟢Currently Open Tickets")
+st.subheader("🟢Currently Open Tickets")
 
-    open_tickets_df = filtered_df[
-        filtered_df["case state"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .isin([
-            "open",
-            "register",
-            "effect confirmation",
-            "in processing"
-        ])
-    ].copy()
+open_tickets_df = filtered_df[
+    filtered_df["case state"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+    .isin([
+        "open",
+        "register",
+        "effect confirmation",
+        "in processing"
+    ])
+].copy()
 
     open_tickets_df["register time"] = pd.to_datetime(
         open_tickets_df["register time"],
