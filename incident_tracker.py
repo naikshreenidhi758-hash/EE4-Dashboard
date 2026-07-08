@@ -115,8 +115,7 @@ if uploaded_file:
 
     col1.metric("Total Tickets", total_tickets)
     col2.metric("Open Tickets", open_tickets)
-    
-col3.metric("Closed Tickets", closed_tickets)
+    col3.metric("Closed Tickets", closed_tickets)
 
 # Ticket Data
 st.subheader("Ticket Data across INDIA 🗺️")
