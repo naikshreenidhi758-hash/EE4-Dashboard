@@ -116,20 +116,6 @@ if uploaded_file:
     col1.metric("Total Tickets", total_tickets)
     col2.metric("Open Tickets", open_tickets)
     
-with st.expander(f"View  {total_tickets} total_tickets"):
-   total_tickets_list = df[
-        df["status"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .ne("closed")
-    ]
-
-st.dataframe(
-    total_tickets_list,
-    use_container_width=True
-)
-    
 col3.metric("Closed Tickets", closed_tickets)
 
 # Ticket Data
