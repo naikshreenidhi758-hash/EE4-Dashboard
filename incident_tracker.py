@@ -148,7 +148,7 @@ with left_col:
         title="Case State Distribution"
     )
 
-    fig1.update_traces(textinfo="value")
+    fig1.update_traces(textinfo="percent+label")
 
     st.plotly_chart(fig1, use_container_width=True)
 
