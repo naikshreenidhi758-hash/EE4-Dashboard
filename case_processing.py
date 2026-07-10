@@ -199,8 +199,22 @@ with st.expander(f"View All {pending_cases} Pending Cases"):
         .ne("closed")
     ]
 
+    display_columns=[
+        "project code",
+        "project name",
+        "case number",
+        "filled_date",
+        "first engineer(india team)",
+        "case description",
+        "requester",
+        "priority",
+        "start date","problem classification",
+        "status"
+    ]
+            
+
     st.dataframe(
-        pending_case_list,
+        pending_case_list[display_columns],
         use_container_width=True
     )
 
