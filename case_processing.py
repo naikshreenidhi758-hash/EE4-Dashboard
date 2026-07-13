@@ -199,33 +199,11 @@ with st.expander(f"View All {pending_cases} Pending Cases"):
         .ne("closed")
     ]
 
-    display_columns = [
-    "project code",
-    "project name",
-    "case number",
-    "filled_date",
-    "first engineer(india team)",
-    "case description",
-    "requester",
-    "priority",
-    "start date",
-    "problem classification",
-    "status"
-]
+    st.dataframe(
+        pending_case_list,
+        use_container_width=True
+    )
 
-available_columns = [
-    col for col in display_columns
-    if col in pending_case_list.columns
-]
-
-st.dataframe(
-    pending_case_list[available_columns],
-    width="stretch"
-)
-st.plotly_chart(
-    fig_status,
-    width="stretch"
-)
 with c3:
     st.metric("✅ Closed Cases", closed_cases)
     
@@ -251,7 +229,7 @@ fig_status.update_traces(
 
 st.plotly_chart(
     fig_status,
-    width="stretch"
+    use_container_width=True
 )
 
 # ENGINEER VS STATUS
@@ -319,7 +297,7 @@ col1, col2 = st.columns(2)
 with col1:
     st.plotly_chart(
         fig_bar,
-        width="stretch"
+        use_container_width=True
     )
 
 # PENDING AGING ANALYSIS (Overall Data)
@@ -393,5 +371,5 @@ fig_pending.update_traces(
 
 st.plotly_chart(
     fig_pending,
-    width="stretch"
+    use_container_width=True
 )
