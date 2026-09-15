@@ -124,163 +124,163 @@ if uploaded_file:
 
     st.dataframe(required_df)
 
-# Create 2 Columns
-left_col, right_col = st.columns(2)
+    # Create 2 Columns
+    left_col, right_col = st.columns(2)
 
-# LEFT SIDE - Pie Chart
-with left_col:
+    # LEFT SIDE - Pie Chart
+    with left_col:
 
-    st.subheader("📈Tickets by Case State")
+        st.subheader("📈Tickets by Case State")
 
-    status_chart = (
-         filtered_df["case state"]
-         .value_counts()
-         .reset_index()
-    )
+        status_chart = (
+             filtered_df["case state"]
+             .value_counts()
+             .reset_index()
+        )
 
-    status_chart.columns = ["Case State", "Count"]
+        status_chart.columns = ["Case State", "Count"]
 
-    fig1 = px.pie(
-        status_chart,
-        names="Case State",
-        values="Count",
-        hole=0.5,
-        title="Case State Distribution"
-    )
+        fig1 = px.pie(
+            status_chart,
+            names="Case State",
+            values="Count",
+            hole=0.5,
+            title="Case State Distribution"
+        )
 
-    fig1.update_traces(textinfo="value")
+        fig1.update_traces(textinfo="value")
 
-    st.plotly_chart(fig1, use_container_width=True)
+        st.plotly_chart(fig1, use_container_width=True)
 
-# RIGHT SIDE - Year Wise Chart
-with right_col:
+    # RIGHT SIDE - Year Wise Chart
+    with right_col:
 
-     st.subheader("📅Tickets Status by Year")
+        st.subheader("📅Tickets Status by Year")
 
-    # Convert register time to datetime
-    filtered_df["register time"] = pd.to_datetime(
-        filtered_df["register time"],
+        # Convert register time to datetime
+        filtered_df["register time"] = pd.to_datetime(
+            filtered_df["register time"],
+            errors="coerce"
+        )
+
+        # Available years
+        years = sorted(
+            filtered_df["register time"]
+            .dt.year
+            .dropna()
+            .unique(),
+            reverse=True
+        )
+
+        current_year = pd.Timestamp.now().year
+
+        if len(years) > 0:
+
+            selected_year = st.selectbox(
+                "Select Year",
+                years,
+                index=years.index(current_year)
+                    if current_year in years else 0
+            )
+
+            # Filter selected year
+            year_df = filtered_df[
+                filtered_df["register time"].dt.year == selected_year
+            ].copy()
+
+            # Month Name
+            year_df["Month"] = year_df["register time"].dt.strftime("%b")
+
+            # Open / Closed Group
+            year_df["Status Group"] = (
+                year_df["case state"]
+                .astype(str)
+                .str.strip()
+                .str.lower()
+                .apply(
+                    lambda x: "Closed"
+                    if x == "closed"
+                    else "Open"
+                )
+            )
+
+            # Monthly Summary
+            monthly_status = (
+                year_df.groupby(
+                    ["Month", "Status Group"]
+                )
+                .size()
+                .reset_index(name="Count")
+            )
+
+            # Month Order
+            month_order = [
+                "Jan", "Feb", "Mar", "Apr",
+                "May", "Jun", "Jul", "Aug",
+                "Sep", "Oct", "Nov", "Dec"
+            ]
+
+            monthly_status["Month"] = pd.Categorical(
+                monthly_status["Month"],
+                categories=month_order,
+                ordered=True
+            )
+
+            monthly_status = monthly_status.sort_values("Month")
+
+            fig2 = px.bar(
+                monthly_status,
+                x="Month",
+                y="Count",
+                color="Status Group",
+                barmode="group",
+                title=f"Open vs Closed Tickets - {selected_year}"
+            )
+
+            st.plotly_chart(fig2, use_container_width=True)
+
+    # Open Tickets Pending Days Report
+    
+    st.subheader("🟢Currently Open Tickets")
+
+    open_tickets_df = filtered_df[
+        filtered_df["case state"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .isin([
+            "open",
+            "register",
+            "effect confirmation",
+            "in processing"
+        ])
+    ].copy()
+
+    open_tickets_df["register time"] = pd.to_datetime(
+        open_tickets_df["register time"],
         errors="coerce"
     )
 
-    # Available years
-    years = sorted(
-        filtered_df["register time"]
-        .dt.year
-        .dropna()
-        .unique(),
-        reverse=True
+    open_tickets_df["Pending from(in Days)"] = (
+        pd.Timestamp.now().normalize()
+        - open_tickets_df["register time"]
+    ).dt.days
+
+    open_tickets_display = open_tickets_df[
+        [
+            "number",
+            "short description",
+            "case state",
+            "site",
+            "register time",
+            "Pending from(in Days)"
+        ]
+    ].sort_values(
+        by="Pending from(in Days)",
+        ascending=False
     )
 
-    current_year = pd.Timestamp.now().year
-
-    if len(years) > 0:
-
-        selected_year = st.selectbox(
-            "Select Year",
-             years,
-            index=years.index(current_year)
-                if current_year in years else 0
-            )
-
-        # Filter selected year
-        year_df = filtered_df[
-            filtered_df["register time"].dt.year == selected_year
-        ].copy()
-
-        # Month Name
-        year_df["Month"] = year_df["register time"].dt.strftime("%b")
-
-        # Open / Closed Group
-        year_df["Status Group"] = (
-            year_df["case state"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .apply(
-                lambda x: "Closed"
-                if x == "closed"
-                else "Open"
-            )
-        )
-
-        # Monthly Summary
-        monthly_status = (
-            year_df.groupby(
-                ["Month", "Status Group"]
-            )
-            .size()
-            .reset_index(name="Count")
-        )
-
-        # Month Order
-        month_order = [
-            "Jan", "Feb", "Mar", "Apr",
-            "May", "Jun", "Jul", "Aug",
-            "Sep", "Oct", "Nov", "Dec"
-        ]
-
-        monthly_status["Month"] = pd.Categorical(
-            monthly_status["Month"],
-            categories=month_order,
-            ordered=True
-        )
-
-        monthly_status = monthly_status.sort_values("Month")
-
-        fig2 = px.bar(
-            monthly_status,
-            x="Month",
-            y="Count",
-            color="Status Group",
-            barmode="group",
-            title=f"Open vs Closed Tickets - {selected_year}"
-        )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
-# Open Tickets Pending Days Report
-    
-st.subheader("🟢Currently Open Tickets")
-
-open_tickets_df = filtered_df[
-    filtered_df["case state"]
-    .astype(str)
-    .str.strip()
-    .str.lower()
-    .isin([
-        "open",
-        "register",
-        "effect confirmation",
-        "in processing"
-    ])
-].copy()
-
-open_tickets_df["register time"] = pd.to_datetime(
-    open_tickets_df["register time"],
-    errors="coerce"
-)
-
-open_tickets_df["Pending from(in Days)"] = (
-    pd.Timestamp.now().normalize()
-    - open_tickets_df["register time"]
-).dt.days
-
-open_tickets_display = open_tickets_df[
-    [
-        "number",
-        "short description",
-        "case state",
-        "site",
-        "register time",
-        "Pending from(in Days)"
-        ]
-].sort_values(
-    by="Pending from(in Days)",
-    ascending=False
-)
-
-st.dataframe(
-    open_tickets_display,
-    use_container_width=True
-)
+    st.dataframe(
+        open_tickets_display,
+        use_container_width=True
+    )
