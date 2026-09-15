@@ -124,19 +124,19 @@ if uploaded_file:
 
     st.dataframe(required_df)
 
- # Create 2 Columns
- left_col, right_col = st.columns(2)
+# Create 2 Columns
+left_col, right_col = st.columns(2)
 
- # LEFT SIDE - Pie Chart
- with left_col:
+# LEFT SIDE - Pie Chart
+with left_col:
 
-     st.subheader("📈Tickets by Case State")
+    st.subheader("📈Tickets by Case State")
 
-     status_chart = (
+    status_chart = (
          filtered_df["case state"]
          .value_counts()
          .reset_index()
-     )
+    )
 
     status_chart.columns = ["Case State", "Count"]
 
@@ -152,8 +152,8 @@ if uploaded_file:
 
     st.plotly_chart(fig1, use_container_width=True)
 
-  # RIGHT SIDE - Year Wise Chart
-  with right_col:
+# RIGHT SIDE - Year Wise Chart
+with right_col:
 
      st.subheader("📅Tickets Status by Year")
 
