@@ -3,6 +3,9 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
+#add image
+st.image("envision.png")
+
 # PAGE CONFIG
 st.set_page_config(
     page_title="Case Processing Dashboard",
