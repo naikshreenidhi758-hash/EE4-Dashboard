@@ -29,21 +29,21 @@ df.columns = df.columns.str.strip().str.lower()
 # CLEAN DATA
 df["first engineer(india team)"] = (
     df["first engineer(india team)"]
-    .fillna("Unassigned")
+    .fillna("Ticket Status Unassigned")
     .astype(str)
     .str.strip()
 )
 
 df["status"] = (
     df["status"]
-    .fillna("Unassigned")
+    .fillna("Ticket Status Unassigned")
     .astype(str)
     .str.strip()
 )
 
 df["priority"] = (
     df["priority"]
-    .fillna("Unassigned")
+    .fillna("Ticket Status Unassigned")
     .astype(str)
     .str.strip()
     .str.title()
