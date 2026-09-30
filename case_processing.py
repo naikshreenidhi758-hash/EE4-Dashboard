@@ -302,8 +302,8 @@ with col1:
     )
     
 # PENDING AGING ANALYSIS (Overall Data)
-pending_df = filtered_df[
-    (filtered_df["end time"].isna()) &
+pending_df = df[
+    (df["end time"].isna()) &
     (
         filtered_df["status"]
         .astype(str)
