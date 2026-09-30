@@ -238,7 +238,7 @@ st.plotly_chart(
 # ENGINEER VS STATUS
 
 # Start from filtered data
-engineer_df = filtered_df.copy()
+engineer_df =df.copy()
 
 # Clean engineer column
 engineer_df["first engineer(india team)"] = (
