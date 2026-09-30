@@ -172,11 +172,11 @@ if selected_week != "All Weeks":
     ]
 
 # KPI METRICS
-total_cases = len(df)
+total_cases = len(filtered_df)
 
 closed_cases = len(
-    df[
-        df["status"]
+    filtered_df[
+        filtered_df["status"]
         .astype(str)
         .str.strip()
         .str.lower()
@@ -194,7 +194,7 @@ with c2:
     st.metric("⏳ Pending Cases", pending_cases)
 
 with st.expander(f"View All {pending_cases} Pending Cases"):
-    pending_case_list = df[
+    pending_case_list = filtered_df[
         df["status"]
         .astype(str)
         .str.strip()
@@ -212,7 +212,7 @@ with c3:
     
 # STATUS CHART
 status_summary = (
-    df.groupby("status")
+    filtered_df.groupby("status")
     .size()
     .reset_index(name="Count")
 )
@@ -302,10 +302,10 @@ with col1:
     )
     
 # PENDING AGING ANALYSIS (Overall Data)
-pending_df = df[
-    (df["end time"].isna()) &
+pending_df = filtered_df[
+    (filtered_df["end time"].isna()) &
     (
-        df["status"]
+        filtered_df["status"]
         .astype(str)
         .str.strip()
         .str.lower() != "closed"
