@@ -172,11 +172,11 @@ if selected_week != "All Weeks":
     ]
 
 # KPI METRICS
-total_cases = len(filtered_df)
+total_cases = len(df)
 
 closed_cases = len(
-    filtered_df[
-        filtered_df["status"]
+    df[
+        df["status"]
         .astype(str)
         .str.strip()
         .str.lower()
@@ -194,7 +194,7 @@ with c2:
     st.metric("⏳ Pending Cases", pending_cases)
 
 with st.expander(f"View All {pending_cases} Pending Cases"):
-    pending_case_list = filtered_df[
+    pending_case_list = df[
         df["status"]
         .astype(str)
         .str.strip()
@@ -212,7 +212,7 @@ with c3:
     
 # STATUS CHART
 status_summary = (
-    filtered_df.groupby("status")
+    df.groupby("status")
     .size()
     .reset_index(name="Count")
 )
@@ -238,7 +238,7 @@ st.plotly_chart(
 # ENGINEER VS STATUS
 
 # Start from filtered data
-engineer_df =df.copy()
+engineer_df = filtered_df.copy()
 
 # Clean engineer column
 engineer_df["first engineer(india team)"] = (
