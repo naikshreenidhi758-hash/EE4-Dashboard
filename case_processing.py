@@ -236,26 +236,33 @@ st.plotly_chart(
 )
 
 # ENGINEER VS STATUS
+
+# Start from filtered data
+engineer_df = filtered_df.copy()
+
 # Clean engineer column
-filtered_df["first engineer(india team)"] = (
-    filtered_df["first engineer(india team)"]
-    .fillna("")
+engineer_df["first engineer(india team)"] = (
+    engineer_df["first engineer(india team)"]
+    .fillna("Unassigned")
     .astype(str)
     .str.strip()
+    .replace(["", "nan", "None"], "Unassigned")
 )
 
-# Replace empty strings and 'nan' strings
-filtered_df["first engineer(india team)"] = filtered_df[
-    "first engineer(india team)"
-].replace(["", "nan", "None"], "Unassigned")
+# IMPORTANT:
+# Use the SAME status values as Overall Ticket Status
+engineer_df["status"] = (
+    engineer_df["status"]
+    .fillna("Ticket Status Unassigned")
+    .astype(str)
+    .str.strip()
+    .replace(["", "nan", "None"], "Ticket Status Unassigned")
+)
 
-filtered_df.loc[
-    filtered_df["first engineer(india team)"] == "",
-    "first engineer(india team)"
-] = "Unassigned"
-
+# Create engineer + status summary
 eng_status = (
-    filtered_df.groupby(
+    engineer_df
+    .groupby(
         ["first engineer(india team)", "status"],
         dropna=False
     )
@@ -272,14 +279,13 @@ fig_bar = px.bar(
     barmode="stack",
     title="Cases by Engineer and Status",
     color_discrete_map={
-    "Closed":"blue",
-    "Ongoing":"green",
-    "Pending on Manufactures":"orange",
-    "Pending on Universe":"yellow",
-    "Not Started":"pink", 
-     "Blank":"black",   
-    
-}
+        "Closed": "blue",
+        "Ongoing": "green",
+        "Pending on Manufactures": "orange",
+        "Pending on Universe": "yellow",
+        "Not Started": "pink",
+        "Ticket Status Unassigned": "black"
+    }
 )
 
 fig_bar.update_traces(
@@ -294,7 +300,7 @@ with col1:
         fig_bar,
         use_container_width=True
     )
-
+    
 # PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
     (df["end time"].isna()) &
