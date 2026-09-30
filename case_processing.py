@@ -305,7 +305,7 @@ with col1:
 pending_df = df[
     (df["end time"].isna()) &
     (
-        filtered_df["status"]
+        df["status"]
         .astype(str)
         .str.strip()
         .str.lower() != "closed"
