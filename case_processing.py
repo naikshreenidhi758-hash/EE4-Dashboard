@@ -87,7 +87,7 @@ df["week_no"] = (
 # WEEK NAME
 df["week_name"] = "Week " + df["week_no"].astype(str)
 
-st.title("Cases by Engineering and Status")
+st.sub title("Cases by Engineering and Status")
 
 # YEAR / MONTH / WEEK FILTER
 
