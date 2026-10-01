@@ -87,8 +87,6 @@ df["week_no"] = (
 # WEEK NAME
 df["week_name"] = "Week " + df["week_no"].astype(str)
 
-st.sub title("Cases by Engineering and Status")
-
 # YEAR / MONTH / WEEK FILTER
 
 df["year"] = df["effective_date"].dt.year
