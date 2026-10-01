@@ -29,8 +29,7 @@ df.columns = df.columns.str.strip().str.lower()
 # CLEAN DATA
 df["first engineer(india team)"] = (
     df["first engineer(india team)"]
-    .fillna("Ticket Status Unassigned")
-    .astype(str)
+    .astype("string")
     .str.strip()
 )
 
@@ -39,6 +38,10 @@ df["status"] = (
     .fillna("Ticket Status Unassigned")
     .astype(str)
     .str.strip()
+    .replace(
+        ["", "nan", "None"],
+        "Ticket Status Unassigned"
+    )
 )
 
 df["priority"] = (
@@ -236,29 +239,38 @@ st.plotly_chart(
 
 # ENGINEER VS STATUS
 
-# Start from filtered data
 engineer_df = filtered_df.copy()
 
-# Clean engineer column
+# Keep engineer name as engineer
 engineer_df["first engineer(india team)"] = (
     engineer_df["first engineer(india team)"]
-    .fillna("Unassigned")
-    .astype(str)
+    .astype("string")
     .str.strip()
-    .replace(["", "nan", "None"], "Unassigned")
 )
 
-# IMPORTANT:
-# Use the SAME status values as Overall Ticket Status
+# Keep Ticket Status Unassigned ONLY in STATUS
 engineer_df["status"] = (
     engineer_df["status"]
     .fillna("Ticket Status Unassigned")
     .astype(str)
     .str.strip()
-    .replace(["", "nan", "None"], "Ticket Status Unassigned")
+    .replace(
+        ["", "nan", "None"],
+        "Ticket Status Unassigned"
+    )
 )
 
-# Create engineer + status summary
+# Remove rows that genuinely have no engineer
+# This prevents a separate "Unassigned" engineer bar
+engineer_df = engineer_df[
+    engineer_df["first engineer(india team)"].notna() &
+    (engineer_df["first engineer(india team)"] != "") &
+    (~engineer_df["first engineer(india team)"].isin(
+        ["nan", "None", "Ticket Status Unassigned"]
+    ))
+]
+
+# Group by ENGINEER + STATUS
 eng_status = (
     engineer_df
     .groupby(
@@ -269,6 +281,7 @@ eng_status = (
     .reset_index(name="count")
 )
 
+# STACKED BAR
 fig_bar = px.bar(
     eng_status,
     x="first engineer(india team)",
@@ -280,8 +293,9 @@ fig_bar = px.bar(
     color_discrete_map={
         "Closed": "blue",
         "Ongoing": "green",
-        "Pending on Manufactures": "orange",
-        "Pending on Universe": "yellow",
+        "Pending on Infra": "orange",
+        "Pending on Manufactures": "yellow",
+        "Pending on Universe": "orange",
         "Not Started": "pink",
         "Ticket Status Unassigned": "black"
     }
@@ -291,7 +305,6 @@ fig_bar.update_traces(
     textposition="inside"
 )
 
-# SIDE BY SIDE CHARTS
 col1, col2 = st.columns(2)
 
 with col1:
