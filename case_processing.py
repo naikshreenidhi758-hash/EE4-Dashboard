@@ -243,16 +243,17 @@ if selected_week != "All Weeks":
 
 
 # ============================================================
-# KPI METRICS
-# These KPIs respond to Year / Month / Week filters
+# KPI METRICS - ALL TICKETS
+# These KPIs ALWAYS show the complete dataset
+# Year / Month / Week filters do NOT affect them
 # ============================================================
 
-total_cases = len(filtered_df)
+total_cases = len(df)
 
 
 closed_cases = len(
-    filtered_df[
-        filtered_df["status"]
+    df[
+        df["status"]
         .astype(str)
         .str.strip()
         .str.lower()
@@ -263,6 +264,13 @@ closed_cases = len(
 
 pending_cases = (
     total_cases - closed_cases
+)
+
+
+closure_rate = (
+    (closed_cases / total_cases) * 100
+    if total_cases > 0
+    else 0
 )
 
 
@@ -316,7 +324,7 @@ with st.expander(
     f"View All {pending_cases} Pending Cases"
 ):
 
-    pending_case_list = filtered_df[
+    pending_case_list = df[
         filtered_df["status"]
         .astype(str)
         .str.strip()
