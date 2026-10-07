@@ -211,7 +211,34 @@ with st.expander(f"View All {pending_cases} Pending Cases"):
 
 with c3:
     st.metric("✅ Closed Cases", closed_cases)
-    
+
+# YEARLY STATUS BREAKDOWN
+
+year_status_summary = (
+    engineer_year_df
+    .groupby("status")
+    .size()
+    .reset_index(name="count")
+)
+
+fig_year_status = px.bar(
+    year_status_summary,
+    x="status",
+    y="count",
+    color="status",
+    text="count",
+    title=f"{selected_engineer} - {current_year} Status Breakdown"
+)
+
+fig_year_status.update_traces(
+    textposition="outside"
+)
+
+st.plotly_chart(
+    fig_year_status,
+    use_container_width=True
+)
+
 # STATUS CHART
 status_summary = (
     df.groupby("status")
@@ -313,6 +340,152 @@ with col1:
         use_container_width=True
     )
     
+# ============================================================
+# ENGINEER YEARLY PERFORMANCE - CURRENT YEAR
+# ============================================================
+
+st.subheader("👨‍💻 Engineer Yearly Performance")
+
+# Current calendar year
+current_year = datetime.now().year
+
+# All cases from January 1 until today
+current_year_df = df[
+    (df["year"] == current_year) &
+    (df["effective_date"] <= pd.Timestamp.today())
+].copy()
+
+# Engineer list
+engineer_list = sorted(
+    current_year_df[
+        current_year_df["first engineer(india team)"].notna()
+    ]["first engineer(india team)"]
+    .astype(str)
+    .str.strip()
+    .loc[lambda x: ~x.isin(["", "nan", "None", "Ticket Status Unassigned"])]
+    .unique()
+)
+
+# Engineer selection
+selected_engineer = st.selectbox(
+    "Select Engineer",
+    engineer_list,
+    key="yearly_engineer"
+)
+
+# Selected engineer data
+engineer_year_df = current_year_df[
+    current_year_df["first engineer(india team)"]
+    .astype(str)
+    .str.strip()
+    == selected_engineer
+].copy()
+
+# Status counts
+year_total = len(engineer_year_df)
+
+year_closed = len(
+    engineer_year_df[
+        engineer_year_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        == "closed"
+    ]
+)
+
+year_ongoing = len(
+    engineer_year_df[
+        engineer_year_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        == "ongoing"
+    ]
+)
+
+year_infra = len(
+    engineer_year_df[
+        engineer_year_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        == "pending on infra"
+    ]
+)
+
+year_manufactures = len(
+    engineer_year_df[
+        engineer_year_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        == "pending on manufactures"
+    ]
+)
+
+year_unassigned = len(
+    engineer_year_df[
+        engineer_year_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        == "ticket status unassigned"
+    ]
+)
+
+# Closure percentage
+year_closure_rate = (
+    (year_closed / year_total) * 100
+    if year_total > 0
+    else 0
+)
+
+# KPI cards
+k1, k2, k3, k4, k5, k6, k7 = st.columns(7)
+
+with k1:
+    st.metric(
+        "📋 Total Cases",
+        year_total
+    )
+
+with k2:
+    st.metric(
+        "✅ Closed",
+        year_closed
+    )
+
+with k3:
+    st.metric(
+        "🔄 Ongoing",
+        year_ongoing
+    )
+
+with k4:
+    st.metric(
+        "🏭 Pending Infra",
+        year_infra
+    )
+
+with k5:
+    st.metric(
+        "🏭 Pending Mfg",
+        year_manufactures
+    )
+
+with k6:
+    st.metric(
+        "⚠️ Unassigned",
+        year_unassigned
+    )
+
+with k7:
+    st.metric(
+        "📈 Closure %",
+        f"{year_closure_rate:.1f}%"
+    )
+
 # PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
     (df["end time"].isna()) &
