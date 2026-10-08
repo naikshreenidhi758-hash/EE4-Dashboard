@@ -347,7 +347,7 @@ st.subheader("📊 Overall Ticket Status")
 
 
 status_summary = (
-    filtered_df
+    df
     .groupby("status")
     .size()
     .reset_index(name="Count")
