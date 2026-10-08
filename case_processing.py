@@ -339,8 +339,7 @@ with st.expander(
 
 
 # ============================================================
-# OVERALL TICKET STATUS
-# Responds to Year / Month / Week filters
+# OVERALL TICKET STATUS - ALL TICKETS
 # ============================================================
 
 st.subheader("📊 Overall Ticket Status")
@@ -354,33 +353,32 @@ status_summary = (
 )
 
 
-fig_status = px.bar(
+fig_status = px.pie(
     status_summary,
-    x="status",
-    y="Count",
+    names="status",
+    values="Count",
     color="status",
-    text="Count",
-    title="Overall Ticket Status"
+    hole=0.45,
+    title="Overall Ticket Status - All Tickets"
 )
 
 
 fig_status.update_traces(
+    textinfo="label+value+percent",
     textposition="outside"
 )
 
 
 fig_status.update_layout(
-    xaxis_title="Status",
-    yaxis_title="Number of Cases",
-    showlegend=False
+    showlegend=True,
+    legend_title="Status"
 )
 
 
-st.pie_chart(
+st.plotly_chart(
     fig_status,
     use_container_width=True
 )
-
 
 # ============================================================
 # ENGINEER VS STATUS
