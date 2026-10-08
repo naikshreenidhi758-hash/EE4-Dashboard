@@ -712,53 +712,48 @@ if engineer_list:
         )
 
 
-    # ========================================================
-    # YEARLY STATUS BREAKDOWN
-    # ========================================================
+# ========================================================
+# YEARLY STATUS BREAKDOWN - HORIZONTAL BAR
+# ========================================================
 
-    year_status_summary = (
-        engineer_year_df
-        .groupby("status")
-        .size()
-        .reset_index(name="count")
+year_status_summary = (
+    engineer_year_df
+    .groupby("status")
+    .size()
+    .reset_index(name="count")
+)
+
+
+fig_year_status = px.bar(
+    year_status_summary,
+    x="count",
+    y="status",
+    color="status",
+    text="count",
+    orientation="h",
+    title=(
+        f"{selected_engineer} - "
+        f"{current_year} Status Breakdown"
     )
+)
 
 
-    fig_year_status = px.bar(
-        year_status_summary,
-        x="status",
-        y="count",
-        color="status",
-        text="count",
-        title=(
-            f"{selected_engineer} - "
-            f"{current_year} Status Breakdown"
-        )
-    )
+fig_year_status.update_traces(
+    textposition="outside"
+)
 
 
-    fig_year_status.update_traces(
-        textposition="outside"
-    )
+fig_year_status.update_layout(
+    xaxis_title="Number of Cases",
+    yaxis_title="Status",
+    showlegend=False
+)
 
 
-    fig_year_status.update_layout(
-        xaxis_title="Status",
-        yaxis_title="Number of Cases",
-        showlegend=False
-    )
-
-
-    st.plotly_chart(
-        fig_year_status,
-        use_container_width=True
-    )
-
-else:
-
-    st.info(
-        f"No engineer data available for {current_year}."
-    )
+st.plotly_chart(
+    fig_year_status,
+    use_container_width=True
+)
 
 
 # ============================================================
