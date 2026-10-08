@@ -376,7 +376,7 @@ fig_status.update_layout(
 )
 
 
-st.plotly_chart(
+st.pie_chart(
     fig_status,
     use_container_width=True
 )
