@@ -713,7 +713,7 @@ if engineer_list:
 
 
 # ========================================================
-# YEARLY STATUS BREAKDOWN - HORIZONTAL BAR
+# YEARLY STATUS BREAKDOWN - HALF WIDTH
 # ========================================================
 
 year_status_summary = (
@@ -723,7 +723,6 @@ year_status_summary = (
     .reset_index(name="count")
 )
 
-
 fig_year_status = px.bar(
     year_status_summary,
     x="count",
@@ -731,29 +730,28 @@ fig_year_status = px.bar(
     color="status",
     text="count",
     orientation="h",
-    title=(
-        f"{selected_engineer} - "
-        f"{current_year} Status Breakdown"
-    )
+    title=f"{selected_engineer} - {current_year} Status Breakdown"
 )
-
 
 fig_year_status.update_traces(
     textposition="outside"
 )
 
-
 fig_year_status.update_layout(
     xaxis_title="Number of Cases",
     yaxis_title="Status",
-    showlegend=False
+    showlegend=False,
+    height=400
 )
 
+# Display chart in only half of the dashboard
+left_col, right_col = st.columns(2)
 
-st.plotly_chart(
-    fig_year_status,
-    use_container_width=True
-)
+with left_col:
+    st.plotly_chart(
+        fig_year_status,
+        use_container_width=True
+    )
 
 
 # ============================================================
