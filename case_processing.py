@@ -324,18 +324,18 @@ with st.expander(
     f"View All {pending_cases} Pending Cases"
 ):
 
-    pending_case_list = df[
-        filtered_df["status"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .ne("closed")
-    ]
+pending_case_list = df[
+    filtered_df["status"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+    .ne("closed")
+]
 
-    st.dataframe(
-        pending_case_list,
-        use_container_width=True
-    )
+st.dataframe(
+    pending_case_list,
+    use_container_width=True
+)
 
 
 # ============================================================
