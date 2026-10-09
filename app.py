@@ -366,10 +366,10 @@ with right:
             project_row[plan_date_col]
         ) if plan_date_col else pd.NaT
 
-    st.write(
-        start_date.strftime("%d-%m-%Y")
-        if not pd.isna(start_date) else "—"
-    )
+        st.write(
+            start_date.strftime("%d-%m-%Y")
+            if not pd.isna(start_date) else "—"
+        )
 
     # Status for each implementation stage.
     st.markdown("### Implementation checklist")
