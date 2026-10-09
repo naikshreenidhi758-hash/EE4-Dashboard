@@ -12,7 +12,7 @@ st.set_page_config(
 )
 
 st.title("📋 Project Implementation Dashboard")
-st.caption("Upload the latest project implementation Excel or CSV file to view project status.")
+
 
 # -----------------------------
 # Helpers
