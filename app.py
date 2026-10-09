@@ -352,10 +352,10 @@ with right:
         st.markdown("**Server Engineer**")
         st.write(display_value(project_row[server_col]) if server_col else "—")
     with b:
-    st.markdown("**Project Name**")
-    st.write(
-        display_value(project_row[project_name_col])
-        if project_name_col else "—"
+        st.markdown("**Project Name**")
+        st.write(
+            display_value(project_row[project_name_col])
+            if project_name_col else "—"
     )
 
     st.markdown("**Project Manager**")
