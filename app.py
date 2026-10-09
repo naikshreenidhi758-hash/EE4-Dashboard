@@ -124,7 +124,7 @@ project_col = find_column(
 
 manager_col = find_column(
     columns,
-    ["Project Manager", "Project Owner", "Manager"]
+    ["Network Engineer", "Network Engg", "Network Engineer Name"]
 )
 
 server_col = find_column(
@@ -186,7 +186,7 @@ if project_col is None:
     missing_core.append("Project number / Project code")
 
 if manager_col is None:
-    missing_core.append("Project Manager")
+    missing_core.append("Network Engineer")
 
 if missing_core:
     st.error(
@@ -252,7 +252,7 @@ with col_project:
 
 managers = sorted(df[manager_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist())
 with col_manager:
-    selected_manager = st.selectbox("Project Manager", ["All managers"] + managers)
+    selected_manager = st.selectbox("Network Engineer", ["All managers"] + managers)
 
 if server_col is not None:
     engineers = sorted(df[server_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist())
@@ -299,7 +299,7 @@ with left:
     project_list = engineer_projects[list_columns].copy()
     project_list.columns = [
         "Project code" if col == project_col else
-        "Project Manager" if col == manager_col else
+        "Network Engineer" if col == manager_col else
         "Server Engineer" if col == server_col else str(col)
         for col in project_list.columns
     ]
@@ -342,7 +342,7 @@ with right:
     with a:
         st.markdown("**Project code**")
         st.write(display_value(project_row[project_col]))
-        st.markdown("**Project Manager**")
+        st.markdown("**Network Engineer**")
         st.write(display_value(project_row[manager_col]))
         st.markdown("**Server Engineer**")
         st.write(display_value(project_row[server_col]) if server_col else "—")
