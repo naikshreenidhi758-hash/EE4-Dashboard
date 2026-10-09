@@ -1,4 +1,4 @@
-import re
+ import re
 from datetime import date
 
 import pandas as pd
@@ -359,7 +359,7 @@ with right:
     )
 
         st.markdown("**Project Manager**")
-        st.write(display_value(project_row[network_col]))
+        st.write(display_value(project_row[manager_col]))
 
         st.markdown("**Plan start date**")
         start_date = safe_date(
