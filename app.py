@@ -75,85 +75,172 @@ def safe_date(value):
     return pd.to_datetime(value, errors="coerce", dayfirst=True)
 
 
+```python
 # ============================================================
 # LOAD EXCEL
 # ============================================================
 
-df = pd.read_excel(
-    "India project synchronous.xlsx",
-    sheet_name="Project implementation"
+import pandas as pd
+import streamlit as st
+
+try:
+    df = pd.read_excel(
+        "India project synchronous.xlsx",
+        sheet_name="Project implementation"
+    )
+
+except Exception as exc:
+    st.error(f"Could not read the Excel file: {exc}")
+    st.stop()
+
+
+# ============================================================
+# VALIDATE DATA
+# ============================================================
+
+if df.empty:
+    st.warning("The Excel sheet has no data rows.")
+    st.stop()
+
+# Remove whitespace from column names
+df.columns = [str(col).strip() for col in df.columns]
+
+# Remove completely empty rows
+df = df.dropna(how="all").copy()
+
+if df.empty:
+    st.warning("The Excel sheet has no usable data rows.")
+    st.stop()
+
+
+# ============================================================
+# IDENTIFY COLUMNS
+# ============================================================
+
+columns = list(df.columns)
+
+project_col = find_column(
+    columns,
+    ["Project number", "Project code", "Project No", "Project ID", "Project"]
+)
+
+manager_col = find_column(
+    columns,
+    ["Project Manager", "Project Owner", "Manager"]
+)
+
+service_col = find_column(
+    columns,
+    ["Service Engineer", "Service Engg", "Service Engineer Name"]
+)
+
+network_engineer_col = find_column(
+    columns,
+    ["Network Engineer", "Network Engg"]
+)
+
+server_engineer_col = find_column(
+    columns,
+    ["Server Engineer", "Server Engg"]
+)
+
+plan_date_col = find_column(
+    columns,
+    ["Plan start date", "Planned start date", "Start date", "Plan Date"]
+)
+
+priority_col = find_column(
+    columns,
+    ["Priority Wise", "Priority", "Project Status", "Overall Status"]
 )
 
 
-try:
-    if uploaded_file.name.lower().endswith(".csv"):
-        df = pd.read_csv(uploaded_file)
-    else:
-        df = pd.read_excel(uploaded_file)
-except Exception as exc:
-    st.error(f"Could not read this file: {exc}")
-    st.stop()
+# ============================================================
+# IMPLEMENTATION STATUS COLUMNS
+# ============================================================
 
-if df.empty:
-    st.warning("The uploaded file has no data rows.")
-    st.stop()
-
-# Trim whitespace from headers and remove completely empty rows.
-df.columns = [str(col).strip() for col in df.columns]
-df = df.dropna(how="all").copy()
-if df.empty:
-    st.warning("The uploaded file has no usable data rows.")
-    st.stop()
-
-# Find columns using common header variants. Users can adjust these mappings.
-columns = list(df.columns)
-project_col = find_column(columns, ["Project number", "Project code", "Project No", "Project ID", "Project"])
-manager_col = find_column(columns, ["Project Manager", "Project Owner", "Manager"])
-service_col = find_column(columns, ["Service Engineer", "Service Engg", "Service Engineer Name"])
-network_engineer_col = find_column(columns, ["Network Engineer", "Network Engg"])
-server_engineer_col = find_column(columns, ["Server Engineer", "Server Engg"])
-plan_date_col = find_column(columns, ["Plan start date", "Planned start date", "Start date", "Plan Date"])
-priority_col = find_column(columns, ["Priority Wise", "Priority", "Project Status", "Overall Status"])
-
-# Implementation steps in the screenshot and common spelling variants.
 stage_candidates = {
     "BOM": ["BOM"],
-    "Jump server Installation": ["Jump server Installation", "Jump Server Install", "Jump Server Installation"],
+    "Jump server Installation": [
+        "Jump server Installation",
+        "Jump Server Install",
+        "Jump Server Installation"
+    ],
     "Radius Server": ["Radius Server", "RADIUS Server"],
     "Wiring": ["Wiring"],
     "Network": ["Network"],
     "Server": ["Server"],
 }
-stage_columns = {label: find_column(columns, candidates) for label, candidates in stage_candidates.items()}
 
-# If Service Engineer is not a literal column, allow the user to select the appropriate engineer field.
-if service_col is None:
-    st.warning("I couldn't find a column named 'Service Engineer'. Choose the column that should drive the Service Engineer filter.")
-    engineer_options = [None] + columns
-    chosen = st.selectbox("Service Engineer column", engineer_options, format_func=lambda x: "— Not available —" if x is None else x)
-    service_col = chosen
+stage_columns = {
+    label: find_column(columns, candidates)
+    for label, candidates in stage_candidates.items()
+}
+
+
+# ============================================================
+# VALIDATE REQUIRED COLUMNS
+# ============================================================
 
 missing_core = []
+
 if project_col is None:
     missing_core.append("Project number / Project code")
+
 if manager_col is None:
     missing_core.append("Project Manager")
 
 if missing_core:
     st.error(
-        "Required column(s) not found: "
+        "Required columns not found: "
         + ", ".join(missing_core)
-        + ". Please check that the uploaded workbook contains these columns. The detected headers are shown below."
     )
-    st.write(columns)
+
+    st.write("Available Excel columns:", columns)
     st.stop()
 
-# Build a display key that remains usable even if duplicate project codes exist.
-df["_project_code_display"] = df[project_col].apply(display_value)
-df = df[df["_project_code_display"] != "—"].copy()
+
+# ============================================================
+# PREPARE PROJECT CODES
+# ============================================================
+
+df["_project_code_display"] = (
+    df[project_col].apply(display_value)
+)
+
+# Remove rows without a project code
+df = df[
+    df["_project_code_display"] != "—"
+].copy()
+
 if df.empty:
-    st.warning("No project codes were found in the uploaded file.")
+    st.warning("No project codes were found in the Excel sheet.")
     st.stop()
+
+
+# ============================================================
+# SERVICE ENGINEER COLUMN
+# ============================================================
+
+if service_col is None:
+    st.warning(
+        "The Service Engineer column was not detected. "
+        "Please select the correct column below."
+    )
+
+    engineer_options = [None] + columns
+
+    chosen = st.selectbox(
+        "Select Service Engineer column",
+        engineer_options,
+        format_func=lambda x: (
+            "— Not available —" if x is None else x
+        )
+    )
+
+    service_col = chosen
+```
+
 
 # -----------------------------
 # Filters in one row
