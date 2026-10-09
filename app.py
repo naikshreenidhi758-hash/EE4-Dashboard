@@ -319,57 +319,105 @@ with left:
         index=default_index,
         key="detail_project_code",
     )
+project_name_col = find_column(
+    columns,
+    ["Project name", "Project Title"]
+)
+
+manager_col = find_column(
+    columns,
+    ["Project Manager"]
+)
+
+network_col = find_column(
+    columns,
+    ["Network Engineer"]
+)
+
+server_col = find_column(
+    columns,
+    ["Server Engineer"]
+)
 
 with right:
     st.subheader("Project details")
-    detail_rows = df[df["_project_code_display"] == detail_project]
+
+    detail_rows = df[
+        df["_project_code_display"] == detail_project
+    ]
+
     if selected_manager != "All managers":
-        detail_rows = detail_rows[detail_rows[manager_col].astype(str).str.strip() == selected_manager]
-    if selected_engineer != "All engineers" and server_col is not None:
-        detail_rows = detail_rows[detail_rows[server_col].astype(str).str.strip() == selected_engineer]
+        detail_rows = detail_rows[
+            detail_rows[manager_col].astype(str).str.strip()
+            == selected_manager
+        ]
+
+    if (
+        selected_engineer != "All engineers"
+        and service_col is not None
+    ):
+        detail_rows = detail_rows[
+            detail_rows[service_col].astype(str).str.strip()
+            == selected_engineer
+        ]
 
     if detail_rows.empty:
-        st.warning("No project row matches the current filters. Change the filters on the left.")
+        st.warning(
+            "No project row matches the current filters. "
+            "Change the filters on the left."
+        )
         st.stop()
 
-    # If duplicate codes exist, show the first matching row and let the user know.
     project_row = detail_rows.iloc[0]
-    if len(detail_rows) > 1:
-        st.warning(f"{len(detail_rows)} rows have this project code under the current filters. Showing the first matching row.")
 
-    # Top-level details
+    if len(detail_rows) > 1:
+        st.warning(
+            f"{len(detail_rows)} rows have this project code. "
+            "Showing the first matching row."
+        )
+
     a, b = st.columns(2)
-    
-    project_name_col = find_column(
-    columns,
-    ["Project name", "Project Name", "Project Title"]
-)
+
     with a:
-        st.markdown("**Project code**")
+        st.markdown("**Project Code**")
         st.write(display_value(project_row[project_col]))
+
         st.markdown("**Network Engineer**")
-        st.write(display_value(project_row[network_col]))
+        st.write(
+            display_value(project_row[network_col])
+            if network_col else "—"
+        )
+
         st.markdown("**Server Engineer**")
-        st.write(display_value(project_row[server_col]) if server_col else "—")
+        st.write(
+            display_value(project_row[server_col])
+            if server_col else "—"
+        )
+
     with b:
         st.markdown("**Project Name**")
         st.write(
             display_value(project_row[project_name_col])
             if project_name_col else "—"
-    )
+        )
 
         st.markdown("**Project Manager**")
-        st.write(display_value(project_row[manager_col]))
+        st.write(
+            display_value(project_row[manager_col])
+            if manager_col else "—"
+        )
 
-        st.markdown("**Plan start date**")
-        start_date = safe_date(
-            project_row[plan_date_col]
-        ) if plan_date_col else pd.NaT
+        st.markdown("**Plan Start Date**")
+        start_date = (
+            safe_date(project_row[plan_date_col])
+            if plan_date_col else pd.NaT
+        )
 
         st.write(
             start_date.strftime("%d-%m-%Y")
             if not pd.isna(start_date) else "—"
         )
+
 
     # Status for each implementation stage.
     st.markdown("### Implementation checklist")
