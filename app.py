@@ -275,7 +275,7 @@ if selected_engineer != "All engineers" and server_col is not None:
 left, right = st.columns([1, 1.65], gap="large")
 
 with left:
-    st.subheader("Projects for selected engineer")
+    st.subheader("Total Projects for selected engineer")
     engineer_projects = df.copy()
     if selected_engineer != "All engineers" and server_col is not None:
         engineer_projects = engineer_projects[
