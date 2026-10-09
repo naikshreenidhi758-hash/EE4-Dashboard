@@ -358,13 +358,13 @@ with right:
             if project_name_col else "—"
     )
 
-    st.markdown("**Project Manager**")
-    st.write(display_value(project_row[manager_col]))
+        st.markdown("**Project Manager**")
+        st.write(display_value(project_row[manager_col]))
 
-    st.markdown("**Plan start date**")
-    start_date = safe_date(
-        project_row[plan_date_col]
-    ) if plan_date_col else pd.NaT
+        st.markdown("**Plan start date**")
+        start_date = safe_date(
+            project_row[plan_date_col]
+        ) if plan_date_col else pd.NaT
 
     st.write(
         start_date.strftime("%d-%m-%Y")
