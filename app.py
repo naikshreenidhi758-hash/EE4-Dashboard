@@ -74,8 +74,6 @@ def safe_date(value):
         return pd.NaT
     return pd.to_datetime(value, errors="coerce", dayfirst=True)
 
-
-```python
 # ============================================================
 # LOAD EXCEL
 # ============================================================
@@ -239,7 +237,6 @@ if service_col is None:
     )
 
     service_col = chosen
-```
 
 
 # -----------------------------
