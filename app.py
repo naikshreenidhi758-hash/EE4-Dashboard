@@ -75,18 +75,15 @@ def safe_date(value):
     return pd.to_datetime(value, errors="coerce", dayfirst=True)
 
 
-# -----------------------------
-# Upload source file
-# -----------------------------
-uploaded_file = st.file_uploader(
-    "Upload Project Implementation file",
-    type=["xlsx", "xls", "csv"],
-    help="The file can be downloaded from SharePoint and uploaded here. The dashboard does not need a direct SharePoint connection.",
+# ============================================================
+# LOAD EXCEL
+# ============================================================
+
+df = pd.read_excel(
+    "India project synchronous.xlsx",
+    sheet_name="Project implementation"
 )
 
-if uploaded_file is None:
-    st.info("Upload your Excel or CSV file to start. For example, download the workbook from SharePoint and select it here.")
-    st.stop()
 
 try:
     if uploaded_file.name.lower().endswith(".csv"):
