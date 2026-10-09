@@ -324,7 +324,7 @@ with right:
     st.subheader("Project details")
     detail_rows = df[df["_project_code_display"] == detail_project]
     if selected_manager != "All managers":
-        detail_rows = detail_rows[detail_rows[network_col].astype(str).str.strip() == selected_manager]
+        detail_rows = detail_rows[detail_rows[manager_col].astype(str).str.strip() == selected_manager]
     if selected_engineer != "All engineers" and server_col is not None:
         detail_rows = detail_rows[detail_rows[server_col].astype(str).str.strip() == selected_engineer]
 
@@ -359,7 +359,7 @@ with right:
     )
 
         st.markdown("**Project Manager**")
-        st.write(display_value(project_row[network_col]))
+        st.write(display_value(project_row[manager_col]))
 
         st.markdown("**Plan start date**")
         start_date = safe_date(
