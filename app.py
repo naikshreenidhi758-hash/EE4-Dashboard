@@ -122,7 +122,7 @@ project_col = find_column(
     ["Project number", "Project code", "Project No", "Project ID", "Project"]
 )
 
-manager_col = find_column(
+network_col = find_column(
     columns,
     ["Network Engineer", "Network Engg", "Network Engineer Name"]
 )
@@ -185,7 +185,7 @@ missing_core = []
 if project_col is None:
     missing_core.append("Project number / Project code")
 
-if manager_col is None:
+if network_col is None:
     missing_core.append("Network Engineer")
 
 if missing_core:
@@ -291,7 +291,7 @@ with left:
         ]
 
     list_columns = [project_col]
-    if manager_col and manager_col not in list_columns:
+    if network_col and network_col not in list_columns:
         list_columns.append(manager_col)
     if server_col and server_col not in list_columns:
         list_columns.append(server_col)
@@ -299,7 +299,7 @@ with left:
     project_list = engineer_projects[list_columns].copy()
     project_list.columns = [
         "Project code" if col == project_col else
-        "Network Engineer" if col == manager_col else
+        "Network Engineer" if col == network_col else
         "Server Engineer" if col == server_col else str(col)
         for col in project_list.columns
     ]
@@ -348,7 +348,7 @@ with right:
         st.markdown("**Project code**")
         st.write(display_value(project_row[project_col]))
         st.markdown("**Network Engineer**")
-        st.write(display_value(project_row[manager_col]))
+        st.write(display_value(project_row[manager    _col]))
         st.markdown("**Server Engineer**")
         st.write(display_value(project_row[server_col]) if server_col else "—")
     with b:
