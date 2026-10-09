@@ -250,7 +250,7 @@ project_codes = sorted(df["_project_code_display"].dropna().unique().tolist())
 with col_project:
     selected_project = st.selectbox("Project code", ["All projects"] + project_codes)
 
-managers = sorted(df[manager_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist())
+managers = sorted(df[network_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist())
 with col_manager:
     selected_manager = st.selectbox("Network Engineer", ["All managers"] + managers)
 
@@ -265,7 +265,7 @@ filtered = df.copy()
 if selected_project != "All projects":
     filtered = filtered[filtered["_project_code_display"] == selected_project]
 if selected_manager != "All managers":
-    filtered = filtered[filtered[manager_col].astype(str).str.strip() == selected_manager]
+    filtered = filtered[filtered[network_col].astype(str).str.strip() == selected_manager]
 if selected_engineer != "All engineers" and server_col is not None:
     filtered = filtered[filtered[server_col].astype(str).str.strip() == selected_engineer]
 
@@ -283,7 +283,7 @@ with left:
         ]
     if selected_manager != "All managers":
         engineer_projects = engineer_projects[
-            engineer_projects[manager_col].astype(str).str.strip() == selected_manager
+            engineer_projects[network_col].astype(str).str.strip() == selected_manager
         ]
     if selected_project != "All projects":
         engineer_projects = engineer_projects[
@@ -292,7 +292,7 @@ with left:
 
     list_columns = [project_col]
     if network_col and network_col not in list_columns:
-        list_columns.append(manager_col)
+        list_columns.append(network_col)
     if server_col and server_col not in list_columns:
         list_columns.append(server_col)
 
@@ -324,7 +324,7 @@ with right:
     st.subheader("Project details")
     detail_rows = df[df["_project_code_display"] == detail_project]
     if selected_manager != "All managers":
-        detail_rows = detail_rows[detail_rows[manager_col].astype(str).str.strip() == selected_manager]
+        detail_rows = detail_rows[detail_rows[network_col].astype(str).str.strip() == selected_manager]
     if selected_engineer != "All engineers" and server_col is not None:
         detail_rows = detail_rows[detail_rows[server_col].astype(str).str.strip() == selected_engineer]
 
@@ -348,7 +348,7 @@ with right:
         st.markdown("**Project code**")
         st.write(display_value(project_row[project_col]))
         st.markdown("**Network Engineer**")
-        st.write(display_value(project_row[manager    _col]))
+        st.write(display_value(project_row[network_col]))
         st.markdown("**Server Engineer**")
         st.write(display_value(project_row[server_col]) if server_col else "—")
     with b:
@@ -359,7 +359,7 @@ with right:
     )
 
         st.markdown("**Project Manager**")
-        st.write(display_value(project_row[manager_col]))
+        st.write(display_value(project_row[network_col]))
 
         st.markdown("**Plan start date**")
         start_date = safe_date(
