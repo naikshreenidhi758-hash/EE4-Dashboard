@@ -11,7 +11,7 @@ st.set_page_config(
     layout="wide",
 )
 
-st.title("📋 Project Implementation Dashboard")
+st.title("📋 Project Implementation")
 
 
 # -----------------------------
