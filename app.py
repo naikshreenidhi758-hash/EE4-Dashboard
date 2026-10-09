@@ -127,9 +127,9 @@ manager_col = find_column(
     ["Project Manager", "Project Owner", "Manager"]
 )
 
-service_col = find_column(
+server_col = find_column(
     columns,
-    ["Service Engineer", "Service Engg", "Service Engineer Name"]
+    ["Server Engineer", "Server Engg", "Server Engineer Name"]
 )
 
 network_engineer_col = find_column(
@@ -217,26 +217,26 @@ if df.empty:
 
 
 # ============================================================
-# SERVICE ENGINEER COLUMN
+# SERVER ENGINEER COLUMN
 # ============================================================
 
-if service_col is None:
+if server_col is None:
     st.warning(
-        "The Service Engineer column was not detected. "
+        "The Server Engineer column was not detected. "
         "Please select the correct column below."
     )
 
     engineer_options = [None] + columns
 
     chosen = st.selectbox(
-        "Select Service Engineer column",
+        "Select Server Engineer column",
         engineer_options,
         format_func=lambda x: (
             "— Not available —" if x is None else x
         )
     )
 
-    service_col = chosen
+    server_col = chosen
 
 
 # -----------------------------
@@ -254,20 +254,20 @@ managers = sorted(df[manager_col].dropna().astype(str).str.strip().replace("", p
 with col_manager:
     selected_manager = st.selectbox("Project Manager", ["All managers"] + managers)
 
-if service_col is not None:
-    engineers = sorted(df[service_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist())
+if server_col is not None:
+    engineers = sorted(df[server_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist())
 else:
     engineers = []
 with col_engineer:
-    selected_engineer = st.selectbox("Service Engineer", ["All engineers"] + engineers)
+    selected_engineer = st.selectbox("Server Engineer", ["All engineers"] + engineers)
 
 filtered = df.copy()
 if selected_project != "All projects":
     filtered = filtered[filtered["_project_code_display"] == selected_project]
 if selected_manager != "All managers":
     filtered = filtered[filtered[manager_col].astype(str).str.strip() == selected_manager]
-if selected_engineer != "All engineers" and service_col is not None:
-    filtered = filtered[filtered[service_col].astype(str).str.strip() == selected_engineer]
+if selected_engineer != "All engineers" and server_col is not None:
+    filtered = filtered[filtered[server_col].astype(str).str.strip() == selected_engineer]
 
 # -----------------------------
 # Engineer project list + project detail side by side
@@ -277,9 +277,9 @@ left, right = st.columns([1, 1.65], gap="large")
 with left:
     st.subheader("Projects for selected engineer")
     engineer_projects = df.copy()
-    if selected_engineer != "All engineers" and service_col is not None:
+    if selected_engineer != "All engineers" and server_col is not None:
         engineer_projects = engineer_projects[
-            engineer_projects[service_col].astype(str).str.strip() == selected_engineer
+            engineer_projects[server_col].astype(str).str.strip() == selected_engineer
         ]
     if selected_manager != "All managers":
         engineer_projects = engineer_projects[
@@ -293,14 +293,14 @@ with left:
     list_columns = [project_col]
     if manager_col and manager_col not in list_columns:
         list_columns.append(manager_col)
-    if service_col and service_col not in list_columns:
-        list_columns.append(service_col)
+    if server_col and server_col not in list_columns:
+        list_columns.append(server_col)
 
     project_list = engineer_projects[list_columns].copy()
     project_list.columns = [
         "Project code" if col == project_col else
         "Project Manager" if col == manager_col else
-        "Service Engineer" if col == service_col else str(col)
+        "Server Engineer" if col == server_col else str(col)
         for col in project_list.columns
     ]
     project_list = project_list.fillna("")
@@ -325,8 +325,8 @@ with right:
     detail_rows = df[df["_project_code_display"] == detail_project]
     if selected_manager != "All managers":
         detail_rows = detail_rows[detail_rows[manager_col].astype(str).str.strip() == selected_manager]
-    if selected_engineer != "All engineers" and service_col is not None:
-        detail_rows = detail_rows[detail_rows[service_col].astype(str).str.strip() == selected_engineer]
+    if selected_engineer != "All engineers" and server_col is not None:
+        detail_rows = detail_rows[detail_rows[server_col].astype(str).str.strip() == selected_engineer]
 
     if detail_rows.empty:
         st.warning("No project row matches the current filters. Change the filters on the left.")
@@ -344,8 +344,8 @@ with right:
         st.write(display_value(project_row[project_col]))
         st.markdown("**Project Manager**")
         st.write(display_value(project_row[manager_col]))
-        st.markdown("**Service Engineer**")
-        st.write(display_value(project_row[service_col]) if service_col else "—")
+        st.markdown("**Server Engineer**")
+        st.write(display_value(project_row[server_col]) if server_col else "—")
     with b:
         st.markdown("**Network Engineer**")
         st.write(display_value(project_row[network_engineer_col]) if network_engineer_col else "—")
