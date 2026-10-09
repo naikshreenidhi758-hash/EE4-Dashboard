@@ -339,6 +339,11 @@ with right:
 
     # Top-level details
     a, b = st.columns(2)
+    
+    project_name_col = find_column(
+    columns,
+    ["Project name", "Project Name", "Project Title"]
+)
     with a:
         st.markdown("**Project code**")
         st.write(display_value(project_row[project_col]))
@@ -347,13 +352,24 @@ with right:
         st.markdown("**Server Engineer**")
         st.write(display_value(project_row[server_col]) if server_col else "—")
     with b:
-        st.markdown("**Network Engineer**")
-        st.write(display_value(project_row[network_engineer_col]) if network_engineer_col else "—")
-        st.markdown("**Server Engineer**")
-        st.write(display_value(project_row[server_engineer_col]) if server_engineer_col else "—")
-        st.markdown("**Plan start date**")
-        start_date = safe_date(project_row[plan_date_col]) if plan_date_col else pd.NaT
-        st.write(start_date.strftime("%d-%m-%Y") if not pd.isna(start_date) else "—")
+    st.markdown("**Project Name**")
+    st.write(
+        display_value(project_row[project_name_col])
+        if project_name_col else "—"
+    )
+
+    st.markdown("**Project Manager**")
+    st.write(display_value(project_row[manager_col]))
+
+    st.markdown("**Plan start date**")
+    start_date = safe_date(
+        project_row[plan_date_col]
+    ) if plan_date_col else pd.NaT
+
+    st.write(
+        start_date.strftime("%d-%m-%Y")
+        if not pd.isna(start_date) else "—"
+    )
 
     # Status for each implementation stage.
     st.markdown("### Implementation checklist")
