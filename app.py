@@ -420,20 +420,6 @@ with row_top_right:
             st.markdown("**Plan Start Date**")
             st.write(start_date.strftime("%d-%m-%Y") if not pd.isna(start_date) else "—")
 
-        statuses = [
-            normalize_status(project_row[col])
-            for col in stage_columns.values()
-            if col is not None
-        ]
-        completed = bool(statuses) and all(status == "Completed" for status in statuses)
-        if completed:
-            st.success("Overall project status: Completed")
-        else:
-            st.warning("Overall project status: In progress / Pending")
-            if pd.isna(start_date):
-                st.metric("Pending duration", "Unavailable")
-            else:
-                st.metric("Pending duration", f"{max(0, (date.today() - start_date.date()).days)} days")
 
 # -----------------------------
 # 6. Pending projects
@@ -479,18 +465,48 @@ with row_bottom_right:
     if project_row is None:
         st.info("Select a project using the dropdown under Total Projects.")
     else:
-        for stage, col in stage_columns.items():
-            st.markdown(f"**{stage}**")
-            if col is None:
-                st.caption("Column not found in workbook")
-                continue
-            status = normalize_status(project_row[col])
-            if status == "Completed":
-                st.success("✅ Completed")
-            elif status == "Under Implementation":
-                st.warning("🟡 Under Implementation")
+        # Six checklist items displayed in two columns across three rows.
+        stage_items = list(stage_columns.items())
+        for index in range(0, len(stage_items), 2):
+            stage_pair = stage_items[index:index + 2]
+            checklist_cols = st.columns(2, gap="medium")
+            for checklist_col, (stage, source_col) in zip(checklist_cols, stage_pair):
+                with checklist_col:
+                    st.markdown(f"**{stage}**")
+                    if source_col is None:
+                        st.caption("Column not found in workbook")
+                    else:
+                        status = normalize_status(project_row[source_col])
+                        if status == "Completed":
+                            st.success("✅ Completed")
+                        elif status == "Under Implementation":
+                            st.warning("🟡 Under Implementation")
+                        else:
+                            st.info("⏳ Pending")
+
+        # Overall status and pending duration belong below the checklist.
+        detected_statuses = [
+            normalize_status(project_row[col])
+            for col in stage_columns.values()
+            if col is not None
+        ]
+        all_stages_completed = (
+            bool(detected_statuses)
+            and all(status == "Completed" for status in detected_statuses)
+        )
+
+        st.divider()
+        st.markdown("### Overall Project Status")
+        if all_stages_completed:
+            st.success("🎉 Completed")
+        else:
+            st.warning("🟡 In progress / Pending")
+            if pd.isna(start_date):
+                st.metric("Pending duration", "Unavailable")
+                st.caption("A valid Plan Start Date is needed to calculate duration.")
             else:
-                st.info("⏳ Pending")
+                days_pending = max(0, (date.today() - start_date.date()).days)
+                st.metric("Pending duration", f"{days_pending} days")
 
 # -----------------------------
 # Full source data
