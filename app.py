@@ -325,7 +325,7 @@ pending_table_columns = {
 }
 
 if project_name_col is not None:
-    pending_table_columns["Project Name"] = project_name_col
+    pending_table_columns["Project Name"] = manager_col
 
 pending_table = pending_df[
     list(pending_table_columns.values())
