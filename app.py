@@ -457,23 +457,45 @@ with row_bottom_left:
 # -----------------------------
 # 7. Implementation checklist (beside Pending Projects)
 # -----------------------------
-with row_bottom_right:
-    st.subheader("7. Implementation Checklist")
-    if project_row is None:
-        st.info("Select a project using the dropdown under Total Projects.")
-    else:
-        for stage, col in stage_columns.items():
-            st.markdown(f"**{stage}**")
-            if col is None:
-                st.caption("Column not found in workbook")
-                continue
-            status = normalize_status(project_row[col])
-            if status == "Completed":
-                st.success("✅ Completed")
-            elif status == "Under Implementation":
-                st.warning("🟡 Under Implementation")
-            else:
-                st.info("⏳ Pending")
+# Implementation steps in the screenshot and common spelling variants. 
+stage_candidates = { 
+    "BOM": ["BOM"], 
+    "Jump server Installation": ["Jump server Installation", "Jump Server Install", "Jump Server Installation"], 
+    "Radius Server": ["Radius Server", "RADIUS Server"], 
+    "Wiring": ["Wiring"], 
+    "Network": ["Network"], 
+    "Server": ["Server"], 
+} 
+stage_columns = {label: find_column(columns, candidates) for label, candidates in stage_candidates.items()} 
+ 
+# If Service Engineer is not a literal column, allow the user to select the appropriate engineer field. 
+if service_col is None: 
+    st.warning("I couldn't find a column named 'Service Engineer'. Choose the column that should drive the Service Engineer filter.") 
+    engineer_options = [None] + columns 
+    chosen = st.selectbox("Service Engineer column", engineer_options, format_func=lambda x: "— Not available —" if x is None else x) 
+    service_col = chosen 
+ 
+missing_core = [] 
+if project_col is None: 
+    missing_core.append("Project number / Project code") 
+if manager_col is None: 
+    missing_core.append("Project Manager") 
+ 
+if missing_core: 
+    st.error( 
+        "Required column(s) not found: " 
+        + ", ".join(missing_core) 
+        + ". Please check that the uploaded workbook contains these columns. The detected headers are shown below." 
+    ) 
+    st.write(columns) 
+    st.stop() 
+ 
+# Build a display key that remains usable even if duplicate project codes exist. 
+df["_project_code_display"] = df[project_col].apply(display_value) 
+df = df[df["_project_code_display"] != "—"].copy() 
+if df.empty: 
+    st.warning("No project codes were found in the uploaded file.") 
+    st.stop() 
 
 # -----------------------------
 # Full source data
