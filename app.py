@@ -324,7 +324,7 @@ pending_table_columns = {
     "Project Number": "_project_code_display"
 }
 
-if project_name_col is not None:
+if manager_col is not None:
     pending_table_columns["Project Name"] = manager_col
 
 pending_table = pending_df[
