@@ -454,53 +454,105 @@ with row_bottom_left:
                 st.session_state["selected_pending_project"] = clicked_project
                 st.rerun()
 
+
 # -----------------------------
-# 7. Implementation checklist (beside Pending Projects)
+# 7. Implementation checklist and column validation
 # -----------------------------
-# Implementation steps in the screenshot and common spelling variants. 
-stage_candidates = { 
-    "BOM": ["BOM"], 
-    "Jump server Installation": ["Jump server Installation", "Jump Server Install", "Jump Server Installation"], 
-    "Radius Server": ["Radius Server", "RADIUS Server"], 
-    "Wiring": ["Wiring"], 
-    "Network": ["Network"], 
-    "Server": ["Server"], 
-} 
-stage_columns = {label: find_column(columns, candidates) for label, candidates in stage_candidates.items()} 
- 
-# If Service Engineer is not a literal column, allow the user to select the appropriate engineer field. 
-if service_col is None: 
-    st.warning("I couldn't find a column named 'Service Engineer'. Choose the column that should drive the Service Engineer filter.") 
-    engineer_options = [None] + columns 
-    chosen = st.selectbox("Service Engineer column", engineer_options, format_func=lambda x: "— Not available —" if x is None else x) 
-    service_col = chosen 
- 
-missing_core = [] 
-if project_col is None: 
-    missing_core.append("Project number / Project code") 
-if manager_col is None: 
-    missing_core.append("Project Manager") 
- 
-if missing_core: 
-    st.error( 
-        "Required column(s) not found: " 
-        + ", ".join(missing_core) 
-        + ". Please check that the uploaded workbook contains these columns. The detected headers are shown below." 
-    ) 
-    st.write(columns) 
-    st.stop() 
- 
-# Build a display key that remains usable even if duplicate project codes exist. 
-df["_project_code_display"] = df[project_col].apply(display_value) 
-df = df[df["_project_code_display"] != "—"].copy() 
-if df.empty: 
-    st.warning("No project codes were found in the uploaded file.") 
-    st.stop() 
+
+# Detect the relevant columns before using them
+project_col = project_col or find_column(
+    columns,
+    ["Project number", "Project code", "Project No", "Project ID", "Project"]
+)
+
+manager_col = find_column(
+    columns,
+    ["Project Manager", "Project Manager Name"]
+)
+
+project_name_col = find_column(
+    columns,
+    ["Project Name", "Project Title"]
+)
+
+network_col = find_column(
+    columns,
+    ["Network Engineer", "Network Engg", "Network Engineer Name"]
+)
+
+server_col = find_column(
+    columns,
+    ["Server Engineer", "Server Engg", "Server Engineer Name"]
+)
+
+# Use Service Engineer if available; otherwise use Server Engineer
+service_col = find_column(
+    columns,
+    ["Service Engineer", "Service Engg", "Service Engineer Name"]
+)
+
+if service_col is None:
+    service_col = server_col
+
+plan_date_col = find_column(
+    columns,
+    ["Plan Start Date", "Planned Start Date", "Start Date", "Plan Date"]
+)
+
+# Implementation checklist columns
+stage_candidates = {
+    "BOM": ["BOM"],
+    "Jump server Installation": [
+        "Jump server Installation",
+        "Jump Server Install",
+        "Jump Server Installation",
+    ],
+    "Radius Server": ["Radius Server", "RADIUS Server"],
+    "Wiring": ["Wiring"],
+    "Network": ["Network"],
+    "Server": ["Server"],
+}
+
+stage_columns = {
+    label: find_column(columns, candidates)
+    for label, candidates in stage_candidates.items()
+}
+
+# Validate only the essential columns
+missing_core = []
+
+if project_col is None:
+    missing_core.append("Project number / Project code")
+
+if missing_core:
+    st.error(
+        "Required column(s) not found: "
+        + ", ".join(missing_core)
+    )
+    st.write("Detected Excel columns:", columns)
+    st.stop()
+
+# Prepare project numbers
+df["_project_code_display"] = df[project_col].apply(display_value)
+
+df = df[df["_project_code_display"] != "—"].copy()
+
+if df.empty:
+    st.warning("No project codes were found in the uploaded file.")
+    st.stop()
 
 # -----------------------------
 # Full source data
 # -----------------------------
 with st.expander("View uploaded source data"):
-    st.dataframe(df.drop(columns=["_project_code_display"], errors="ignore"), use_container_width=True, hide_index=True)
+    st.dataframe(
+        df.drop(columns=["_project_code_display"], errors="ignore"),
+        use_container_width=True,
+        hide_index=True,
+    )
 
-st.caption("Status rule: Completed values show a check mark; blank or explicitly pending values show Pending; other non-empty values show Under Implementation.")
+st.caption(
+    "Status rule: Completed values show a check mark; "
+    "blank or explicitly pending values show Pending; "
+    "other non-empty values show Under Implementation."
+)
