@@ -269,6 +269,100 @@ if selected_manager != "All managers":
 if selected_engineer != "All engineers" and server_col is not None:
     filtered = filtered[filtered[server_col].astype(str).str.strip() == selected_engineer]
 
+# ============================================================
+# PENDING PROJECTS TABLE
+# ============================================================
+
+st.subheader("⏳ Pending Projects")
+
+# Start with all project records
+pending_df = df.copy()
+
+# Apply the selected Project Manager filter
+if selected_manager != "All managers":
+    pending_df = pending_df[
+        pending_df[manager_col].astype(str).str.strip()
+        == selected_manager
+    ]
+
+# Apply the selected Server Engineer filter
+if selected_engineer != "All engineers" and server_col is not None:
+    pending_df = pending_df[
+        pending_df[server_col].astype(str).str.strip()
+        == selected_engineer
+    ]
+
+# Apply the selected Project Code filter
+if selected_project != "All projects":
+    pending_df = pending_df[
+        pending_df["_project_code_display"] == selected_project
+    ]
+
+# Identify projects that are not fully completed
+def is_project_pending(row):
+    detected_columns = [
+        col for col in stage_columns.values()
+        if col is not None
+    ]
+
+    # Cannot determine project status if no stage columns were found
+    if not detected_columns:
+        return False
+
+    return any(
+        normalize_status(row[col]) != "Completed"
+        for col in detected_columns
+    )
+
+
+pending_df = pending_df[
+    pending_df.apply(is_project_pending, axis=1)
+].copy()
+
+# Create a simple table with project number and project name
+pending_table_columns = {
+    "Project Number": "_project_code_display"
+}
+
+if project_name_col is not None:
+    pending_table_columns["Project Name"] = project_name_col
+
+pending_table = pending_df[
+    list(pending_table_columns.values())
+].copy()
+
+pending_table.columns = list(pending_table_columns.keys())
+pending_table = pending_table.drop_duplicates(
+    subset=["Project Number"]
+).reset_index(drop=True)
+
+st.caption(
+    "Select a row in this table to open that project's details below."
+)
+
+if pending_table.empty:
+    st.success("No pending projects found for the selected filters.")
+
+else:
+    pending_selection = st.dataframe(
+        pending_table,
+        use_container_width=True,
+        hide_index=True,
+        on_select="rerun",
+        selection_mode="single-row",
+        key="pending_projects_table",
+    )
+
+    selected_rows = pending_selection.selection.rows
+
+    if selected_rows:
+        clicked_project = pending_table.iloc[
+            selected_rows[0]
+        ]["Project Number"]
+
+        # Update the detail selector before it is created below.
+        st.session_state["detail_project_code"] = clicked_project
+
 # -----------------------------
 # Engineer project list + project detail side by side
 # -----------------------------
@@ -313,12 +407,21 @@ with left:
 
     # This second selector controls which project's full details appear.
     default_index = available_codes.index(selected_project) if selected_project in available_codes else 0
-    detail_project = st.selectbox(
-        "Choose a project to view full details",
-        available_codes,
-        index=default_index,
-        key="detail_project_code",
-    )
+# Use the pending-table selection if that project is available
+current_detail = st.session_state.get(
+    "detail_project_code",
+    available_codes[default_index]
+)
+
+if current_detail not in available_codes:
+    current_detail = available_codes[default_index]
+
+detail_project = st.selectbox(
+    "Choose a project to view full details",
+    available_codes,
+    index=available_codes.index(current_detail),
+    key="detail_project_code",
+)
 project_name_col = find_column(
     columns,
     ["Project name", "Project Title"]
