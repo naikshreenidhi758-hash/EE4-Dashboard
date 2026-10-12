@@ -1,5 +1,6 @@
 import re
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import streamlit as st
@@ -78,14 +79,26 @@ def safe_date(value):
 # LOAD EXCEL
 # ============================================================
 
+# Load the workbook from the same folder as this Python script, not the
+# PowerShell current working directory.
+EXCEL_PATH = Path(__file__).resolve().parent / "India project synchronous.xlsx"
+
 try:
+    if not EXCEL_PATH.exists():
+        st.error(
+            "Excel workbook not found. Put 'India project synchronous.xlsx' "
+            "in the same folder as this Python script."
+        )
+        st.caption(f"Expected file location: {EXCEL_PATH}")
+        st.stop()
+
     df = pd.read_excel(
-        "India project synchronous.xlsx",
+        EXCEL_PATH,
         sheet_name="Project implementation"
     )
-
 except Exception as exc:
     st.error(f"Could not read the Excel file: {exc}")
+    st.caption(f"Workbook path checked: {EXCEL_PATH}")
     st.stop()
 
 
@@ -192,9 +205,8 @@ missing_core = []
 if project_col is None:
     missing_core.append("Project number / Project code")
 
-if network_col is None:
-    missing_core.append("Network Engineer")
-
+# Network/Server Engineer columns are optional; the dashboard can still
+# render project details if the workbook uses different header names.
 if missing_core:
     st.error(
         "Required columns not found: "
@@ -263,7 +275,7 @@ with col_project:
 
 network_options = sorted(
     df[network_col].dropna().astype(str).str.strip().replace("", pd.NA).dropna().unique().tolist()
-)
+) if network_col is not None else []
 with col_network:
     selected_network = st.selectbox(
         "2. Network engineer",
@@ -288,7 +300,7 @@ with col_server:
 filtered = df.copy()
 if selected_project != "All projects":
     filtered = filtered[filtered["_project_code_display"] == selected_project]
-if selected_network != "All network engineers":
+if selected_network != "All network engineers" and network_col is not None:
     filtered = filtered[filtered[network_col].astype(str).str.strip() == selected_network]
 if selected_server != "All server engineers" and server_col is not None:
     filtered = filtered[filtered[server_col].astype(str).str.strip() == selected_server]
@@ -359,17 +371,19 @@ with row_top_left:
         else:
             default_project = available_codes[0]
 
-        # Set session state before the widget is created to avoid StreamlitAPIException.
-        if (
-            st.session_state.get("detail_project_code") != default_project
-            and (prior_pending in available_codes or st.session_state.get("detail_project_code") not in available_codes)
-        ):
+        # Set the default before creating the selectbox. This avoids stale
+        # values when a different pending row is selected.
+        if st.session_state.get("detail_project_code") != default_project:
             st.session_state["detail_project_code"] = default_project
+
+        # Consume the pending-row selection once so the user can still change
+        # the dropdown manually afterwards.
+        if prior_pending in available_codes:
+            st.session_state.pop("selected_pending_project", None)
 
         detail_project = st.selectbox(
             "Choose project number for details",
             available_codes,
-            index=available_codes.index(st.session_state.get("detail_project_code", default_project)),
             key="detail_project_code",
         )
 
@@ -449,110 +463,39 @@ with row_bottom_left:
         if selected_rows:
             clicked_project = pending_table.iloc[selected_rows[0]]["Project Number"]
             # Clicking a pending row sets the dropdown value for the next rerun.
-            if clicked_project in available_codes and st.session_state.get("selected_pending_project") != clicked_project:
-                # The next rerun applies this value before the dropdown is created.
+            if (
+                clicked_project in available_codes
+                and st.session_state.get("detail_project_code") != clicked_project
+            ):
+                # Apply this on the next rerun before the dropdown is created.
                 st.session_state["selected_pending_project"] = clicked_project
                 st.rerun()
 
-
 # -----------------------------
-# 7. Implementation checklist and column validation
+# 7. Implementation checklist (beside Pending Projects)
 # -----------------------------
-
-# Detect the relevant columns before using them
-project_col = project_col or find_column(
-    columns,
-    ["Project number", "Project code", "Project No", "Project ID", "Project"]
-)
-
-manager_col = find_column(
-    columns,
-    ["Project Manager", "Project Manager Name"]
-)
-
-project_name_col = find_column(
-    columns,
-    ["Project Name", "Project Title"]
-)
-
-network_col = find_column(
-    columns,
-    ["Network Engineer", "Network Engg", "Network Engineer Name"]
-)
-
-server_col = find_column(
-    columns,
-    ["Server Engineer", "Server Engg", "Server Engineer Name"]
-)
-
-# Use Service Engineer if available; otherwise use Server Engineer
-service_col = find_column(
-    columns,
-    ["Service Engineer", "Service Engg", "Service Engineer Name"]
-)
-
-if service_col is None:
-    service_col = server_col
-
-plan_date_col = find_column(
-    columns,
-    ["Plan Start Date", "Planned Start Date", "Start Date", "Plan Date"]
-)
-
-# Implementation checklist columns
-stage_candidates = {
-    "BOM": ["BOM"],
-    "Jump server Installation": [
-        "Jump server Installation",
-        "Jump Server Install",
-        "Jump Server Installation",
-    ],
-    "Radius Server": ["Radius Server", "RADIUS Server"],
-    "Wiring": ["Wiring"],
-    "Network": ["Network"],
-    "Server": ["Server"],
-}
-
-stage_columns = {
-    label: find_column(columns, candidates)
-    for label, candidates in stage_candidates.items()
-}
-
-# Validate only the essential columns
-missing_core = []
-
-if project_col is None:
-    missing_core.append("Project number / Project code")
-
-if missing_core:
-    st.error(
-        "Required column(s) not found: "
-        + ", ".join(missing_core)
-    )
-    st.write("Detected Excel columns:", columns)
-    st.stop()
-
-# Prepare project numbers
-df["_project_code_display"] = df[project_col].apply(display_value)
-
-df = df[df["_project_code_display"] != "—"].copy()
-
-if df.empty:
-    st.warning("No project codes were found in the uploaded file.")
-    st.stop()
+with row_bottom_right:
+    st.subheader("7. Implementation Checklist")
+    if project_row is None:
+        st.info("Select a project using the dropdown under Total Projects.")
+    else:
+        for stage, col in stage_columns.items():
+            st.markdown(f"**{stage}**")
+            if col is None:
+                st.caption("Column not found in workbook")
+                continue
+            status = normalize_status(project_row[col])
+            if status == "Completed":
+                st.success("✅ Completed")
+            elif status == "Under Implementation":
+                st.warning("🟡 Under Implementation")
+            else:
+                st.info("⏳ Pending")
 
 # -----------------------------
 # Full source data
 # -----------------------------
 with st.expander("View uploaded source data"):
-    st.dataframe(
-        df.drop(columns=["_project_code_display"], errors="ignore"),
-        use_container_width=True,
-        hide_index=True,
-    )
+    st.dataframe(df.drop(columns=["_project_code_display"], errors="ignore"), use_container_width=True, hide_index=True)
 
-st.caption(
-    "Status rule: Completed values show a check mark; "
-    "blank or explicitly pending values show Pending; "
-    "other non-empty values show Under Implementation."
-)
+st.caption("Status rule: Completed values show a check mark; blank or explicitly pending values show Pending; other non-empty values show Under Implementation.")
