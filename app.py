@@ -78,9 +78,6 @@ def safe_date(value):
 # LOAD EXCEL
 # ============================================================
 
-import pandas as pd
-import streamlit as st
-
 try:
     df = pd.read_excel(
         "India project synchronous.xlsx",
@@ -130,6 +127,16 @@ network_col = find_column(
 server_col = find_column(
     columns,
     ["Server Engineer", "Server Engg", "Server Engineer Name"]
+)
+
+project_name_col = find_column(
+    columns,
+    ["Project name", "Project Title"]
+)
+
+manager_col = find_column(
+    columns,
+    ["Project Manager"]
 )
 
 network_engineer_col = find_column(
@@ -272,77 +279,54 @@ if selected_engineer != "All engineers" and server_col is not None:
 # ============================================================
 # PENDING PROJECTS TABLE
 # ============================================================
-
 st.subheader("⏳ Pending Projects")
 
-# Start with all project records
 pending_df = df.copy()
 
-# Apply the selected Project Manager filter
+# The filter labelled Network Engineer filters the Network Engineer column.
 if selected_manager != "All managers":
     pending_df = pending_df[
-        pending_df[manager_col].astype(str).str.strip()
-        == selected_manager
+        pending_df[network_col].astype(str).str.strip() == selected_manager
     ]
 
-# Apply the selected Server Engineer filter
 if selected_engineer != "All engineers" and server_col is not None:
     pending_df = pending_df[
-        pending_df[server_col].astype(str).str.strip()
-        == selected_engineer
+        pending_df[server_col].astype(str).str.strip() == selected_engineer
     ]
 
-# Apply the selected Project Code filter
 if selected_project != "All projects":
     pending_df = pending_df[
         pending_df["_project_code_display"] == selected_project
     ]
 
-# Identify projects that are not fully completed
-def is_project_pending(row):
-    detected_columns = [
-        col for col in stage_columns.values()
-        if col is not None
-    ]
-
-    # Cannot determine project status if no stage columns were found
-    if not detected_columns:
-        return False
-
-    return any(
-        normalize_status(row[col]) != "Completed"
-        for col in detected_columns
+# A project is pending if at least one detected implementation stage is not complete.
+detected_stage_columns = [col for col in stage_columns.values() if col is not None]
+if detected_stage_columns:
+    pending_mask = pending_df.apply(
+        lambda row: any(
+            normalize_status(row[col]) != "Completed"
+            for col in detected_stage_columns
+        ),
+        axis=1,
     )
+    pending_df = pending_df[pending_mask].copy()
+else:
+    pending_df = pending_df.iloc[0:0].copy()
 
+pending_table_columns = {"Project Number": "_project_code_display"}
+if project_name_col is not None:
+    pending_table_columns["Project Name"] = project_name_col
 
-pending_df = pending_df[
-    pending_df.apply(is_project_pending, axis=1)
-].copy()
-
-# Create a simple table with project number and project name
-pending_table_columns = {
-    "Project Number": "_project_code_display"
-}
-
-if manager_col is not None:
-    pending_table_columns["Project Name"] = manager_col
-
-pending_table = pending_df[
-    list(pending_table_columns.values())
-].copy()
-
+pending_table = pending_df[list(pending_table_columns.values())].copy()
 pending_table.columns = list(pending_table_columns.keys())
 pending_table = pending_table.drop_duplicates(
     subset=["Project Number"]
 ).reset_index(drop=True)
 
-st.caption(
-    "Select a row in this table to open that project's details below."
-)
+st.caption("Select a row in this table to open that project's details and implementation checklist below.")
 
 if pending_table.empty:
     st.success("No pending projects found for the selected filters.")
-
 else:
     pending_selection = st.dataframe(
         pending_table,
@@ -354,14 +338,10 @@ else:
     )
 
     selected_rows = pending_selection.selection.rows
-
     if selected_rows:
-        clicked_project = pending_table.iloc[
-            selected_rows[0]
-        ]["Project Number"]
-
-        # Update the detail selector before it is created below.
-        st.session_state["detail_project_code"] = clicked_project
+        clicked_project = pending_table.iloc[selected_rows[0]]["Project Number"]
+        # This state is read before the detail selectbox is created below.
+        st.session_state["selected_pending_project"] = clicked_project
 
 # -----------------------------
 # Engineer project list + project detail side by side
@@ -400,47 +380,34 @@ with left:
     project_list = project_list.fillna("")
     st.dataframe(project_list, use_container_width=True, hide_index=True, height=300)
 
-    available_codes = sorted(engineer_projects["_project_code_display"].dropna().unique().tolist())
+    # Show all project codes in the details selector so a clicked pending project
+    # remains selectable even when the left-side list is filtered.
+    available_codes = sorted(df["_project_code_display"].dropna().unique().tolist())
     if not available_codes:
-        st.warning("No projects match the selected filters.")
+        st.warning("No project codes are available.")
         st.stop()
 
-    # This second selector controls which project's full details appear.
-    default_index = available_codes.index(selected_project) if selected_project in available_codes else 0
-# Use the pending-table selection if that project is available
-current_detail = st.session_state.get(
-    "detail_project_code",
-    available_codes[default_index]
-)
+    pending_project = st.session_state.get("selected_pending_project")
+    if pending_project not in available_codes:
+        pending_project = None
 
-if current_detail not in available_codes:
-    current_detail = available_codes[default_index]
+    if pending_project is not None:
+        default_project = pending_project
+    elif selected_project != "All projects" and selected_project in available_codes:
+        default_project = selected_project
+    else:
+        default_project = available_codes[0]
 
-detail_project = st.selectbox(
-    "Choose a project to view full details",
-    available_codes,
-    index=available_codes.index(current_detail),
-    key="detail_project_code",
-)
-project_name_col = find_column(
-    columns,
-    ["Project name", "Project Title"]
-)
+    # Update the widget's value before the widget is instantiated.
+    if st.session_state.get("detail_project_code") != default_project:
+        st.session_state["detail_project_code"] = default_project
 
-manager_col = find_column(
-    columns,
-    ["Project Manager"]
-)
-
-network_col = find_column(
-    columns,
-    ["Network Engineer"]
-)
-
-server_col = find_column(
-    columns,
-    ["Server Engineer"]
-)
+    detail_project = st.selectbox(
+        "Choose a project to view full details",
+        available_codes,
+        index=available_codes.index(default_project),
+        key="detail_project_code",
+    )
 
 with right:
     st.subheader("Project details")
@@ -449,20 +416,8 @@ with right:
         df["_project_code_display"] == detail_project
     ]
 
-    if selected_manager != "All managers":
-        detail_rows = detail_rows[
-            detail_rows[manager_col].astype(str).str.strip()
-            == selected_manager
-        ]
-
-    if (
-        selected_engineer != "All engineers"
-        and service_col is not None
-    ):
-        detail_rows = detail_rows[
-            detail_rows[service_col].astype(str).str.strip()
-            == selected_engineer
-        ]
+    # Do not reapply the list filters here: a project selected from the Pending
+    # Projects table must be able to open even if it is outside those filters.
 
     if detail_rows.empty:
         st.warning(
