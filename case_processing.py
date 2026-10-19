@@ -712,46 +712,45 @@ if engineer_list:
         )
 
 
-# ========================================================
-# YEARLY STATUS BREAKDOWN - HALF WIDTH
-# ========================================================
+    # ========================================================
+    # YEARLY STATUS BREAKDOWN GRAPH - HALF DASHBOARD WIDTH
+    # ========================================================
 
-year_status_summary = (
-    engineer_year_df
-    .groupby("status")
-    .size()
-    .reset_index(name="count")
-)
-
-fig_year_status = px.bar(
-    year_status_summary,
-    x="count",
-    y="status",
-    color="status",
-    text="count",
-    orientation="h",
-    title=f"{selected_engineer} - {current_year} Status Breakdown"
-)
-
-fig_year_status.update_traces(
-    textposition="outside"
-)
-
-fig_year_status.update_layout(
-    xaxis_title="Number of Cases",
-    yaxis_title="Status",
-    showlegend=False,
-    height=400
-)
-
-# Display chart in only half of the dashboard
-left_col, right_col = st.columns(2)
-
-with left_col:
-    st.plotly_chart(
-        fig_year_status,
-        use_container_width=True
+    year_status_summary = (
+        engineer_year_df
+        .groupby("status")
+        .size()
+        .reset_index(name="Count")
     )
+
+    fig_year_status = px.bar(
+        year_status_summary,
+        x="status",
+        y="Count",
+        color="status",
+        text="Count",
+        title=f"{selected_engineer} - {current_year} Status Breakdown"
+    )
+
+    fig_year_status.update_traces(
+        textposition="outside"
+    )
+
+    fig_year_status.update_layout(
+        height=400,
+        xaxis_title="Ticket Status",
+        yaxis_title="Number of Cases",
+        showlegend=False
+    )
+
+    # Display graph in half of the dashboard
+    left_col, right_col = st.columns(2)
+
+    with left_col:
+        st.plotly_chart(
+            fig_year_status,
+            use_container_width=True
+        )
 
 
 # ============================================================
