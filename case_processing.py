@@ -712,8 +712,8 @@ if engineer_list:
         )
 
 
-    # ========================================================
-    # YEARLY STATUS BREAKDOWN GRAPH - HALF DASHBOARD WIDTH
+        # ========================================================
+    # YEARLY STATUS BREAKDOWN - LINE GRAPH
     # ========================================================
 
     year_status_summary = (
@@ -723,17 +723,19 @@ if engineer_list:
         .reset_index(name="Count")
     )
 
-    fig_year_status = px.bar(
+    fig_year_status = px.line(
         year_status_summary,
         x="status",
         y="Count",
-        color="status",
+        markers=True,
         text="Count",
         title=f"{selected_engineer} - {current_year} Status Breakdown"
     )
 
     fig_year_status.update_traces(
-        textposition="outside"
+        textposition="top center",
+        line=dict(width=3),
+        marker=dict(size=9)
     )
 
     fig_year_status.update_layout(
