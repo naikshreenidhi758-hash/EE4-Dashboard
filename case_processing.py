@@ -894,41 +894,76 @@ elif selected_section == "Pending Cases Aging Analysis":
     pending_summary = pending_summary[
         pending_summary["count"] > 0
     ]
-    # ------------------------------------------------------------
-    # PENDING AGING CHART - NAVIGATION SECTION
-    # ------------------------------------------------------------
+    # PENDING AGING ANALYSIS (Overall Data)
+pending_df = df[
+    (df["end time"].isna()) &
+    (
+        df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower() != "closed"
+    )
+].copy()
 
-    if pending_summary.empty:
-        st.info("No pending cases available for the selected filters.")
+pending_df["effective_start_date"] = (
+    pending_df["start date"]
+    .fillna(pending_df["filled_date"])
+)
 
-    else:
-        fig_pending = px.bar(
-            pending_summary,
-            x="first engineer(india team)",
-            y="count",
-            color="age_bucket",
-            text="count",
-            barmode="stack",
-            title="Pending Cases Aging Analysis",
-            color_discrete_map={
-                "0-7 Days": "blue",
-                "8-15 Days": "orange",
-                ">15 Days": "red",
-                "Unknown": "gray"
-            }
-        )
+today = pd.Timestamp.today().normalize()
 
-        fig_pending.update_traces(
-            textposition="inside"
-        )
+pending_df["case_days"] = (
+    today - pending_df["effective_start_date"]
+).dt.days
 
-        fig_pending.update_layout(
-            xaxis_title="Engineer",
-            yaxis_title="Number of Pending Cases",
-            legend_title="Case Age"
-        )
 
-        st.plotly_chart(
-            fig_pending,
-            use_container_width=True
-        )
+pending_df["age_bucket"] = np.select(
+    [
+        pending_df["case_days"] <= 7,
+        pending_df["case_days"].between(8, 15),
+        pending_df["case_days"] > 15
+    ],
+    [
+        "0-7 Days",
+        "8-15 Days",
+        ">15 Days"
+    ],
+    default="Unknown"
+)
+
+pending_summary = (
+    pending_df.groupby(
+        ["first engineer(india team)", "age_bucket"],
+        observed=False
+    )
+    .size()
+    .reset_index(name="count")
+)
+
+pending_summary = pending_summary[
+    pending_summary["count"] > 0
+]
+
+fig_pending = px.bar(
+    pending_summary,
+    x="first engineer(india team)",
+    y="count",
+    color="age_bucket",
+    text="count",
+    barmode="stack",
+    title="Overall Pending Cases Aging Analysis",
+    color_discrete_map={
+        "0-7 Days": "blue",
+        "8-15 Days": "orange",
+        ">15 Days": "red"
+    }
+)
+
+fig_pending.update_traces(
+    textposition="inside"
+)
+
+st.plotly_chart(
+    fig_pending,
+    use_container_width=True
+)
