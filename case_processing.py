@@ -891,7 +891,6 @@ elif selected_section == "Pending Cases Aging Analysis":
         .size()
         .reset_index(name="count")
     )
-
     pending_summary = pending_summary[
         pending_summary["count"] > 0
     ]
