@@ -535,59 +535,65 @@ if engineer_list:
 
 
     # --------------------------------------------------------
-    # STATUS COUNTS
-    # --------------------------------------------------------
+    # ============================================================
+# YEARLY ENGINEER PERFORMANCE
+# ============================================================
 
-    year_total = len(
-        engineer_year_df
-    )
+# --------------------------------------------------------
+# STATUS COUNTS
+# --------------------------------------------------------
 
+year_total = len(engineer_year_df)
 
-    year_closed = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"]
-            == "closed"
-        ]
-    )
+year_closed = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "closed"
+    ]
+)
 
+year_ongoing = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "ongoing"
+    ]
+)
 
-    year_ongoing = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"]
-            == "ongoing"
-        ]
-    )
+year_infra = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "pending on infra"
+    ]
+)
 
+year_manufactures = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "pending on manufactures"
+    ]
+)
 
-    year_infra = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"]
-            == "pending on infra"
-        ]
-    )
-
-
-    year_manufactures = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"]
-            == "pending on manufactures"
-        ]
-    )
-
-
-    year_unassigned = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"]
-            == "ticket status unassigned"
-        ]
-    )
+year_unassigned = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "ticket status unassigned"
+    ]
+)
 
 
-    # --------------------------------------------------------
+# --------------------------------------------------------
+# CLOSURE PERCENTAGE
+# Calculate this BEFORE creating the gauge
+# --------------------------------------------------------
+
+year_closure_rate = (
+    (year_closed / year_total) * 100
+    if year_total > 0
+    else 0
+)
+
+
+# --------------------------------------------------------
 # LEFT SIDE - PERFORMANCE LIST | RIGHT SIDE - GAUGE
 # --------------------------------------------------------
 
 list_col, chart_col = st.columns([1.2, 1])
+
 
 # --------------------------------------------------------
 # LEFT SIDE - PERFORMANCE LIST IN TWO COLUMNS
@@ -652,30 +658,44 @@ with list_col:
 
 with chart_col:
 
-    import plotly.graph_objects as go
-
     fig_yearly_gauge = go.Figure(
         go.Indicator(
             mode="gauge+number",
             value=year_closure_rate,
+
             number={
                 "suffix": "%",
                 "font": {"size": 28}
             },
+
             title={
                 "text": "Yearly Closure Rate",
                 "font": {"size": 14}
             },
+
             gauge={
                 "axis": {
                     "range": [0, 100],
                     "ticksuffix": "%"
                 },
-                "bar": {"color": "#00A86B"},
+
+                "bar": {
+                    "color": "#00A86B"
+                },
+
                 "steps": [
-                    {"range": [0, 50], "color": "#FCE8E6"},
-                    {"range": [50, 80], "color": "#FFF4CC"},
-                    {"range": [80, 100], "color": "#D9F2E6"},
+                    {
+                        "range": [0, 50],
+                        "color": "#FCE8E6"
+                    },
+                    {
+                        "range": [50, 80],
+                        "color": "#FFF4CC"
+                    },
+                    {
+                        "range": [80, 100],
+                        "color": "#D9F2E6"
+                    },
                 ],
             },
         )
@@ -683,7 +703,12 @@ with chart_col:
 
     fig_yearly_gauge.update_layout(
         height=220,
-        margin=dict(l=10, r=10, t=40, b=10)
+        margin=dict(
+            l=10,
+            r=10,
+            t=40,
+            b=10
+        )
     )
 
     st.plotly_chart(
@@ -691,54 +716,19 @@ with chart_col:
         use_container_width=True,
         config={"displayModeBar": False}
     )
-    
-    # --------------------------------------------------------
-    # Closure percentage
-    # --------------------------------------------------------
 
-    year_closure_rate = (
-        (year_closed / year_total) * 100
-        if year_total > 0
-        else 0
-    )
 
-    fig_yearly_gauge = go.Figure(
-    go.Indicator(
-        mode="gauge+number",
-        value=year_closure_rate,
-        number={"suffix": "%", "font": {"size": 30}},
-        title={"text": "Yearly Closure Rate"},
-        gauge={
-            "axis": {"range": [0, 100], "ticksuffix": "%"},
-            "bar": {"color": "#00A86B"},
-            "steps": [
-                {"range": [0, 50], "color": "#FCE8E6"},
-                {"range": [50, 80], "color": "#FFF4CC"},
-                {"range": [80, 100], "color": "#D9F2E6"},
-            ],
-        },
-    )
-)
-
-fig_yearly_gauge.update_layout(
-    height=220,
-    margin=dict(l=15, r=15, t=45, b=10),
-)
-
-st.plotly_chart(
-    fig_yearly_gauge,
-    use_container_width=True,
-    config={"displayModeBar": False},
-)
 # ============================================================
 # PENDING AGING ANALYSIS
-# This responds to Year / Month / Week filters
+# Responds to Year / Month / Week filters
 # ============================================================
 
-st.subheader(
-    "⏳ Pending Cases Aging Analysis"
-)
+st.subheader("⏳ Pending Cases Aging Analysis")
 
+
+# ------------------------------------------------------------
+# Filter pending cases using filtered_df
+# ------------------------------------------------------------
 
 pending_df = filtered_df[
     (filtered_df["end time"].isna()) &
@@ -766,9 +756,10 @@ pending_df["effective_start_date"] = (
 # Calculate case age
 # ------------------------------------------------------------
 
+today = pd.Timestamp.today().normalize()
+
 pending_df["case_days"] = (
-    today -
-    pending_df["effective_start_date"]
+    today - pending_df["effective_start_date"]
 ).dt.days
 
 
@@ -779,20 +770,27 @@ pending_df["case_days"] = (
 pending_df["age_bucket"] = np.select(
     [
         pending_df["case_days"] <= 7,
-        pending_df["case_days"].between(8, 15),
+
+        pending_df["case_days"].between(
+            8,
+            15
+        ),
+
         pending_df["case_days"] > 15
     ],
+
     [
         "0-7 Days",
         "8-15 Days",
         ">15 Days"
     ],
+
     default="Unknown"
 )
 
 
 # ------------------------------------------------------------
-# Group engineer + age bucket
+# Group Engineer + Age Bucket
 # ------------------------------------------------------------
 
 pending_summary = (
@@ -809,80 +807,53 @@ pending_summary = (
 )
 
 
+# Remove zero-count rows
+
 pending_summary = pending_summary[
     pending_summary["count"] > 0
 ]
 
 
-# PENDING AGING ANALYSIS (Overall Data) 
-pending_df = df[
-  (df["end time"].isna()) &
-  ( 
-      df["status"] 
-      .astype(str) 
-      .str.strip() 
-      .str.lower() != "closed" 
-  ) 
-].copy() 
-  
-pending_df["effective_start_date"] = ( 
-    pending_df["start date"] 
-    .fillna(pending_df["filled_date"]) 
-) 
-today = pd.Timestamp.today().normalize() 
+# ------------------------------------------------------------
+# Pending Aging Chart
+# ------------------------------------------------------------
 
-pending_df["case_days"] = ( 
-  today - pending_df["effective_start_date"] 
-).dt.days 
+fig_pending = px.bar(
+    pending_summary,
 
-pending_df["age_bucket"] = np.select( 
-  [ 
-    pending_df["case_days"] <= 7, 
-    pending_df["case_days"].between(8, 15), 
-    pending_df["case_days"] > 15 
-  ], 
-  [ 
-    "0-7 Days", 
-    "8-15 Days", 
-    ">15 Days" 
-  ], 
-  default="Unknown" 
-) 
+    x="first engineer(india team)",
 
-pending_summary = ( 
-  pending_df.groupby( 
-    ["first engineer(india team)", "age_bucket"], 
-    observed=False 
-  ) 
-    
-  .size() 
-  .reset_index(name="count") 
-) 
+    y="count",
 
-pending_summary = pending_summary[ 
-  pending_summary["count"] > 0 
-] 
+    color="age_bucket",
 
-fig_pending = px.bar( 
-   pending_summary, 
-   x="first engineer(india team)", 
-   y="count", 
-   color="age_bucket", 
-   text="count", 
-   barmode="stack", 
-   title="Overall Pending Cases Aging Analysis", 
-   color_discrete_map={ 
-      "0-7 Days": "blue", 
-      "8-15 Days": "orange", 
-      ">15 Days": "red" 
-   } 
+    text="count",
+
+    barmode="stack",
+
+    title="Pending Cases Aging Analysis",
+
+    color_discrete_map={
+        "0-7 Days": "blue",
+        "8-15 Days": "orange",
+        ">15 Days": "red"
+    }
 )
 
-fig_pending.update_traces( 
-   textposition="inside" 
-) 
 
-st.plotly_chart( 
-   fig_pending, 
-   use_container_width=True 
+fig_pending.update_traces(
+    textposition="inside"
+)
+
+
+fig_pending.update_layout(
+    xaxis_title="Engineer",
+    yaxis_title="Number of Pending Cases",
+    legend_title="Case Age"
+)
+
+
+st.plotly_chart(
+    fig_pending,
+    use_container_width=True
 )
