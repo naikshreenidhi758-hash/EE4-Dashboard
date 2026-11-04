@@ -584,6 +584,115 @@ if engineer_list:
 
 
     # --------------------------------------------------------
+# LEFT SIDE - PERFORMANCE LIST | RIGHT SIDE - GAUGE
+# --------------------------------------------------------
+
+list_col, chart_col = st.columns([1.2, 1])
+
+# --------------------------------------------------------
+# LEFT SIDE - PERFORMANCE LIST IN TWO COLUMNS
+# --------------------------------------------------------
+
+with list_col:
+
+    list_col1, list_col2 = st.columns(2)
+
+    # First list column
+    with list_col1:
+
+        st.markdown(
+            f"**Total Cases:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_total}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Closed:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_closed}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Ongoing:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_ongoing}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Closure:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_closure_rate:.1f}%</span>",
+            unsafe_allow_html=True
+        )
+
+    # Second list column
+    with list_col2:
+
+        st.markdown(
+            f"**Pending:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_infra}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Pending from Mfg:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_manufactures}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Unassigned:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_unassigned}</span>",
+            unsafe_allow_html=True
+        )
+
+
+# --------------------------------------------------------
+# RIGHT SIDE - CLOSURE RATE GAUGE
+# --------------------------------------------------------
+
+with chart_col:
+
+    import plotly.graph_objects as go
+
+    fig_yearly_gauge = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=year_closure_rate,
+            number={
+                "suffix": "%",
+                "font": {"size": 28}
+            },
+            title={
+                "text": "Yearly Closure Rate",
+                "font": {"size": 14}
+            },
+            gauge={
+                "axis": {
+                    "range": [0, 100],
+                    "ticksuffix": "%"
+                },
+                "bar": {"color": "#00A86B"},
+                "steps": [
+                    {"range": [0, 50], "color": "#FCE8E6"},
+                    {"range": [50, 80], "color": "#FFF4CC"},
+                    {"range": [80, 100], "color": "#D9F2E6"},
+                ],
+            },
+        )
+    )
+
+    fig_yearly_gauge.update_layout(
+        height=220,
+        margin=dict(l=10, r=10, t=40, b=10)
+    )
+
+    st.plotly_chart(
+        fig_yearly_gauge,
+        use_container_width=True,
+        config={"displayModeBar": False}
+    )
+    
+    # --------------------------------------------------------
     # Closure percentage
     # --------------------------------------------------------
 
@@ -593,8 +702,6 @@ if engineer_list:
         else 0
     )
 
-
-   
     fig_yearly_gauge = go.Figure(
     go.Indicator(
         mode="gauge+number",
