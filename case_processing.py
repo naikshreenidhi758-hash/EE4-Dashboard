@@ -496,11 +496,15 @@ engineer_list = sorted(
 
 if engineer_list:
 
-    selected_engineer = st.selectbox(
-        "Select Engineer",
-        engineer_list,
-        key="yearly_engineer"
-    )
+    # Show engineer selection in half of the dashboard
+    selection_col, empty_col = st.columns(2)
+
+    with selection_col:
+        selected_engineer = st.selectbox(
+            "Select Engineer",
+            engineer_list,
+            key="yearly_engineer"
+        )
 
 
     # --------------------------------------------------------
