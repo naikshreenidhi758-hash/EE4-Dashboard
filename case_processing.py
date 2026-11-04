@@ -894,7 +894,49 @@ elif selected_section == "Pending Cases Aging Analysis":
     pending_summary = pending_summary[
         pending_summary["count"] > 0
     ]
-    # PENDING AGING ANALYSIS (Overall Data)
+    # ------------------------------------------------------------
+    # DISPLAY PENDING AGING CHART IN NAVIGATION SECTION
+    # ------------------------------------------------------------
+
+    if pending_summary.empty:
+
+        st.info(
+            "No pending cases found for the selected filters."
+        )
+
+    else:
+
+        fig_pending_navigation = px.bar(
+            pending_summary,
+            x="first engineer(india team)",
+            y="count",
+            color="age_bucket",
+            text="count",
+            barmode="stack",
+            title="Pending Cases Aging Analysis",
+            color_discrete_map={
+                "0-7 Days": "blue",
+                "8-15 Days": "orange",
+                ">15 Days": "red",
+                "Unknown": "gray"
+            }
+        )
+
+        fig_pending_navigation.update_traces(
+            textposition="inside"
+        )
+
+        fig_pending_navigation.update_layout(
+            xaxis_title="Engineer",
+            yaxis_title="Number of Pending Cases",
+            legend_title="Case Age"
+        )
+
+        st.plotly_chart(
+            fig_pending_navigation,
+            use_container_width=True
+        )
+# PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
     (df["end time"].isna()) &
     (
