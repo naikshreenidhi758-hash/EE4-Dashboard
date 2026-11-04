@@ -593,64 +593,9 @@ if engineer_list:
     )
 
 
-    # ========================================================
-    # YEARLY KPI CARDS
-    # ========================================================
-
-    k1, k2, k3, k4, k5, k6, k7 = st.columns(7)
-
-
-    with k1:
-        st.metric(
-            "📋 Total Cases",
-            year_total
-        )
-
-
-    with k2:
-        st.metric(
-            "✅ Closed",
-            year_closed
-        )
-
-
-    with k3:
-        st.metric(
-            "🔄 Ongoing",
-            year_ongoing
-        )
-
-
-    with k4:
-        st.metric(
-            "🏗️ Pending Infra",
-            year_infra
-        )
-
-
-    with k5:
-        st.metric(
-            "🏭 Pending Mfg",
-            year_manufactures
-        )
-
-
-    with k6:
-        st.metric(
-            "⚠️ Unassigned",
-            year_unassigned
-        )
-
-
-    with k7:
-        st.metric(
-            "📈 Closure %",
-            f"{year_closure_rate:.1f}%"
-        )
-
-
-    # ========================================================
-    # ENGINEER YEARLY PERFORMANCE - LIST VIEW
+   
+        # ========================================================
+    # ENGINEER YEARLY PERFORMANCE - HIGHLIGHTED LIST
     # ========================================================
 
     st.subheader(
@@ -660,16 +605,50 @@ if engineer_list:
     left_col, right_col = st.columns(2)
 
     with left_col:
-        st.markdown(f"**Total Cases:** {year_total}")
-        st.markdown(f"**Closed:** {year_closed}")
-        st.markdown(f"**Ongoing:** {year_ongoing}")
-        st.markdown(f"**Closure:** {year_closure_rate:.1f}%")
+
+        st.markdown(
+            f"**Total Cases:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_total}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Closed:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_closed}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Ongoing:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_ongoing}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Closure:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_closure_rate:.1f}%</span>",
+            unsafe_allow_html=True
+        )
 
     with right_col:
-        st.markdown(f"**Pending:** {year_infra}")
-        st.markdown(f"**Pending from Mfg:** {year_manufactures}")
-        st.markdown(f"**Unassigned:** {year_unassigned}")
 
+        st.markdown(
+            f"**Pending:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_infra}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Pending from Mfg:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_manufactures}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Unassigned:** <span style='font-size:24px; "
+            f"font-weight:700;'>{year_unassigned}</span>",
+            unsafe_allow_html=True
+        )
 # ============================================================
 # PENDING AGING ANALYSIS
 # This responds to Year / Month / Week filters
