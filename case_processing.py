@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import numpy as np
+import plotly.graph_objects as go
 from datetime import datetime
 
 
@@ -594,135 +595,34 @@ if engineer_list:
 
 
    
-    # ========================================================
-    # YEARLY PERFORMANCE - LIST + DONUT CHART
-    # ========================================================
-
-    st.subheader(
-        f"📋 {selected_engineer} - {current_year} Performance"
-    )
-
-    # Two equal-width columns
-    list_col, chart_col = st.columns(2)
-
-        # --------------------------------------------------------
-    # LEFT SIDE - PERFORMANCE LIST IN TWO COLUMNS
-    # --------------------------------------------------------
-
-    with list_col:
-
-        list_col1, list_col2 = st.columns(2)
-
-        # First list column
-        with list_col1:
-
-            st.markdown(
-                f"**Total Cases:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_total}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Closed:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_closed}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Ongoing:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_ongoing}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Closure:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_closure_rate:.1f}%</span>",
-                unsafe_allow_html=True
-            )
-
-        # Second list column
-        with list_col2:
-
-            st.markdown(
-                f"**Pending:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_infra}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Pending from Mfg:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_manufactures}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Unassigned:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_unassigned}</span>",
-                unsafe_allow_html=True
-            )
-    # --------------------------------------------------------
-    # RIGHT SIDE - YEARLY STATUS DONUT CHART
-    # --------------------------------------------------------
-
-    with chart_col:
-
-        yearly_donut_data = pd.DataFrame({
-            "Status": [
-                "Closed",
-                "Ongoing",
-                "Pending on Infra",
-                "Pending on Manufactures",
-                "Ticket Status Unassigned"
+    fig_yearly_gauge = go.Figure(
+    go.Indicator(
+        mode="gauge+number",
+        value=year_closure_rate,
+        number={"suffix": "%", "font": {"size": 30}},
+        title={"text": "Yearly Closure Rate"},
+        gauge={
+            "axis": {"range": [0, 100], "ticksuffix": "%"},
+            "bar": {"color": "#00A86B"},
+            "steps": [
+                {"range": [0, 50], "color": "#FCE8E6"},
+                {"range": [50, 80], "color": "#FFF4CC"},
+                {"range": [80, 100], "color": "#D9F2E6"},
             ],
-            "Count": [
-                year_closed,
-                year_ongoing,
-                year_infra,
-                year_manufactures,
-                year_unassigned
-            ]
-        })
-
-        # Remove statuses with zero cases
-        yearly_donut_data = yearly_donut_data[
-            yearly_donut_data["Count"] > 0
-        ]
-
-        fig_yearly_donut = px.pie(
-            yearly_donut_data,
-            names="Status",
-            values="Count",
-            hole=0.55,
-            title="Yearly Status Distribution",
-            color="Status",
-            color_discrete_map={
-                "Closed": "blue",
-                "Ongoing": "green",
-                "Pending on Infra": "orange",
-                "Pending on Manufactures": "yellow",
-                "Ticket Status Unassigned": "black"
-            }
-        )
-
-        fig_yearly_donut.update_traces(
-            textinfo="percent",
-            textposition="inside",
-            insidetextfont=dict(size=11),
-            hovertemplate=(
-                "%{label}<br>"
-                "Cases: %{value}<br>"
-                "Percentage: %{percent}"
-                "<extra></extra>"
-            )
-        )
-
-    fig_yearly_donut.update_layout(
-    height=240,
-    margin=dict(l=5, r=5, t=25, b=5),
-    showlegend=True,
-    legend=dict(font=dict(size=9))
+        },
+    )
 )
-        
+
+fig_yearly_gauge.update_layout(
+    height=220,
+    margin=dict(l=15, r=15, t=45, b=10),
+)
+
+st.plotly_chart(
+    fig_yearly_gauge,
+    use_container_width=True,
+    config={"displayModeBar": False},
+)
 # ============================================================
 # PENDING AGING ANALYSIS
 # This responds to Year / Month / Week filters
