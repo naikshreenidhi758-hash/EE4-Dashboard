@@ -645,48 +645,26 @@ if engineer_list:
         )
 
 
-        # ========================================================
-    # YEARLY STATUS BREAKDOWN - LINE GRAPH
+    # ========================================================
+    # ENGINEER YEARLY PERFORMANCE - LIST VIEW
     # ========================================================
 
-    year_status_summary = (
-        engineer_year_df
-        .groupby("status")
-        .size()
-        .reset_index(name="Count")
+    st.subheader(
+        f"📋 {selected_engineer} - {current_year} Performance"
     )
 
-    fig_year_status = px.line(
-        year_status_summary,
-        x="status",
-        y="Count",
-        markers=True,
-        text="Count",
-        title=f"{selected_engineer} - {current_year} Status Breakdown"
-    )
-
-    fig_year_status.update_traces(
-        textposition="top center",
-        line=dict(width=3),
-        marker=dict(size=9)
-    )
-
-    fig_year_status.update_layout(
-        height=400,
-        xaxis_title="Ticket Status",
-        yaxis_title="Number of Cases",
-        showlegend=False
-    )
-
-    # Display graph in half of the dashboard
     left_col, right_col = st.columns(2)
 
     with left_col:
-        st.plotly_chart(
-            fig_year_status,
-            use_container_width=True
-        )
+        st.markdown(f"**Total Cases:** {year_total}")
+        st.markdown(f"**Closed:** {year_closed}")
+        st.markdown(f"**Ongoing:** {year_ongoing}")
+        st.markdown(f"**Closure:** {year_closure_rate:.1f}%")
 
+    with right_col:
+        st.markdown(f"**Pending:** {year_infra}")
+        st.markdown(f"**Pending from Mfg:** {year_manufactures}")
+        st.markdown(f"**Unassigned:** {year_unassigned}")
 
 # ============================================================
 # PENDING AGING ANALYSIS
