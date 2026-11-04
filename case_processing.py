@@ -736,16 +736,95 @@ elif selected_section == "Engineer Yearly Performance":
 
 
 elif selected_section == "Pending Cases Aging Analysis":
-    # ============================================================
-    # PENDING AGING ANALYSIS
-    # Responds to Year / Month / Week filters
-    # ============================================================
 
     st.subheader("⏳ Pending Cases Aging Analysis")
 
+    # ------------------------------------------------------------
+    # YEAR / MONTH / WEEK FILTERS
+    # Define filtered_df inside this section
+    # ------------------------------------------------------------
+
+    filter_col, empty_col = st.columns([1, 3])
+
+    with filter_col:
+
+        years = sorted(
+            df["year"].dropna().unique().tolist(),
+            reverse=True
+        )
+
+        if not years:
+            st.warning("No date records are available.")
+            st.stop()
+
+        selected_year = st.selectbox(
+            "Select Year",
+            years,
+            key="aging_year"
+        )
+
+        available_months = (
+            df[df["year"] == selected_year]
+            .sort_values("month")["month_name"]
+            .dropna()
+            .unique()
+            .tolist()
+        )
+
+        if not available_months:
+            st.warning("No month records are available for this year.")
+            st.stop()
+
+        current_month = datetime.now().strftime("%B")
+
+        default_month_index = (
+            available_months.index(current_month)
+            if current_month in available_months
+            else 0
+        )
+
+        selected_month = st.selectbox(
+            "Select Month",
+            available_months,
+            index=default_month_index,
+            key="aging_month"
+        )
+
+        available_weeks = (
+            df[
+                (df["year"] == selected_year) &
+                (df["month_name"] == selected_month)
+            ]
+            .sort_values("week_no")["week_name"]
+            .dropna()
+            .unique()
+            .tolist()
+        )
+
+        week_options = ["All Weeks"] + available_weeks
+
+        selected_week = st.selectbox(
+            "Select Week",
+            week_options,
+            key="aging_week"
+        )
 
     # ------------------------------------------------------------
-    # Filter pending cases using filtered_df
+    # APPLY FILTERS
+    # ------------------------------------------------------------
+
+    filtered_df = df[
+        (df["year"] == selected_year) &
+        (df["month_name"] == selected_month)
+    ].copy()
+
+    if selected_week != "All Weeks":
+        filtered_df = filtered_df[
+            filtered_df["week_name"] == selected_week
+        ].copy()
+
+    # ------------------------------------------------------------
+    # FILTER PENDING CASES
     # ------------------------------------------------------------
 
     pending_df = filtered_df[
@@ -755,13 +834,16 @@ elif selected_section == "Pending Cases Aging Analysis":
             .astype(str)
             .str.strip()
             .str.lower()
-            != "closed"
+            .ne("closed")
         )
     ].copy()
 
+    if pending_df.empty:
+        st.info("No pending cases found for the selected filters.")
+        st.stop()
 
     # ------------------------------------------------------------
-    # Effective start date
+    # CALCULATE CASE AGE
     # ------------------------------------------------------------
 
     pending_df["effective_start_date"] = (
@@ -769,46 +851,32 @@ elif selected_section == "Pending Cases Aging Analysis":
         .fillna(pending_df["filled_date"])
     )
 
-
-    # ------------------------------------------------------------
-    # Calculate case age
-    # ------------------------------------------------------------
-
     today = pd.Timestamp.today().normalize()
 
     pending_df["case_days"] = (
         today - pending_df["effective_start_date"]
     ).dt.days
 
-
     # ------------------------------------------------------------
-    # Age buckets
+    # AGE BUCKETS
     # ------------------------------------------------------------
 
     pending_df["age_bucket"] = np.select(
         [
-            pending_df["case_days"] <= 7,
-
-            pending_df["case_days"].between(
-                8,
-                15
-            ),
-
+            pending_df["case_days"].between(0, 7),
+            pending_df["case_days"].between(8, 15),
             pending_df["case_days"] > 15
         ],
-
         [
             "0-7 Days",
             "8-15 Days",
             ">15 Days"
         ],
-
         default="Unknown"
     )
 
-
     # ------------------------------------------------------------
-    # Group Engineer + Age Bucket
+    # GROUP BY ENGINEER + AGE BUCKET
     # ------------------------------------------------------------
 
     pending_summary = (
@@ -818,58 +886,45 @@ elif selected_section == "Pending Cases Aging Analysis":
                 "first engineer(india team)",
                 "age_bucket"
             ],
-            observed=False
+            dropna=False
         )
         .size()
         .reset_index(name="count")
     )
 
-
-    # Remove zero-count rows
-
     pending_summary = pending_summary[
         pending_summary["count"] > 0
     ]
 
-
     # ------------------------------------------------------------
-    # Pending Aging Chart
+    # PENDING AGING CHART
     # ------------------------------------------------------------
 
     fig_pending = px.bar(
         pending_summary,
-
         x="first engineer(india team)",
-
         y="count",
-
         color="age_bucket",
-
         text="count",
-
         barmode="stack",
-
         title="Pending Cases Aging Analysis",
-
         color_discrete_map={
             "0-7 Days": "blue",
             "8-15 Days": "orange",
-            ">15 Days": "red"
+            ">15 Days": "red",
+            "Unknown": "gray"
         }
     )
-
 
     fig_pending.update_traces(
         textposition="inside"
     )
-
 
     fig_pending.update_layout(
         xaxis_title="Engineer",
         yaxis_title="Number of Pending Cases",
         legend_title="Case Age"
     )
-
 
     st.plotly_chart(
         fig_pending,
