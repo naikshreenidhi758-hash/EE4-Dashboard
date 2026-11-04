@@ -718,23 +718,9 @@ if engineer_list:
 
     fig_yearly_donut.update_layout(
     height=240,
-    margin=dict(
-        l=5,
-        r=5,
-        t=35,
-        b=5
-    ),
+    margin=dict(l=5, r=5, t=25, b=5),
     showlegend=True,
-    legend=dict(
-        font=dict(size=9)
-    )
-)
-
-fig_yearly_donut.update_traces(
-    domain=dict(
-        x=[0.15, 0.85],
-        y=[0.15, 0.85]
-    )
+    legend=dict(font=dict(size=9))
 )
         
 # ============================================================
