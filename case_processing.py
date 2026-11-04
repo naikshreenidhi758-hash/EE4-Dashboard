@@ -142,105 +142,9 @@ df["week_name"] = (
 
 
 # ============================================================
-# SIDEBAR FILTERS
+# FILTERS ARE DISPLAYED BESIDE CASES BY ENGINEER AND STATUS
+# The filter widgets and filtered_df are created in that section.
 # ============================================================
-
-st.sidebar.header("🔎 Filters")
-
-
-# ------------------------------------------------------------
-# YEAR
-# ------------------------------------------------------------
-
-years = sorted(
-    df["year"]
-    .dropna()
-    .unique()
-    .tolist(),
-    reverse=True
-)
-
-selected_year = st.sidebar.selectbox(
-    "Select Year",
-    years
-)
-
-
-# ------------------------------------------------------------
-# MONTH
-# ------------------------------------------------------------
-
-available_months = (
-    df[df["year"] == selected_year]
-    .sort_values("month")["month_name"]
-    .dropna()
-    .unique()
-)
-
-available_months = list(available_months)
-
-
-current_month = datetime.now().strftime("%B")
-
-if current_month in available_months:
-    default_month_index = available_months.index(
-        current_month
-    )
-else:
-    default_month_index = 0
-
-
-selected_month = st.sidebar.selectbox(
-    "Select Month",
-    available_months,
-    index=default_month_index
-)
-
-
-# ------------------------------------------------------------
-# WEEK
-# ------------------------------------------------------------
-
-available_weeks = (
-    df[
-        (df["year"] == selected_year) &
-        (df["month_name"] == selected_month)
-    ]
-    .sort_values("week_no")["week_name"]
-    .dropna()
-    .unique()
-)
-
-available_weeks = list(available_weeks)
-
-week_options = [
-    "All Weeks"
-] + available_weeks
-
-
-selected_week = st.sidebar.selectbox(
-    "Select Week",
-    week_options
-)
-
-
-# ============================================================
-# FILTER DATA
-# This data responds to Year + Month + Week
-# ============================================================
-
-filtered_df = df[
-    (df["year"] == selected_year) &
-    (df["month_name"] == selected_month)
-].copy()
-
-
-if selected_week != "All Weeks":
-
-    filtered_df = filtered_df[
-        filtered_df["week_name"] == selected_week
-    ].copy()
-
 
 # ============================================================
 # KPI METRICS - ALL TICKETS
@@ -382,30 +286,86 @@ st.plotly_chart(
 
 # ============================================================
 # ENGINEER VS STATUS
-# IMPORTANT:
-# This remains Year / Month / Week filtered
+# Filters are displayed on the right of this chart.
 # ============================================================
 
 st.subheader("👨‍💻 Cases by Engineer and Status")
 
+chart_col, filter_col = st.columns([3, 1])
+
+with filter_col:
+    st.markdown("### 🔎 Filters")
+
+    years = sorted(
+        df["year"].dropna().unique().tolist(),
+        reverse=True
+    )
+
+    selected_year = st.selectbox(
+        "Select Year",
+        years,
+        key="engineer_status_year"
+    )
+
+    available_months = (
+        df[df["year"] == selected_year]
+        .sort_values("month")["month_name"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    current_month = datetime.now().strftime("%B")
+    default_month_index = (
+        available_months.index(current_month)
+        if current_month in available_months
+        else 0
+    )
+
+    selected_month = st.selectbox(
+        "Select Month",
+        available_months,
+        index=default_month_index,
+        key="engineer_status_month"
+    )
+
+    available_weeks = (
+        df[
+            (df["year"] == selected_year) &
+            (df["month_name"] == selected_month)
+        ]
+        .sort_values("week_no")["week_name"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    week_options = ["All Weeks"] + available_weeks
+
+    selected_week = st.selectbox(
+        "Select Week",
+        week_options,
+        key="engineer_status_week"
+    )
+
+# Year / Month / Week filtering is used by the Engineer vs Status chart
+filtered_df = df[
+    (df["year"] == selected_year) &
+    (df["month_name"] == selected_month)
+].copy()
+
+if selected_week != "All Weeks":
+    filtered_df = filtered_df[
+        filtered_df["week_name"] == selected_week
+    ].copy()
 
 engineer_df = filtered_df.copy()
-
-
-# ------------------------------------------------------------
-# Keep engineer name as engineer
-# ------------------------------------------------------------
 
 engineer_df["first engineer(india team)"] = (
     engineer_df["first engineer(india team)"]
     .astype("string")
     .str.strip()
 )
-
-
-# ------------------------------------------------------------
-# Ticket Status Unassigned belongs ONLY to STATUS
-# ------------------------------------------------------------
 
 engineer_df["status"] = (
     engineer_df["status"]
@@ -418,46 +378,23 @@ engineer_df["status"] = (
     )
 )
 
-
-# ------------------------------------------------------------
-# Remove rows that genuinely have no engineer
-# This prevents a separate Unassigned engineer bar
-# ------------------------------------------------------------
-
 engineer_df = engineer_df[
     engineer_df["first engineer(india team)"].notna() &
     (engineer_df["first engineer(india team)"] != "") &
     (~engineer_df["first engineer(india team)"].isin(
-        [
-            "nan",
-            "None",
-            "Ticket Status Unassigned"
-        ]
+        ["nan", "None", "Ticket Status Unassigned"]
     ))
 ].copy()
-
-
-# ------------------------------------------------------------
-# Group by Engineer + Status
-# ------------------------------------------------------------
 
 eng_status = (
     engineer_df
     .groupby(
-        [
-            "first engineer(india team)",
-            "status"
-        ],
+        ["first engineer(india team)", "status"],
         dropna=False
     )
     .size()
     .reset_index(name="count")
 )
-
-
-# ------------------------------------------------------------
-# STACKED BAR
-# ------------------------------------------------------------
 
 fig_bar = px.bar(
     eng_status,
@@ -478,11 +415,7 @@ fig_bar = px.bar(
     }
 )
 
-
-fig_bar.update_traces(
-    textposition="inside"
-)
-
+fig_bar.update_traces(textposition="inside")
 
 fig_bar.update_layout(
     xaxis_title="Engineer",
@@ -490,11 +423,11 @@ fig_bar.update_layout(
     legend_title="Status"
 )
 
-
-st.plotly_chart(
-    fig_bar,
-    use_container_width=True
-)
+with chart_col:
+    st.plotly_chart(
+        fig_bar,
+        use_container_width=True
+    )
 
 
 # ============================================================
