@@ -717,7 +717,7 @@ if engineer_list:
         )
 
         fig_yearly_donut.update_layout(
-            height=320,
+            height=240,
             margin=dict(
                 l=5,
                 r=5,
@@ -726,14 +726,16 @@ if engineer_list:
             ),
             showlegend=True,
             legend=dict(
-                font=dict(size=10)
+                font=dict(size=9)
             )
         )
-
-        st.plotly_chart(
-            fig_yearly_donut,
-            use_container_width=True
+        fig_yearly_donut.update_traces(
+            domain=dict(
+                x=[0.15,0.85],
+                y=[0.15,0.85]
+            )
         )
+        
 # ============================================================
 # PENDING AGING ANALYSIS
 # This responds to Year / Month / Week filters
