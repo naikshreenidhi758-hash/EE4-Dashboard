@@ -892,9 +892,9 @@ elif selected_section == "Pending Cases Aging Analysis":
         .reset_index(name="count")
     )
 
-        pending_summary = pending_summary[
-            pending_summary["count"] > 0
-        ]
+    pending_summary = pending_summary[
+        pending_summary["count"] > 0
+    ]
     # ------------------------------------------------------------
     # PENDING AGING CHART - NAVIGATION SECTION
     # ------------------------------------------------------------
