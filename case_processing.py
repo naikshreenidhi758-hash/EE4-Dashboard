@@ -9,9 +9,6 @@ from datetime import datetime
 # ============================================================
 # PAGE CONFIG
 # ============================================================
-st.markdown('<div id="case-processing-status"></div>', unsafe_allow_html=True)
-st.header("Case Processing Status")
-
 st.set_page_config(
     page_title="Case Processing Dashboard",
     layout="wide"
@@ -24,6 +21,8 @@ st.set_page_config(
 st.image("envision.png")
 
 st.title("INDIA Project - Case Processing Status 📋")
+
+st.markdown('<div id="case-processing-status"></div>', unsafe_allow_html=True)
 
 # ============================================================
 # LOAD EXCEL
@@ -242,7 +241,7 @@ with st.expander(
 
     st.dataframe(
         pending_case_list,
-        use_container_width=True
+        width="stretch"
     )
 
 
@@ -288,660 +287,655 @@ fig_status.update_layout(
 
 st.plotly_chart(
     fig_status,
-    use_container_width=True
+    width="stretch"
 )
 
-if selected_section == "Status Cases by Engineer and Status":
-    # ============================================================
-    # ENGINEER VS STATUS
-    # Filters are displayed on the right of this chart.
-    # ============================================================
-    
-    st.markdown('<div id="cases-by-engineer-and-status"></div>', unsafe_allow_html=True)
-    st.header("Cases by Engineer and Status")
+# ============================================================
+# ENGINEER VS STATUS
+# Filters are displayed on the right of this chart.
+# ============================================================
 
-    
-    st.markdown(
-        "<div id='status-cases-by-engineer'></div>",
-        unsafe_allow_html=True
+st.markdown('<div id="cases-by-engineer-and-status"></div>', unsafe_allow_html=True)
+st.header("Cases by Engineer and Status")
+
+
+st.markdown(
+    "<div id='status-cases-by-engineer'></div>",
+    unsafe_allow_html=True
+)
+
+st.subheader("👨‍💻 Cases by Engineer and Status")
+
+chart_col, filter_col = st.columns([3, 1])
+
+with filter_col:
+    st.markdown("### 🔎 Filters")
+
+    years = sorted(
+        df["year"].dropna().unique().tolist(),
+        reverse=True
     )
 
-    st.subheader("👨‍💻 Cases by Engineer and Status")
-
-    chart_col, filter_col = st.columns([3, 1])
-
-    with filter_col:
-        st.markdown("### 🔎 Filters")
-
-        years = sorted(
-            df["year"].dropna().unique().tolist(),
-            reverse=True
-        )
-
-        selected_year = st.selectbox(
-            "Select Year",
-            years,
-            key="engineer_status_year"
-        )
-
-        available_months = (
-            df[df["year"] == selected_year]
-            .sort_values("month")["month_name"]
-            .dropna()
-            .unique()
-            .tolist()
-        )
-
-        current_month = datetime.now().strftime("%B")
-        default_month_index = (
-            available_months.index(current_month)
-            if current_month in available_months
-            else 0
-        )
-
-        selected_month = st.selectbox(
-            "Select Month",
-            available_months,
-            index=default_month_index,
-            key="engineer_status_month"
-        )
-
-        available_weeks = (
-            df[
-                (df["year"] == selected_year) &
-                (df["month_name"] == selected_month)
-            ]
-            .sort_values("week_no")["week_name"]
-            .dropna()
-            .unique()
-            .tolist()
-        )
-
-        week_options = ["All Weeks"] + available_weeks
-
-        selected_week = st.selectbox(
-            "Select Week",
-            week_options,
-            key="engineer_status_week"
-        )
-
-    # Year / Month / Week filtering is used by the Engineer vs Status chart
-    filtered_df = df[
-        (df["year"] == selected_year) &
-        (df["month_name"] == selected_month)
-    ].copy()
-
-    if selected_week != "All Weeks":
-        filtered_df = filtered_df[
-            filtered_df["week_name"] == selected_week
-        ].copy()
-
-    engineer_df = filtered_df.copy()
-
-    engineer_df["first engineer(india team)"] = (
-        engineer_df["first engineer(india team)"]
-        .astype("string")
-        .str.strip()
+    selected_year = st.selectbox(
+        "Select Year",
+        years,
+        key="engineer_status_year"
     )
 
-    engineer_df["status"] = (
-        engineer_df["status"]
-        .fillna("Ticket Status Unassigned")
-        .astype(str)
-        .str.strip()
-        .replace(
-            ["", "nan", "None"],
-            "Ticket Status Unassigned"
-        )
-    )
-
-    engineer_df = engineer_df[
-        engineer_df["first engineer(india team)"].notna() &
-        (engineer_df["first engineer(india team)"] != "") &
-        (~engineer_df["first engineer(india team)"].isin(
-            ["nan", "None", "Ticket Status Unassigned"]
-        ))
-    ].copy()
-
-    eng_status = (
-        engineer_df
-        .groupby(
-            ["first engineer(india team)", "status"],
-            dropna=False
-        )
-        .size()
-        .reset_index(name="count")
-    )
-
-    fig_bar = px.bar(
-        eng_status,
-        x="first engineer(india team)",
-        y="count",
-        color="status",
-        text="count",
-        barmode="stack",
-        title="Cases by Engineer and Status",
-        color_discrete_map={
-            "Closed": "blue",
-            "Ongoing": "green",
-            "Pending on Infra": "orange",
-            "Pending on Manufactures": "yellow",
-            "Pending on Universe": "orange",
-            "Not Started": "pink",
-            "Ticket Status Unassigned": "black"
-        }
-    )
-
-    fig_bar.update_traces(textposition="inside")
-
-    fig_bar.update_layout(
-        xaxis_title="Engineer",
-        yaxis_title="Number of Cases",
-        legend_title="Status"
-    )
-
-    with chart_col:
-        st.plotly_chart(
-            fig_bar,
-            use_container_width=True
-        )
-
-
-elif selected_section == "Engineer Yearly Performance":
-    # ============================================================
-    # ENGINEER YEARLY PERFORMANCE
-    # CURRENT YEAR: JANUARY 1 -> TODAY
-    #
-    # IMPORTANT:
-    # This section intentionally ignores selected Month and Week.
-    # It shows the engineer's complete current-year performance.
-    # ============================================================
-
-    st.subheader(
-        "👨‍💻 Engineer Yearly Performance"
-    )
-
-
-    # ------------------------------------------------------------
-    # Current calendar year
-    # ------------------------------------------------------------
-
-    current_year = datetime.now().year
-
-    today = pd.Timestamp.today().normalize()
-
-
-    # ------------------------------------------------------------
-    # All cases from January 1 until today
-    # ------------------------------------------------------------
-
-    current_year_df = df[
-        (df["year"] == current_year) &
-        (df["effective_date"] <= today)
-    ].copy()
-
-
-    # ------------------------------------------------------------
-    # Engineer list
-    # ------------------------------------------------------------
-
-    engineer_list = sorted(
-        current_year_df[
-            current_year_df[
-                "first engineer(india team)"
-            ].notna()
-        ]["first engineer(india team)"]
-        .astype(str)
-        .str.strip()
-        .loc[
-            lambda x:
-            ~x.isin(
-                [
-                    "",
-                    "nan",
-                    "None",
-                    "Ticket Status Unassigned"
-                ]
-            )
-        ]
+    available_months = (
+        df[df["year"] == selected_year]
+        .sort_values("month")["month_name"]
+        .dropna()
         .unique()
+        .tolist()
     )
 
-
-    # ------------------------------------------------------------
-    # Engineer selection
-    # ------------------------------------------------------------
-
-    if engineer_list:
-
-        # Show engineer selection in half of the dashboard
-        selection_col, empty_col = st.columns(2)
-
-        with selection_col:
-            selected_engineer = st.selectbox(
-                "Select Engineer",
-                engineer_list,
-                key="yearly_engineer"
-            )
-
-
-        # --------------------------------------------------------
-        # Selected engineer data
-        # --------------------------------------------------------
-
-        engineer_year_df = current_year_df[
-            current_year_df[
-                "first engineer(india team)"
-            ]
-            .astype(str)
-            .str.strip()
-            .eq(selected_engineer)
-        ].copy()
-
-
-        # --------------------------------------------------------
-        # NORMALIZE STATUS FOR CALCULATIONS
-        # --------------------------------------------------------
-
-        engineer_year_df["status_clean"] = (
-            engineer_year_df["status"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-        )
-
-
-    # --------------------------------------------------------
-    # ============================================================
-    # YEARLY ENGINEER PERFORMANCE
-    # ============================================================
-
-    # --------------------------------------------------------
-    # STATUS COUNTS
-    # --------------------------------------------------------
-
-    st.markdown('<div id="engineer-yearly-performance"></div>', unsafe_allow_html=True)
-    st.header("Engineer Yearly Performance")
-    
-    year_total = len(engineer_year_df)
-
-    year_closed = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"] == "closed"
-        ]
-    )
-
-    year_ongoing = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"] == "ongoing"
-        ]
-    )
-
-    year_infra = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"] == "pending on infra"
-        ]
-    )
-
-    year_manufactures = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"] == "pending on manufactures"
-        ]
-    )
-
-    year_unassigned = len(
-        engineer_year_df[
-            engineer_year_df["status_clean"] == "ticket status unassigned"
-        ]
-    )
-
-
-    # --------------------------------------------------------
-    # CLOSURE PERCENTAGE
-    # Calculate this BEFORE creating the gauge
-    # --------------------------------------------------------
-
-    year_closure_rate = (
-        (year_closed / year_total) * 100
-        if year_total > 0
+    current_month = datetime.now().strftime("%B")
+    default_month_index = (
+        available_months.index(current_month)
+        if current_month in available_months
         else 0
     )
 
-
-    # --------------------------------------------------------
-    # LEFT SIDE - PERFORMANCE LIST | RIGHT SIDE - GAUGE
-    # --------------------------------------------------------
-
-    list_col, chart_col = st.columns([1.2, 1])
-
-
-    # --------------------------------------------------------
-    # LEFT SIDE - PERFORMANCE LIST IN TWO COLUMNS
-    # --------------------------------------------------------
-
-    with list_col:
-
-        list_col1, list_col2 = st.columns(2)
-
-        # First list column
-        with list_col1:
-
-            st.markdown(
-                f"**Total Cases:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_total}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Closed:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_closed}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Ongoing:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_ongoing}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Closure:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_closure_rate:.1f}%</span>",
-                unsafe_allow_html=True
-            )
-
-        # Second list column
-        with list_col2:
-
-            st.markdown(
-                f"**Pending:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_infra}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Pending from Mfg:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_manufactures}</span>",
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"**Unassigned:** "
-                f"<span style='font-size:24px;font-weight:700;'>{year_unassigned}</span>",
-                unsafe_allow_html=True
-            )
-
-
-    # --------------------------------------------------------
-    # RIGHT SIDE - CLOSURE RATE GAUGE
-    # --------------------------------------------------------
-
-    with chart_col:
-
-        fig_yearly_gauge = go.Figure(
-            go.Indicator(
-                mode="gauge+number",
-                value=year_closure_rate,
-
-                number={
-                    "suffix": "%",
-                    "font": {"size": 28}
-                },
-
-                title={
-                    "text": "Yearly Closure Rate",
-                    "font": {"size": 14}
-                },
-
-                gauge={
-                    "axis": {
-                        "range": [0, 100],
-                        "ticksuffix": "%"
-                    },
-
-                    "bar": {
-                        "color": "#00A86B"
-                    },
-
-                    "steps": [
-                        {
-                            "range": [0, 50],
-                            "color": "#FCE8E6"
-                        },
-                        {
-                            "range": [50, 80],
-                            "color": "#FFF4CC"
-                        },
-                        {
-                            "range": [80, 100],
-                            "color": "#D9F2E6"
-                        },
-                    ],
-                },
-            )
-        )
-
-        fig_yearly_gauge.update_layout(
-            height=220,
-            margin=dict(
-                l=10,
-                r=10,
-                t=40,
-                b=10
-            )
-        )
-
-        st.plotly_chart(
-            fig_yearly_gauge,
-            use_container_width=True,
-            config={"displayModeBar": False}
-        )
-
-
-elif selected_section == "Pending Cases Aging Analysis":
-
-    st.subheader("⏳ Pending Cases Aging Analysis")
-
-    # ------------------------------------------------------------
-    # YEAR / MONTH / WEEK FILTERS
-    # Define filtered_df inside this section
-    # ------------------------------------------------------------
-
-    filter_col, empty_col = st.columns([1, 3])
-
-    with filter_col:
-
-        years = sorted(
-            df["year"].dropna().unique().tolist(),
-            reverse=True
-        )
-
-        if not years:
-            st.warning("No date records are available.")
-            st.stop()
-
-        selected_year = st.selectbox(
-            "Select Year",
-            years,
-            key="aging_year"
-        )
-
-        available_months = (
-            df[df["year"] == selected_year]
-            .sort_values("month")["month_name"]
-            .dropna()
-            .unique()
-            .tolist()
-        )
-
-        if not available_months:
-            st.warning("No month records are available for this year.")
-            st.stop()
-
-        current_month = datetime.now().strftime("%B")
-
-        default_month_index = (
-            available_months.index(current_month)
-            if current_month in available_months
-            else 0
-        )
-
-        selected_month = st.selectbox(
-            "Select Month",
-            available_months,
-            index=default_month_index,
-            key="aging_month"
-        )
-
-        available_weeks = (
-            df[
-                (df["year"] == selected_year) &
-                (df["month_name"] == selected_month)
-            ]
-            .sort_values("week_no")["week_name"]
-            .dropna()
-            .unique()
-            .tolist()
-        )
-
-        week_options = ["All Weeks"] + available_weeks
-
-        selected_week = st.selectbox(
-            "Select Week",
-            week_options,
-            key="aging_week"
-        )
-
-    # ------------------------------------------------------------
-    # APPLY FILTERS
-    # ------------------------------------------------------------
-
-    filtered_df = df[
-        (df["year"] == selected_year) &
-        (df["month_name"] == selected_month)
-    ].copy()
-
-    if selected_week != "All Weeks":
-        filtered_df = filtered_df[
-            filtered_df["week_name"] == selected_week
-        ].copy()
-
-    # ------------------------------------------------------------
-    # FILTER PENDING CASES
-    # ------------------------------------------------------------
-
-    pending_df = filtered_df[
-        (filtered_df["end time"].isna()) &
-        (
-            filtered_df["status"]
-            .astype(str)
-            .str.strip()
-            .str.lower()
-            .ne("closed")
-        )
-    ].copy()
-
-    if pending_df.empty:
-        st.info("No pending cases found for the selected filters.")
-        st.stop()
-
-    # ------------------------------------------------------------
-    # CALCULATE CASE AGE
-    # ------------------------------------------------------------
-
-    pending_df["effective_start_date"] = (
-        pending_df["start date"]
-        .fillna(pending_df["filled_date"])
+    selected_month = st.selectbox(
+        "Select Month",
+        available_months,
+        index=default_month_index,
+        key="engineer_status_month"
     )
 
-    today = pd.Timestamp.today().normalize()
-
-    pending_df["case_days"] = (
-        today - pending_df["effective_start_date"]
-    ).dt.days
-
-    # ------------------------------------------------------------
-    # AGE BUCKETS
-    # ------------------------------------------------------------
-
-    pending_df["age_bucket"] = np.select(
-        [
-            pending_df["case_days"].between(0, 7),
-            pending_df["case_days"].between(8, 15),
-            pending_df["case_days"] > 15
-        ],
-        [
-            "0-7 Days",
-            "8-15 Days",
-            ">15 Days"
-        ],
-        default="Unknown"
+    available_weeks = (
+        df[
+            (df["year"] == selected_year) &
+            (df["month_name"] == selected_month)
+        ]
+        .sort_values("week_no")["week_name"]
+        .dropna()
+        .unique()
+        .tolist()
     )
 
-    # ------------------------------------------------------------
-    # GROUP BY ENGINEER + AGE BUCKET
-    # ------------------------------------------------------------
+    week_options = ["All Weeks"] + available_weeks
 
-    pending_summary = (
-        pending_df
-        .groupby(
+    selected_week = st.selectbox(
+        "Select Week",
+        week_options,
+        key="engineer_status_week"
+    )
+
+# Year / Month / Week filtering is used by the Engineer vs Status chart
+filtered_df = df[
+    (df["year"] == selected_year) &
+    (df["month_name"] == selected_month)
+].copy()
+
+if selected_week != "All Weeks":
+    filtered_df = filtered_df[
+        filtered_df["week_name"] == selected_week
+    ].copy()
+
+engineer_df = filtered_df.copy()
+
+engineer_df["first engineer(india team)"] = (
+    engineer_df["first engineer(india team)"]
+    .astype("string")
+    .str.strip()
+)
+
+engineer_df["status"] = (
+    engineer_df["status"]
+    .fillna("Ticket Status Unassigned")
+    .astype(str)
+    .str.strip()
+    .replace(
+        ["", "nan", "None"],
+        "Ticket Status Unassigned"
+    )
+)
+
+engineer_df = engineer_df[
+    engineer_df["first engineer(india team)"].notna() &
+    (engineer_df["first engineer(india team)"] != "") &
+    (~engineer_df["first engineer(india team)"].isin(
+        ["nan", "None", "Ticket Status Unassigned"]
+    ))
+].copy()
+
+eng_status = (
+    engineer_df
+    .groupby(
+        ["first engineer(india team)", "status"],
+        dropna=False
+    )
+    .size()
+    .reset_index(name="count")
+)
+
+fig_bar = px.bar(
+    eng_status,
+    x="first engineer(india team)",
+    y="count",
+    color="status",
+    text="count",
+    barmode="stack",
+    title="Cases by Engineer and Status",
+    color_discrete_map={
+        "Closed": "blue",
+        "Ongoing": "green",
+        "Pending on Infra": "orange",
+        "Pending on Manufactures": "yellow",
+        "Pending on Universe": "orange",
+        "Not Started": "pink",
+        "Ticket Status Unassigned": "black"
+    }
+)
+
+fig_bar.update_traces(textposition="inside")
+
+fig_bar.update_layout(
+    xaxis_title="Engineer",
+    yaxis_title="Number of Cases",
+    legend_title="Status"
+)
+
+with chart_col:
+    st.plotly_chart(
+        fig_bar,
+        width="stretch"
+    )
+
+
+# ============================================================
+# ENGINEER YEARLY PERFORMANCE
+# CURRENT YEAR: JANUARY 1 -> TODAY
+#
+# IMPORTANT:
+# This section intentionally ignores selected Month and Week.
+# It shows the engineer's complete current-year performance.
+# ============================================================
+
+st.subheader(
+    "👨‍💻 Engineer Yearly Performance"
+)
+
+
+# ------------------------------------------------------------
+# Current calendar year
+# ------------------------------------------------------------
+
+current_year = datetime.now().year
+
+today = pd.Timestamp.today().normalize()
+
+
+# ------------------------------------------------------------
+# All cases from January 1 until today
+# ------------------------------------------------------------
+
+current_year_df = df[
+    (df["year"] == current_year) &
+    (df["effective_date"] <= today)
+].copy()
+
+
+# ------------------------------------------------------------
+# Engineer list
+# ------------------------------------------------------------
+
+engineer_list = sorted(
+    current_year_df[
+        current_year_df[
+            "first engineer(india team)"
+        ].notna()
+    ]["first engineer(india team)"]
+    .astype(str)
+    .str.strip()
+    .loc[
+        lambda x:
+        ~x.isin(
             [
-                "first engineer(india team)",
-                "age_bucket"
-            ],
-            dropna=False
+                "",
+                "nan",
+                "None",
+                "Ticket Status Unassigned"
+            ]
         )
-        .size()
-        .reset_index(name="count")
-    )
-    pending_summary = pending_summary[
-        pending_summary["count"] > 0
     ]
-    # ------------------------------------------------------------
-    # DISPLAY PENDING AGING CHART IN NAVIGATION SECTION
-    # ------------------------------------------------------------
+    .unique()
+)
 
-    st.markdown('<div id="pending-cases-aging-analysis"></div>', unsafe_allow_html=True)
-    st.header("Pending Cases Aging Analysis")
-    
-    if pending_summary.empty:
 
-        st.info(
-            "No pending cases found for the selected filters."
+# ------------------------------------------------------------
+# Engineer selection
+# ------------------------------------------------------------
+
+if engineer_list:
+
+    # Show engineer selection in half of the dashboard
+    selection_col, empty_col = st.columns(2)
+
+    with selection_col:
+        selected_engineer = st.selectbox(
+            "Select Engineer",
+            engineer_list,
+            key="yearly_engineer"
         )
 
-    else:
 
-        fig_pending_navigation = px.bar(
-            pending_summary,
-            x="first engineer(india team)",
-            y="count",
-            color="age_bucket",
-            text="count",
-            barmode="stack",
-            title="Pending Cases Aging Analysis",
-            color_discrete_map={
-                "0-7 Days": "blue",
-                "8-15 Days": "orange",
-                ">15 Days": "red",
-                "Unknown": "gray"
-            }
+    # --------------------------------------------------------
+    # Selected engineer data
+    # --------------------------------------------------------
+
+    engineer_year_df = current_year_df[
+        current_year_df[
+            "first engineer(india team)"
+        ]
+        .astype(str)
+        .str.strip()
+        .eq(selected_engineer)
+    ].copy()
+
+
+    # --------------------------------------------------------
+    # NORMALIZE STATUS FOR CALCULATIONS
+    # --------------------------------------------------------
+
+    engineer_year_df["status_clean"] = (
+        engineer_year_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+    )
+
+
+# --------------------------------------------------------
+# ============================================================
+# YEARLY ENGINEER PERFORMANCE
+# ============================================================
+
+# --------------------------------------------------------
+# STATUS COUNTS
+# --------------------------------------------------------
+
+st.markdown('<div id="engineer-yearly-performance"></div>', unsafe_allow_html=True)
+st.header("Engineer Yearly Performance")
+
+year_total = len(engineer_year_df)
+
+year_closed = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "closed"
+    ]
+)
+
+year_ongoing = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "ongoing"
+    ]
+)
+
+year_infra = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "pending on infra"
+    ]
+)
+
+year_manufactures = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "pending on manufactures"
+    ]
+)
+
+year_unassigned = len(
+    engineer_year_df[
+        engineer_year_df["status_clean"] == "ticket status unassigned"
+    ]
+)
+
+
+# --------------------------------------------------------
+# CLOSURE PERCENTAGE
+# Calculate this BEFORE creating the gauge
+# --------------------------------------------------------
+
+year_closure_rate = (
+    (year_closed / year_total) * 100
+    if year_total > 0
+    else 0
+)
+
+
+# --------------------------------------------------------
+# LEFT SIDE - PERFORMANCE LIST | RIGHT SIDE - GAUGE
+# --------------------------------------------------------
+
+list_col, chart_col = st.columns([1.2, 1])
+
+
+# --------------------------------------------------------
+# LEFT SIDE - PERFORMANCE LIST IN TWO COLUMNS
+# --------------------------------------------------------
+
+with list_col:
+
+    list_col1, list_col2 = st.columns(2)
+
+    # First list column
+    with list_col1:
+
+        st.markdown(
+            f"**Total Cases:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_total}</span>",
+            unsafe_allow_html=True
         )
 
-        fig_pending_navigation.update_traces(
-            textposition="inside"
+        st.markdown(
+            f"**Closed:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_closed}</span>",
+            unsafe_allow_html=True
         )
 
-        fig_pending_navigation.update_layout(
-            xaxis_title="Engineer",
-            yaxis_title="Number of Pending Cases",
-            legend_title="Case Age"
+        st.markdown(
+            f"**Ongoing:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_ongoing}</span>",
+            unsafe_allow_html=True
         )
 
-        st.plotly_chart(
-            fig_pending_navigation,
-            use_container_width=True
+        st.markdown(
+            f"**Closure:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_closure_rate:.1f}%</span>",
+            unsafe_allow_html=True
         )
+
+    # Second list column
+    with list_col2:
+
+        st.markdown(
+            f"**Pending:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_infra}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Pending from Mfg:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_manufactures}</span>",
+            unsafe_allow_html=True
+        )
+
+        st.markdown(
+            f"**Unassigned:** "
+            f"<span style='font-size:24px;font-weight:700;'>{year_unassigned}</span>",
+            unsafe_allow_html=True
+        )
+
+
+# --------------------------------------------------------
+# RIGHT SIDE - CLOSURE RATE GAUGE
+# --------------------------------------------------------
+
+with chart_col:
+
+    fig_yearly_gauge = go.Figure(
+        go.Indicator(
+            mode="gauge+number",
+            value=year_closure_rate,
+
+            number={
+                "suffix": "%",
+                "font": {"size": 28}
+            },
+
+            title={
+                "text": "Yearly Closure Rate",
+                "font": {"size": 14}
+            },
+
+            gauge={
+                "axis": {
+                    "range": [0, 100],
+                    "ticksuffix": "%"
+                },
+
+                "bar": {
+                    "color": "#00A86B"
+                },
+
+                "steps": [
+                    {
+                        "range": [0, 50],
+                        "color": "#FCE8E6"
+                    },
+                    {
+                        "range": [50, 80],
+                        "color": "#FFF4CC"
+                    },
+                    {
+                        "range": [80, 100],
+                        "color": "#D9F2E6"
+                    },
+                ],
+            },
+        )
+    )
+
+    fig_yearly_gauge.update_layout(
+        height=220,
+        margin=dict(
+            l=10,
+            r=10,
+            t=40,
+            b=10
+        )
+    )
+
+    st.plotly_chart(
+        fig_yearly_gauge,
+        width="stretch",
+        config={"displayModeBar": False}
+    )
+
+
+
+st.subheader("⏳ Pending Cases Aging Analysis")
+
+# ------------------------------------------------------------
+# YEAR / MONTH / WEEK FILTERS
+# Define filtered_df inside this section
+# ------------------------------------------------------------
+
+filter_col, empty_col = st.columns([1, 3])
+
+with filter_col:
+
+    years = sorted(
+        df["year"].dropna().unique().tolist(),
+        reverse=True
+    )
+
+    if not years:
+        st.warning("No date records are available.")
+
+    selected_year = st.selectbox(
+        "Select Year",
+        years,
+        key="aging_year"
+    )
+
+    available_months = (
+        df[df["year"] == selected_year]
+        .sort_values("month")["month_name"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    if not available_months:
+        st.warning("No month records are available for this year.")
+
+    current_month = datetime.now().strftime("%B")
+
+    default_month_index = (
+        available_months.index(current_month)
+        if current_month in available_months
+        else 0
+    )
+
+    selected_month = st.selectbox(
+        "Select Month",
+        available_months,
+        index=default_month_index,
+        key="aging_month"
+    )
+
+    available_weeks = (
+        df[
+            (df["year"] == selected_year) &
+            (df["month_name"] == selected_month)
+        ]
+        .sort_values("week_no")["week_name"]
+        .dropna()
+        .unique()
+        .tolist()
+    )
+
+    week_options = ["All Weeks"] + available_weeks
+
+    selected_week = st.selectbox(
+        "Select Week",
+        week_options,
+        key="aging_week"
+    )
+
+# ------------------------------------------------------------
+# APPLY FILTERS
+# ------------------------------------------------------------
+
+filtered_df = df[
+    (df["year"] == selected_year) &
+    (df["month_name"] == selected_month)
+].copy()
+
+if selected_week != "All Weeks":
+    filtered_df = filtered_df[
+        filtered_df["week_name"] == selected_week
+    ].copy()
+
+# ------------------------------------------------------------
+# FILTER PENDING CASES
+# ------------------------------------------------------------
+
+pending_df = filtered_df[
+    (filtered_df["end time"].isna()) &
+    (
+        filtered_df["status"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .ne("closed")
+    )
+].copy()
+
+if pending_df.empty:
+    st.info("No pending cases found for the selected filters.")
+    st.stop()
+
+# ------------------------------------------------------------
+# CALCULATE CASE AGE
+# ------------------------------------------------------------
+
+pending_df["effective_start_date"] = (
+    pending_df["start date"]
+    .fillna(pending_df["filled_date"])
+)
+
+today = pd.Timestamp.today().normalize()
+
+pending_df["case_days"] = (
+    today - pending_df["effective_start_date"]
+).dt.days
+
+# ------------------------------------------------------------
+# AGE BUCKETS
+# ------------------------------------------------------------
+
+pending_df["age_bucket"] = np.select(
+    [
+        pending_df["case_days"].between(0, 7),
+        pending_df["case_days"].between(8, 15),
+        pending_df["case_days"] > 15
+    ],
+    [
+        "0-7 Days",
+        "8-15 Days",
+        ">15 Days"
+    ],
+    default="Unknown"
+)
+
+# ------------------------------------------------------------
+# GROUP BY ENGINEER + AGE BUCKET
+# ------------------------------------------------------------
+
+pending_summary = (
+    pending_df
+    .groupby(
+        [
+            "first engineer(india team)",
+            "age_bucket"
+        ],
+        dropna=False
+    )
+    .size()
+    .reset_index(name="count")
+)
+pending_summary = pending_summary[
+    pending_summary["count"] > 0
+]
+# ------------------------------------------------------------
+# DISPLAY PENDING AGING CHART IN NAVIGATION SECTION
+# ------------------------------------------------------------
+
+st.markdown('<div id="pending-cases-aging-analysis"></div>', unsafe_allow_html=True)
+st.header("Pending Cases Aging Analysis")
+
+if pending_summary.empty:
+
+    st.info(
+        "No pending cases found for the selected filters."
+    )
+
+else:
+
+    fig_pending_navigation = px.bar(
+        pending_summary,
+        x="first engineer(india team)",
+        y="count",
+        color="age_bucket",
+        text="count",
+        barmode="stack",
+        title="Pending Cases Aging Analysis",
+        color_discrete_map={
+            "0-7 Days": "blue",
+            "8-15 Days": "orange",
+            ">15 Days": "red",
+            "Unknown": "gray"
+        }
+    )
+
+    fig_pending_navigation.update_traces(
+        textposition="inside"
+    )
+
+    fig_pending_navigation.update_layout(
+        xaxis_title="Engineer",
+        yaxis_title="Number of Pending Cases",
+        legend_title="Case Age"
+    )
+
+    st.plotly_chart(
+        fig_pending_navigation,
+        width="stretch"
+    )
 # PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
     (df["end time"].isna()) &
@@ -1013,5 +1007,5 @@ fig_pending.update_traces(
 
 st.plotly_chart(
     fig_pending,
-    use_container_width=True
+    width="stretch"
 )
