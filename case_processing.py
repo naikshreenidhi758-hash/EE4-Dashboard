@@ -733,73 +733,7 @@ with chart_col:
 
 st.subheader("⏳ Pending Cases Aging Analysis")
 
-# ------------------------------------------------------------
-# YEAR / MONTH / WEEK FILTERS
-# Define filtered_df inside this section
-# ------------------------------------------------------------
 
-filter_col, empty_col = st.columns([1, 3])
-
-with filter_col:
-
-    years = sorted(
-        df["year"].dropna().unique().tolist(),
-        reverse=True
-    )
-
-    if not years:
-        st.warning("No date records are available.")
-
-    selected_year = st.selectbox(
-        "Select Year",
-        years,
-        key="aging_year"
-    )
-
-    available_months = (
-        df[df["year"] == selected_year]
-        .sort_values("month")["month_name"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
-
-    if not available_months:
-        st.warning("No month records are available for this year.")
-
-    current_month = datetime.now().strftime("%B")
-
-    default_month_index = (
-        available_months.index(current_month)
-        if current_month in available_months
-        else 0
-    )
-
-    selected_month = st.selectbox(
-        "Select Month",
-        available_months,
-        index=default_month_index,
-        key="aging_month"
-    )
-
-    available_weeks = (
-        df[
-            (df["year"] == selected_year) &
-            (df["month_name"] == selected_month)
-        ]
-        .sort_values("week_no")["week_name"]
-        .dropna()
-        .unique()
-        .tolist()
-    )
-
-    week_options = ["All Weeks"] + available_weeks
-
-    selected_week = st.selectbox(
-        "Select Week",
-        week_options,
-        key="aging_week"
-    )
 
 # ------------------------------------------------------------
 # APPLY FILTERS
