@@ -825,8 +825,6 @@ pending_summary = pending_summary[
 # ------------------------------------------------------------
 
 st.markdown('<div id="pending-cases-aging-analysis"></div>', unsafe_allow_html=True)
-st.header("Pending Cases Aging Analysis")
-
 
 # PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
