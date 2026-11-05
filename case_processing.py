@@ -9,12 +9,13 @@ from datetime import datetime
 # ============================================================
 # PAGE CONFIG
 # ============================================================
+st.markdown('<div id="case-processing-status"></div>', unsafe_allow_html=True)
+st.header("Case Processing Status")
 
 st.set_page_config(
     page_title="Case Processing Dashboard",
     layout="wide"
 )
-
 
 # ============================================================
 # HEADER / IMAGE
@@ -23,7 +24,6 @@ st.set_page_config(
 st.image("envision.png")
 
 st.title("INDIA Project - Case Processing Status 📋")
-
 
 # ============================================================
 # LOAD EXCEL
@@ -34,13 +34,11 @@ df = pd.read_excel(
     sheet_name="CASE processing"
 )
 
-
 # ============================================================
 # CLEAN COLUMN NAMES
 # ============================================================
 
 df.columns = df.columns.str.strip().str.lower()
-
 
 # ============================================================
 # CLEAN ENGINEER COLUMN
@@ -53,7 +51,6 @@ df["first engineer(india team)"] = (
     .astype("string")
     .str.strip()
 )
-
 
 # ============================================================
 # CLEAN STATUS
@@ -70,7 +67,6 @@ df["status"] = (
         "Ticket Status Unassigned"
     )
 )
-
 
 # ============================================================
 # CLEAN PRIORITY
@@ -115,7 +111,6 @@ df["effective_date"] = (
     .fillna(df["filled_date"])
 )
 
-
 # ============================================================
 # YEAR / MONTH / WEEK
 # ============================================================
@@ -143,18 +138,17 @@ df["week_name"] = (
 
 
 # ============================================================
-# DASHBOARD SIDEBAR NAVIGATION
+# DASHBOARD NAVIGATION PANEL
 # ============================================================
 
-selected_section = st.sidebar.radio(
-    "📌 Dashboard Navigation",
-    [
-        "Status Cases by Engineer and Status",
-        "Engineer Yearly Performance",
-        "Pending Cases Aging Analysis"
-    ],
-    key="dashboard_navigation"
-)
+with st.sidebar:
+    st.markdown("### 📌 Dashboard Navigation")
+
+    st.markdown("[Case Processing Status](#case-processing-status)")
+    st.markdown("[Overall Ticket Status](#overall-ticket-status)")
+    st.markdown("[Cases by Engineer and Status](#cases-by-engineer-and-status)")
+    st.markdown("[Engineer Yearly Performance](#engineer-yearly-performance)")
+    st.markdown("[Pending Cases Aging Analysis](#pending-cases-aging-analysis)")
 
 # ============================================================
 # KPI METRICS - ALL TICKETS
@@ -256,6 +250,9 @@ with st.expander(
 # OVERALL TICKET STATUS - ALL TICKETS
 # ============================================================
 
+st.markdown('<div id="overall-ticket-status"></div>', unsafe_allow_html=True)
+st.header("Overall Ticket Status")
+
 st.subheader("📊 Overall Ticket Status")
 
 
@@ -299,12 +296,15 @@ if selected_section == "Status Cases by Engineer and Status":
     # ENGINEER VS STATUS
     # Filters are displayed on the right of this chart.
     # ============================================================
+    
+    st.markdown('<div id="cases-by-engineer-and-status"></div>', unsafe_allow_html=True)
+    st.header("Cases by Engineer and Status")
+
+    
     st.markdown(
         "<div id='status-cases-by-engineer'></div>",
         unsafe_allow_html=True
     )
-
-    st.subheader("👨‍💻 Status Cases by Engineer and Status")
 
     st.subheader("👨‍💻 Cases by Engineer and Status")
 
@@ -560,6 +560,9 @@ elif selected_section == "Engineer Yearly Performance":
     # STATUS COUNTS
     # --------------------------------------------------------
 
+    st.markdown('<div id="engineer-yearly-performance"></div>', unsafe_allow_html=True)
+    st.header("Engineer Yearly Performance")
+    
     year_total = len(engineer_year_df)
 
     year_closed = len(
@@ -898,6 +901,9 @@ elif selected_section == "Pending Cases Aging Analysis":
     # DISPLAY PENDING AGING CHART IN NAVIGATION SECTION
     # ------------------------------------------------------------
 
+    st.markdown('<div id="pending-cases-aging-analysis"></div>', unsafe_allow_html=True)
+    st.header("Pending Cases Aging Analysis")
+    
     if pending_summary.empty:
 
         st.info(
