@@ -250,8 +250,6 @@ with st.expander(
 # ============================================================
 
 st.markdown('<div id="overall-ticket-status"></div>', unsafe_allow_html=True)
-st.header("Overall Ticket Status")
-
 st.subheader("📊 Overall Ticket Status")
 
 
@@ -296,8 +294,6 @@ st.plotly_chart(
 # ============================================================
 
 st.markdown('<div id="cases-by-engineer-and-status"></div>', unsafe_allow_html=True)
-st.header("Cases by Engineer and Status")
-
 
 st.markdown(
     "<div id='status-cases-by-engineer'></div>",
@@ -558,7 +554,6 @@ if engineer_list:
 # --------------------------------------------------------
 
 st.markdown('<div id="engineer-yearly-performance"></div>', unsafe_allow_html=True)
-st.header("Engineer Yearly Performance")
 
 year_total = len(engineer_year_df)
 
