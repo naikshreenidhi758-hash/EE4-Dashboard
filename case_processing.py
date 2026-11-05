@@ -1007,5 +1007,5 @@ fig_pending.update_traces(
 
 st.plotly_chart(
     fig_pending,
-    width="stretch"
+    use_container_width=True
 )
