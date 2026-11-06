@@ -731,102 +731,9 @@ with chart_col:
 
 
 
-st.subheader("⏳ Pending Cases Aging Analysis")
-
-
-
-# ------------------------------------------------------------
-# APPLY FILTERS
-# ------------------------------------------------------------
-
-filtered_df = df[
-    (df["year"] == selected_year) &
-    (df["month_name"] == selected_month)
-].copy()
-
-if selected_week != "All Weeks":
-    filtered_df = filtered_df[
-        filtered_df["week_name"] == selected_week
-    ].copy()
-
-# ------------------------------------------------------------
-# FILTER PENDING CASES
-# ------------------------------------------------------------
-
-pending_df = filtered_df[
-    (filtered_df["end time"].isna()) &
-    (
-        filtered_df["status"]
-        .astype(str)
-        .str.strip()
-        .str.lower()
-        .ne("closed")
-    )
-].copy()
-
-if pending_df.empty:
-    st.info("No pending cases found for the selected filters.")
-    st.stop()
-
-# ------------------------------------------------------------
-# CALCULATE CASE AGE
-# ------------------------------------------------------------
-
-pending_df["effective_start_date"] = (
-    pending_df["start date"]
-    .fillna(pending_df["filled_date"])
-)
-
-today = pd.Timestamp.today().normalize()
-
-pending_df["case_days"] = (
-    today - pending_df["effective_start_date"]
-).dt.days
-
-# ------------------------------------------------------------
-# AGE BUCKETS
-# ------------------------------------------------------------
-
-pending_df["age_bucket"] = np.select(
-    [
-        pending_df["case_days"].between(0, 7),
-        pending_df["case_days"].between(8, 15),
-        pending_df["case_days"] > 15
-    ],
-    [
-        "0-7 Days",
-        "8-15 Days",
-        ">15 Days"
-    ],
-    default="Unknown"
-)
-
-# ------------------------------------------------------------
-# GROUP BY ENGINEER + AGE BUCKET
-# ------------------------------------------------------------
-
-pending_summary = (
-    pending_df
-    .groupby(
-        [
-            "first engineer(india team)",
-            "age_bucket"
-        ],
-        dropna=False
-    )
-    .size()
-    .reset_index(name="count")
-)
-pending_summary = pending_summary[
-    pending_summary["count"] > 0
-]
-# ------------------------------------------------------------
-# DISPLAY PENDING AGING CHART IN NAVIGATION SECTION
-# ------------------------------------------------------------
-
+# PENDING AGING ANALYSIS (Overall Data)
 st.markdown('<div id="pending-cases-aging-analysis"></div>', unsafe_allow_html=True)
 
-# PENDING AGING ANALYSIS (Overall Data)
 pending_df = df[
     (df["end time"].isna()) &
     (
@@ -898,4 +805,5 @@ fig_pending.update_traces(
 st.plotly_chart(
     fig_pending,
     use_container_width=True
-)
+
+
